@@ -8,8 +8,11 @@ import smbus
 import socket
 import threading
 import os
+import signal
 import smtplib
 from email.mime.text import MIMEText
+
+from oled import oledDisplay as OLED
 
 
 # bcmChannel=3
@@ -127,7 +130,7 @@ def insertDataALL(connection, table, temp, humi, illuminance, pressure, haveco):
 #     connection.rollback()
 
 def insert():
-    global humi22, temp22, data, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure, saveFreq
+    global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure, saveFreq
     lock = threading.Lock()
     try:
         connCloud = getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'sensors_data')
@@ -174,7 +177,7 @@ def insert():
 
 
 def acquire():
-    global humi22, temp22, data, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure, acqFreq, saveFreq, warnFreq
+    global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure, acqFreq, saveFreq, warnFreq
     try:
         connection = getConnection('localhost', 'root', '960123%W78u&', 'setting')
         connection_vps = getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'setting')
@@ -228,15 +231,16 @@ def acquire():
                 time.sleep(10)
                 continue
             checkWarning(connection, connection_vps)
+            print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
             lock.release()
             time.sleep(acqFreq * 60)
 
     except KeyboardInterrupt:
         GPIO.cleanup()
         exit(0)
-    # except Exception as exc:
-    #     print(getLocalTimeHuman(), 'thrAqr:', exc)
-    #     time.sleep(5)
+    except Exception as exc:
+        print(getLocalTimeHuman(), 'thrAqr:', exc)
+        time.sleep(5)
 
 
 def findLastDate(connection, table, showKeys='date'):
@@ -408,7 +412,7 @@ def checkWarning(connection, connection_vps):
                    'haveco': {'g': '一氧化碳大于', 'ge': '一氧化碳大于等于', 'l': '一氧化碳小于', 'le': '一氧化碳小于等于', 'e': '一氧化碳等于',
                               'ne': '一氧化碳不等于'}
                    }
-    global humi22, temp22, data, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
+    global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
     try:
         connection.commit()
         connection_vps.commit()
@@ -616,7 +620,7 @@ def sendWarning():
             'e': '一氧化碳等于',
             'ne': '一氧化碳不等于'}
     }
-    global warnFreq, acqFreq, humi22, temp22, data, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
+    global warnFreq, acqFreq, humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
     try:
         connCloud = getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'setting')
         connLocal = getConnection('localhost', 'root', '960123%W78u&', 'setting')
@@ -670,52 +674,99 @@ def syncDatabase():
     pass
 
 # LED闪烁线程
-def ledFlicker(redLED, greenLED, ftime):
+def ledFlicker(redLED, greenLED, toggle_1, ftime):
+    # global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(redLED, GPIO.OUT)
     GPIO.setup(greenLED, GPIO.OUT)
+    GPIO.setup(toggle_1, GPIO.IN)
+    GPIO.add_event_detect(toggle_1, GPIO.FALLING, callback=oledToggleInt, bouncetime=500)
     GPIO.output(redLED, GPIO.LOW)
     GPIO.output(greenLED, GPIO.LOW)
-
-    while True:
-        GPIO.output(greenLED, GPIO.HIGH)
-        time.sleep(ftime)
-        GPIO.output(greenLED, GPIO.LOW)
-        time.sleep(ftime)
-        if isFirstStarted is True:
-            GPIO.output(greenLED, GPIO.LOW)
-            break
-    while True:
-        if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:
-            # 置空所有LED
-            GPIO.output(greenLED, GPIO.LOW)
-            GPIO.output(redLED, GPIO.LOW)
-            # LED闪烁
-            GPIO.output(redLED, GPIO.HIGH)
-            time.sleep(ftime)
-            GPIO.output(redLED, GPIO.LOW)
-            time.sleep(ftime)
-        else:
-            GPIO.output(redLED, GPIO.LOW)
+    oled = OLED()
+    seq = ['H', 'T', 'I', 'CO', 'P', 'AF']
+    unit= {'H':'%', 'T':'C', 'I':' l', 'CO':'', 'P':' hPa', 'AF':'s'}
+    isrunning = False
+    isExecuted = False
+    isOFF = False
+    try:
+        while not isINT:
+            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
+            oled.showData(seq, data, unit)
             GPIO.output(greenLED, GPIO.HIGH)
+            time.sleep(ftime)
+            GPIO.output(greenLED, GPIO.LOW)
+            time.sleep(ftime)
+            if isFirstStarted is True:
+                GPIO.output(greenLED, GPIO.LOW)
+                break
+
+        while not isINT:
+            if oledOFF:
+                if not isOFF:
+                    oled.clear()
+                    isOFF = True
+                time.sleep(0.5)
+                continue
+            else:
+                isOFF = False
+            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
+            oled.showData(seq, data, unit)
+            if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:
+                isExecuted = False
+                isrunning = False
+                # 置空所有LED
+                GPIO.output(greenLED, GPIO.LOW)
+                GPIO.output(redLED, GPIO.LOW)
+                # LED闪烁
+                GPIO.output(redLED, GPIO.HIGH)
+                time.sleep(ftime)
+                GPIO.output(redLED, GPIO.LOW)
+                time.sleep(ftime)
+            else:
+                if not isExecuted:
+                    GPIO.output(redLED, GPIO.LOW)
+                    GPIO.output(greenLED, GPIO.HIGH)
+                isExecuted = True
+                if isrunning is False:
+                    print(getLocalTimeHuman(), 'All threads is running')
+                    isrunning = True
+                time.sleep(0.5)
+
+        oled.clear()
+    except Exception as exc:
+        print(getLocalTimeHuman(), 'thrLED:', exc)
+
+def oledToggleInt(self):
+    global oledOFF
+    oledOFF = not oledOFF
+    if oledOFF:
+        print(getLocalTimeHuman(), 'OLED OFF')
+    else:
+        print(getLocalTimeHuman(), 'OLED ON')
 
 
-def run():
+def main():
     try:
         global saveFreq
         global acqFreq
         global warnFreq
-        global humi22, temp22, data, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
+        global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
         global thrAcqAlive, thrSaveAlive, thrSendAlive, isFirstStarted
+        global isINT, oledOFF
         # GPIO.setmode(GPIO.BCM)
         # GPIO.setwarnings(False)
 
+        isINT = oledOFF = False
+        humi22 = temp22 = illuminance = pressure = temperature = altitude = sealevel_pressure = -1
+        haveco = 'E'
         acqFreq = 1/6
         isFirstStarted = False
         greenLED = 17
         redLED = 27
-        thrLED = threading.Thread(target=ledFlicker, name='Thread_LED', args=(redLED, greenLED, .5))
+        toggle_1 = 26
+        thrLED = threading.Thread(target=ledFlicker, name='Thread_LED', args=(redLED, greenLED, toggle_1, .5))
         thrLED.setDaemon(True)
         thrLED.start()
         # GPIO.setup(greenLED, GPIO.OUT)
@@ -723,11 +774,13 @@ def run():
         #
         # GPIO.output(greenLED, GPIO.LOW)
 
+        signal.signal(signal.SIGTERM, termHandler)
+
         thrAcq = threading.Thread(target = acquire, name= 'Thread_Acq')
         thrAcq.setDaemon(True)
         thrAcq.start()
         time.sleep(10)
-        print('acqFreq =', acqFreq, 'mins')
+
         time.sleep(acqFreq * 60)
         thrSave = threading.Thread(target = insert, name = 'Thread_Save')
         thrSave.setDaemon(True)
@@ -738,43 +791,78 @@ def run():
         isFirstStarted = True
 
         while True:
-            thrAcqAlive = thrSaveAlive = thrSendAlive = False
-            for thread in threading.enumerate():
-                threadName = str(str(thread).split(',', 1)[0]).split('(', 1)[1]
-                # print(threadName)
-                if threadName == 'Thread_Acq':
-                    thrAcqAlive = True
-                elif threadName == 'Thread_Save':
-                    thrSaveAlive = True
-                elif threadName == 'Thread_Send':
-                    thrSendAlive = True
+            thrLEDAlive = thrAcqAlive = thrSaveAlive = thrSendAlive = False
+            # for thread in threading.enumerate():
+            #     threadName = str(str(thread).split(',', 1)[0]).split('(', 1)[1]
+            #     # print(threadName)
+            #     if threadName == 'Thread_Acq':
+            #         thrAcqAlive = True
+            #     elif threadName == 'Thread_Save':
+            #         thrSaveAlive = True
+            #     elif threadName == 'Thread_Send':
+            #         thrSendAlive = True
+            if thrLED.isAlive():
+                thrLEDAlive = True
+            if thrAcq.isAlive():
+                thrAcqAlive = True
+            if thrSave.isAlive():
+                thrSaveAlive = True
+            if thrSend.isAlive():
+                thrSendAlive = True
+            if not thrLEDAlive:
+                print(getLocalTimeHuman(), 'Restarting LED thread!')
+                thrLED = threading.Thread(target=ledFlicker, name='Thread_LED', args=(redLED, greenLED, .5))
+                thrLED.setDaemon(True)
+                thrLED.start()
             if not thrAcqAlive:
                 acqFreq = 0
-                print('Restarting Acquire thread!')
+                print(getLocalTimeHuman(), 'Restarting Acquire thread!')
                 thrAcq = threading.Thread(target=acquire, name='Thread_Acq')
                 thrAcq.setDaemon(True)
                 thrAcq.start()
                 time.sleep(10)
                 time.sleep(acqFreq * 60)
             if not thrSaveAlive:
-                print('Restarting Save thread!')
+                print(getLocalTimeHuman(), 'Restarting Save thread!')
                 thrSave = threading.Thread(target=insert, name='Thread_Save')
                 thrSave.setDaemon(True)
                 thrSave.start()
             if not thrSendAlive:
-                print('Restarting Send thread!')
+                print(getLocalTimeHuman(), 'Restarting Send thread!')
                 thrSend = threading.Thread(target=sendWarning, name='Thread_Send')
                 thrSend.setDaemon(True)
                 thrSend.start()
-            time.sleep(20)
+            # print(threading.enumerate())
+            time.sleep(10)
     except KeyboardInterrupt:
-        print('\nKeyboardInterrupt')
+        print('\n'+getLocalTimeHuman(), 'KeyboardInterrupt')
         greenLED = 17
         redLED = 27
+        isINT = True
+        time.sleep(2)                   # kill LED thread for turn off the OLED and two LED
+        GPIO.output(greenLED, GPIO.LOW)
+        GPIO.output(redLED, GPIO.LOW)
+        exit(0)
+    except Exception as exc:
+        print(getLocalTimeHuman(),exc)
+        greenLED = 17
+        redLED = 27
+        isINT = True
+        time.sleep(2)  # kill LED thread for turn off the OLED and two LED
         GPIO.output(greenLED, GPIO.LOW)
         GPIO.output(redLED, GPIO.LOW)
         exit(0)
 
+def termHandler(arg1, arg2):
+    print (getLocalTimeHuman(), '\nCatch SIGTERM', arg1, arg2)
+    global isINT
+    greenLED = 17
+    redLED = 27
+    isINT = True
+    time.sleep(2)  # kill LED thread for turn off the OLED and two LED
+    GPIO.output(greenLED, GPIO.LOW)
+    GPIO.output(redLED, GPIO.LOW)
+    exit(0)
 
 if __name__ == '__main__':
-    run()
+    main()
