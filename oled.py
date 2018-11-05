@@ -10,6 +10,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+import subprocess
+
 class oledDisplay():
     # Raspberry Pi pin configuration:
     __RST = 24
@@ -46,11 +48,12 @@ class oledDisplay():
     __draw = ImageDraw.Draw(__image)
 
     # First define some constants to allow easy resizing of shapes.
-    __padding = 3
-    __top = __padding
-    __bottom = __height - __padding
-    __left = __padding
-    __right = __width - __padding
+    __xpadding = 0
+    __ypadding = -2
+    __top = __ypadding
+    __bottom = __height - __ypadding
+    __left = __xpadding
+    __right = __width - __xpadding
     # Move left to right keeping track of the current x position for drawing shapes.
     # __x = __padding
 
@@ -83,11 +86,11 @@ class oledDisplay():
 
 
 
-    def showData(self, seq, data, unit):
+    def showData(self, seq, data, unit, status):
         # self.__image = self.__blackImage.copy()
         # self.__disp.clear()
         # self.__disp.display()
-        x = self.__padding
+        x = self.__left
         y = self.__top
         xoffset = 0   # 列偏移量
         xstep = 10   # 列距
@@ -96,19 +99,35 @@ class oledDisplay():
         col = 0     # 列
         temp = 0    # 最小列距
         charrate = 6.2  # 字符/像素点
-        self.__draw.rectangle((0, 0, self.__width - 1, self.__height - 1), outline=1, fill=0)  # edge area , refresh OLED
+        self.__draw.rectangle((0, -2, self.__width, self.__height), outline=0, fill=0)  # edge area , refresh OLED
         # self.__draw.rectangle((x, y, self.__right, self.__bottom), outline=1, fill=0)  # show area
-        for title in seq:
-            string = title + ':' + str(data[title]) + unit[title]
-            if charrate * len(string) > temp:
-                temp = charrate * len(string)
-            self.__draw.text((x + xoffset, y + row * ystep), string, font=self.__font, fill=255)
-            row += 1
-            if row == 3:  # 3行换列
-                row = 0
-                col += 1
-                xoffset += temp + xstep
-                temp = 0
+        if status == 0:
+            for title in seq:
+                string = title + ':' + str(data[title]) + unit[title]
+                if charrate * len(string) > temp:
+                    temp = charrate * len(string)
+                self.__draw.text((x + xoffset, y + row * ystep), string, font=self.__font, fill=255)
+                row += 1
+                if row == 4:  # 4行换列
+                    row = 0
+                    col += 1
+                    xoffset += temp + xstep
+                    temp = 0
+        if status == 1:
+            # Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
+            cmd = "hostname -I | cut -d\' \' -f1"
+            IP = subprocess.check_output(cmd, shell=True)
+            cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+            CPU = subprocess.check_output(cmd, shell=True)
+            cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
+            MemUsage = subprocess.check_output(cmd, shell=True)
+            cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
+            Disk = subprocess.check_output(cmd, shell=True)
+            # Write two lines of text.
+            self.__draw.text((x, y), "IP: " + IP.decode('utf-8'), font=self.__font, fill=255)
+            self.__draw.text((x, y + ystep), CPU.decode('utf-8'), font=self.__font, fill=255)
+            self.__draw.text((x, y + 2*ystep), MemUsage.decode('utf-8'), font=self.__font, fill=255)
+            self.__draw.text((x, y + 3*ystep), Disk.decode('utf-8'), font=self.__font, fill=255)
 
         # Display image.
         # self.__image.save('./display_test.png')

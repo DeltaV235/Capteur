@@ -674,14 +674,16 @@ def syncDatabase():
     pass
 
 # LED闪烁线程
-def ledFlicker(redLED, greenLED, toggle_1, ftime):
+def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
     # global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(redLED, GPIO.OUT)
     GPIO.setup(greenLED, GPIO.OUT)
     GPIO.setup(toggle_1, GPIO.IN)
-    GPIO.add_event_detect(toggle_1, GPIO.FALLING, callback=oledToggleInt, bouncetime=500)
+    GPIO.add_event_detect(toggle_1, GPIO.RISING, callback=oledToggleInt, bouncetime=700)
+    GPIO.setup(toggle_2, GPIO.IN)
+    GPIO.add_event_detect(toggle_2, GPIO.RISING, callback=statusToggleInt, bouncetime=500)
     GPIO.output(redLED, GPIO.LOW)
     GPIO.output(greenLED, GPIO.LOW)
     oled = OLED()
@@ -691,9 +693,9 @@ def ledFlicker(redLED, greenLED, toggle_1, ftime):
     isExecuted = False
     isOFF = False
     try:
-        while not isINT:
+        while not isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
             data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
-            oled.showData(seq, data, unit)
+            oled.showData(seq, data, unit, oledStatus)
             GPIO.output(greenLED, GPIO.HIGH)
             time.sleep(ftime)
             GPIO.output(greenLED, GPIO.LOW)
@@ -702,18 +704,8 @@ def ledFlicker(redLED, greenLED, toggle_1, ftime):
                 GPIO.output(greenLED, GPIO.LOW)
                 break
 
-        while not isINT:
-            if oledOFF:
-                if not isOFF:
-                    oled.clear()
-                    isOFF = True
-                time.sleep(0.5)
-                continue
-            else:
-                isOFF = False
-            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
-            oled.showData(seq, data, unit)
-            if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:
+        while not isINT:                #所有线程启动1次后
+            if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
                 isExecuted = False
                 isrunning = False
                 # 置空所有LED
@@ -724,20 +716,31 @@ def ledFlicker(redLED, greenLED, toggle_1, ftime):
                 time.sleep(ftime)
                 GPIO.output(redLED, GPIO.LOW)
                 time.sleep(ftime)
-            else:
+            else:                                   # 所有线程正常运行，绿LED常亮
                 if not isExecuted:
                     GPIO.output(redLED, GPIO.LOW)
                     GPIO.output(greenLED, GPIO.HIGH)
-                isExecuted = True
+                    isExecuted = True
                 if isrunning is False:
                     print(getLocalTimeHuman(), 'All threads is running')
                     isrunning = True
-                time.sleep(0.5)
 
-        oled.clear()
+            if oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
+                if not isOFF:
+                    oled.clear()
+                    isOFF = True
+                time.sleep(5)
+                continue
+            else:
+                isOFF = False
+            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
+            oled.showData(seq, data, unit, oledStatus)
+
+        oled.clear()    # 键盘中断，熄灭OLED屏幕
     except Exception as exc:
         print(getLocalTimeHuman(), 'thrLED:', exc)
 
+# 按键1中断，点亮/熄灭OLED屏幕
 def oledToggleInt(self):
     global oledOFF
     oledOFF = not oledOFF
@@ -745,6 +748,16 @@ def oledToggleInt(self):
         print(getLocalTimeHuman(), 'OLED OFF')
     else:
         print(getLocalTimeHuman(), 'OLED ON')
+
+# 按键2中断，改变OLED显示内容
+def statusToggleInt(self):
+    global oledStatus
+    oledStatus += 1
+    if oledStatus == allStatus:
+        oledStatus = 0
+        print(getLocalTimeHuman(), 'Change display concent to Env_Args')
+    else:
+        print(getLocalTimeHuman(), 'Change display concent to Sys_Status')
 
 
 def main():
@@ -754,11 +767,13 @@ def main():
         global warnFreq
         global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
         global thrAcqAlive, thrSaveAlive, thrSendAlive, isFirstStarted
-        global isINT, oledOFF
+        global isINT, oledOFF, oledStatus, allStatus
         # GPIO.setmode(GPIO.BCM)
         # GPIO.setwarnings(False)
 
         isINT = oledOFF = False
+        oledStatus = 0
+        allStatus = 2
         humi22 = temp22 = illuminance = pressure = temperature = altitude = sealevel_pressure = -1
         haveco = 'E'
         acqFreq = 1/6
@@ -766,7 +781,8 @@ def main():
         greenLED = 17
         redLED = 27
         toggle_1 = 26
-        thrLED = threading.Thread(target=ledFlicker, name='Thread_LED', args=(redLED, greenLED, toggle_1, .5))
+        toggle_2 = 13
+        thrLED = threading.Thread(target=ledFlicker, name='Thread_LED', args=(redLED, greenLED, toggle_1, toggle_2, .5))
         thrLED.setDaemon(True)
         thrLED.start()
         # GPIO.setup(greenLED, GPIO.OUT)
@@ -811,7 +827,7 @@ def main():
                 thrSendAlive = True
             if not thrLEDAlive:
                 print(getLocalTimeHuman(), 'Restarting LED thread!')
-                thrLED = threading.Thread(target=ledFlicker, name='Thread_LED', args=(redLED, greenLED, .5))
+                thrLED = threading.Thread(target=ledFlicker, name='Thread_LED',args=(redLED, greenLED, toggle_1, toggle_2, .5))
                 thrLED.setDaemon(True)
                 thrLED.start()
             if not thrAcqAlive:
