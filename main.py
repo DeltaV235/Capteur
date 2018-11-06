@@ -195,11 +195,15 @@ def acquire():
         GPIO.setwarnings(False)
         GPIO.setup(mq7Pin, GPIO.IN)
 
+        count = 0
         while (True):
             connection.commit()
             connection_vps.commit()
             Freq = travValue(connection_vps, 'setting')
-            acqFreq = Freq[0][0]
+            if count >= 2:                      # 前2次采集不更新采集频率，使用main中的短采集周期，提高程序的启动速度
+                acqFreq = Freq[0][0]
+            else:
+                count += 1
             saveFreq = Freq[0][1]
             warnFreq = Freq[0][2]
             # print (acqFreq, saveFreq, warnFreq)
@@ -735,6 +739,7 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
                 isOFF = False
             data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
             oled.showData(seq, data, unit, oledStatus)
+            time.sleep(1)
 
         oled.clear()    # 键盘中断，熄灭OLED屏幕
     except Exception as exc:
