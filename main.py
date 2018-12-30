@@ -140,7 +140,7 @@ def insert():
             distance = (time.mktime(time.localtime(time.time())) - time.mktime(
                 time.strptime(str(date[0][0]), "%Y-%m-%d %H:%M:%S")))
             if distance >= saveFreq * 60 or date == None:
-                if temp22 is not None and humi22 is not None and humi22 <= 100.0 and illuminance is not None and haveco is not None:
+                if temp22 is not None and 0 <= humi22 <= 100.0 and illuminance >= 0 and haveco is not None :
                     lock.acquire()
                     print('Cloud Server:')
                     insertDataDHT22(connCloud, 'dht22', ('%.2f' % temp22), ('%.2f' % humi22))
@@ -227,15 +227,16 @@ def acquire():
             elif GPIO.input(mq7Pin) == 0:
                 haveco = 'Y'
             print(getLocalTimeHuman(),
-                  'Temp = {0:0.2f}*C  Humidity = {1:0.2f}%  Illuminance = {2:0.1f}lux  Pressure = {3:0.2f} Pa  CO = {4}'.format(
-                      temp22, humi22, illuminance, pressure, haveco))
+                  'Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
+                  'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
+                  .format(temp22, humi22, illuminance, pressure, haveco, temperature, altitude, sealevel_pressure, acqFreq * 60))
             if temp22 is None or humi22 is None or humi22 > 100.0 or illuminance is None or haveco is None:
-                print(getLocalTimeHuman(),'Data Wrong! Retry after 10 secs!')
+                print(getLocalTimeHuman(), 'Data Wrong! Retry after 10 secs!')
                 lock.release()
                 time.sleep(10)
                 continue
             checkWarning(connection, connection_vps)
-            print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
+            # print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
             lock.release()
             time.sleep(acqFreq * 60)
 
@@ -692,13 +693,13 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
     GPIO.output(greenLED, GPIO.LOW)
     oled = OLED()
     seq = ['H', 'T', 'I', 'CO', 'P', 'AF']
-    unit= {'H':'%', 'T':'C', 'I':' l', 'CO':'', 'P':' hPa', 'AF':'s'}
+    unit= {'H':'%', 'T':'C', 'I':' l', 'CO':'', 'P':'hPa', 'AF':'s'}
     isrunning = False
     isExecuted = False
     isOFF = False
     try:
         while not isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
-            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
+            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
             oled.showData(seq, data, unit, oledStatus)
             GPIO.output(greenLED, GPIO.HIGH)
             time.sleep(ftime)
@@ -737,7 +738,7 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
                 continue
             else:
                 isOFF = False
-            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': int(pressure/100), 'AF':int(acqFreq*60)}
+            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
             oled.showData(seq, data, unit, oledStatus)
             time.sleep(1)
 
@@ -836,7 +837,7 @@ def main():
                 thrLED.setDaemon(True)
                 thrLED.start()
             if not thrAcqAlive:
-                acqFreq = 0
+                acqFreq = 1/6
                 print(getLocalTimeHuman(), 'Restarting Acquire thread!')
                 thrAcq = threading.Thread(target=acquire, name='Thread_Acq')
                 thrAcq.setDaemon(True)
