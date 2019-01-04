@@ -1,16 +1,18 @@
 # coding=utf-8
+
 import RPi.GPIO as GPIO
 import Adafruit_DHT as DHT
 import Adafruit_BMP.BMP085 as BMP
 import time
 import pymysql
 import smbus
-import socket
+#import socket
 import threading
 import os
 import signal
 import smtplib
 from email.mime.text import MIMEText
+import logging
 
 from oled import oledDisplay as OLED
 
@@ -171,9 +173,9 @@ def insert():
     except KeyboardInterrupt:
         exit(0)
 
-    except Exception as exc:
-        print(getLocalTimeHuman(),'thrSave:',exc)
-        time.sleep(5)
+    # except Exception as exc:
+    #     print(getLocalTimeHuman(),'thrSave:',exc)
+    #     time.sleep(5)
 
 
 def acquire():
@@ -230,6 +232,9 @@ def acquire():
                   'Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
                   'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
                   .format(temp22, humi22, illuminance, pressure, haveco, temperature, altitude, sealevel_pressure, acqFreq * 60))
+            # logging.ERROR('Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
+            #       'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
+            #       .format(temp22, humi22, illuminance, pressure, haveco, temperature, altitude, sealevel_pressure, acqFreq * 60))
             if temp22 is None or humi22 is None or humi22 > 100.0 or illuminance is None or haveco is None:
                 print(getLocalTimeHuman(), 'Data Wrong! Retry after 10 secs!')
                 lock.release()
@@ -243,9 +248,9 @@ def acquire():
     except KeyboardInterrupt:
         GPIO.cleanup()
         exit(0)
-    except Exception as exc:
-        print(getLocalTimeHuman(), 'thrAqr:', exc)
-        time.sleep(5)
+    # except Exception as exc:
+    #     print(getLocalTimeHuman(), 'thrAqr:', exc)
+    #     time.sleep(5)
 
 
 def findLastDate(connection, table, showKeys='date'):
@@ -671,14 +676,16 @@ def sendWarning():
                             pass #联系人不存在，告警策略已修改
                         updateLastWarnDate(connCloud, 'warning_list', name, date, getLocalTime())
             time.sleep(acqFreq)
-    except Exception as exc:
-        print(getLocalTimeHuman(), 'thrSend:', exc)
-        time.sleep(5)
+    except KeyboardInterrupt:
+        pass
+    # except Exception as exc:
+    #     print(getLocalTimeHuman(), 'thrSend:', exc)
+    #     time.sleep(5)
 
 def syncDatabase():
     pass
 
-# LED闪烁线程
+# LED闪烁线程&OLED刷新线程
 def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
     # global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
     GPIO.setmode(GPIO.BCM)
@@ -697,54 +704,54 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
     isrunning = False
     isExecuted = False
     isOFF = False
-    try:
-        while not isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
-            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
-            oled.showData(seq, data, unit, oledStatus)
-            GPIO.output(greenLED, GPIO.HIGH)
-            time.sleep(ftime)
+    # try:
+    while not isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
+        data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
+        oled.showData(seq, data, unit, oledStatus)
+        GPIO.output(greenLED, GPIO.HIGH)
+        time.sleep(ftime)
+        GPIO.output(greenLED, GPIO.LOW)
+        time.sleep(ftime)
+        if isFirstStarted is True:
             GPIO.output(greenLED, GPIO.LOW)
+            break
+
+    while not isINT:                #所有线程启动1次后
+        if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
+            isExecuted = False
+            isrunning = False
+            # 置空所有LED
+            GPIO.output(greenLED, GPIO.LOW)
+            GPIO.output(redLED, GPIO.LOW)
+            # LED闪烁
+            GPIO.output(redLED, GPIO.HIGH)
             time.sleep(ftime)
-            if isFirstStarted is True:
-                GPIO.output(greenLED, GPIO.LOW)
-                break
-
-        while not isINT:                #所有线程启动1次后
-            if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
-                isExecuted = False
-                isrunning = False
-                # 置空所有LED
-                GPIO.output(greenLED, GPIO.LOW)
+            GPIO.output(redLED, GPIO.LOW)
+            time.sleep(ftime)
+        else:                                   # 所有线程正常运行，绿LED常亮
+            if not isExecuted:
                 GPIO.output(redLED, GPIO.LOW)
-                # LED闪烁
-                GPIO.output(redLED, GPIO.HIGH)
-                time.sleep(ftime)
-                GPIO.output(redLED, GPIO.LOW)
-                time.sleep(ftime)
-            else:                                   # 所有线程正常运行，绿LED常亮
-                if not isExecuted:
-                    GPIO.output(redLED, GPIO.LOW)
-                    GPIO.output(greenLED, GPIO.HIGH)
-                    isExecuted = True
-                if isrunning is False:
-                    print(getLocalTimeHuman(), 'All threads is running')
-                    isrunning = True
+                GPIO.output(greenLED, GPIO.HIGH)
+                isExecuted = True
+            if isrunning is False:
+                print(getLocalTimeHuman(), 'All threads is running')
+                isrunning = True
 
-            if oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
-                if not isOFF:
-                    oled.clear()
-                    isOFF = True
-                time.sleep(5)
-                continue
-            else:
-                isOFF = False
-            data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
-            oled.showData(seq, data, unit, oledStatus)
-            time.sleep(1)
+        if oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
+            if not isOFF:
+                oled.clear()
+                isOFF = True
+            time.sleep(5)
+            continue
+        else:
+            isOFF = False
+        data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
+        oled.showData(seq, data, unit, oledStatus)
+        time.sleep(1)
 
-        oled.clear()    # 键盘中断，熄灭OLED屏幕
-    except Exception as exc:
-        print(getLocalTimeHuman(), 'thrLED:', exc)
+    oled.clear()    # 键盘中断，熄灭OLED屏幕
+    # except Exception as exc:
+    #     print(getLocalTimeHuman(), 'thrLED:', exc)
 
 # 按键1中断，点亮/熄灭OLED屏幕
 def oledToggleInt(self):
@@ -866,7 +873,7 @@ def main():
         GPIO.output(redLED, GPIO.LOW)
         exit(0)
     except Exception as exc:
-        print(getLocalTimeHuman(),exc)
+        print(getLocalTimeHuman(), exc)
         greenLED = 17
         redLED = 27
         isINT = True
@@ -875,6 +882,7 @@ def main():
         GPIO.output(redLED, GPIO.LOW)
         exit(0)
 
+# 处理KeyboardsInterrupt
 def termHandler(arg1, arg2):
     print (getLocalTimeHuman(), '\nCatch SIGTERM', arg1, arg2)
     global isINT

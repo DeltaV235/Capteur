@@ -1,5 +1,10 @@
 # coding=utf-8
 
+import subprocess
+import time
+
+import Adafruit_SSD1306
+
 import time
 
 import RPi.GPIO as GPIO
