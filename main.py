@@ -13,6 +13,8 @@ import signal
 import smtplib
 from email.mime.text import MIMEText
 import logging
+import getopt
+import sys
 
 from oled import oledDisplay as OLED
 
@@ -154,6 +156,7 @@ def insert():
                     lock.release()
                 else:  # 错误输出错误信息，和校验数据
                     print (getLocalTimeHuman(), "Insert Data Wrong! Waiting For ReAcquirt")
+                    time.sleep(10)
             elif saveFreq * 60 - distance > 600:
                 time.sleep(540)
             elif saveFreq * 60 - distance > 300:
@@ -718,7 +721,7 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
 
     while not isINT:                #所有线程启动1次后
         if thrAcqAlive is False or thrSaveAlive is False or thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
-            isExecuted = False
+            isExecuted = False              # 是否已经使green LED常亮
             isrunning = False
             # 置空所有LED
             GPIO.output(greenLED, GPIO.LOW)
@@ -772,6 +775,25 @@ def statusToggleInt(self):
     else:
         print(getLocalTimeHuman(), 'Change display concent to Sys_Status')
 
+def argparse():
+    global oledOFF
+    oledOFF = False
+    try:
+        helpmsg = '''
+        options:
+            -s slient mode:turn off the oled
+        '''
+        opts, args = getopt.getopt(sys.argv[1:], 'sh', ['slient','help'])
+    except:
+        print(helpmsg)
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ('-s', '--slient'):
+            oledOFF = True
+            print('Slient Mode,OLED OFF')
+        if opt in ('-h', '--help'):
+            print(helpmsg)
+            sys.exit(2)
 
 def main():
     try:
@@ -784,7 +806,7 @@ def main():
         # GPIO.setmode(GPIO.BCM)
         # GPIO.setwarnings(False)
 
-        isINT = oledOFF = False
+        isINT = False
         oledStatus = 0
         allStatus = 2
         humi22 = temp22 = illuminance = pressure = temperature = altitude = sealevel_pressure = -1
@@ -895,4 +917,5 @@ def termHandler(arg1, arg2):
     exit(0)
 
 if __name__ == '__main__':
+    argparse()
     main()
