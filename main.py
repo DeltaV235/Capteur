@@ -710,7 +710,8 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
     # try:
     while not isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
         data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
-        oled.showData(seq, data, unit, oledStatus)
+        oled.getData(seq, data, unit)
+        oled.showData(oledStatus)
         GPIO.output(greenLED, GPIO.HIGH)
         time.sleep(ftime)
         GPIO.output(greenLED, GPIO.LOW)
@@ -749,7 +750,8 @@ def ledFlicker(redLED, greenLED, toggle_1, toggle_2, ftime):
         else:
             isOFF = False
         data = {'H': round(humi22, 1), 'T': round(temp22, 1), 'I': int(illuminance), 'CO': haveco, 'P': round(pressure/100.0, 2), 'AF':int(acqFreq*60)}
-        oled.showData(seq, data, unit, oledStatus)
+        oled.getData(seq, data, unit)
+        oled.showData(oledStatus)
         time.sleep(1)
 
     oled.clear()    # 键盘中断，熄灭OLED屏幕
@@ -762,8 +764,10 @@ def oledToggleInt(self):
     oledOFF = not oledOFF
     if oledOFF:
         print(getLocalTimeHuman(), 'OLED OFF')
+        oled.clear()
     else:
         print(getLocalTimeHuman(), 'OLED ON')
+        oled.showData(oledStatus)
 
 # 按键2中断，改变OLED显示内容
 def statusToggleInt(self):
@@ -772,28 +776,41 @@ def statusToggleInt(self):
     if oledStatus == allStatus:
         oledStatus = 0
         print(getLocalTimeHuman(), 'Change display concent to Env_Args')
+        oled.showData(oledStatus)         # 按键中断产生后，立即刷新OLED显示的内容
     else:
         print(getLocalTimeHuman(), 'Change display concent to Sys_Status')
+        oled.showData(oledStatus)
 
-def argparse():
-    global oledOFF
+
+def argParse():
+    global oledOFF, oledStatus
+    # Default setting
     oledOFF = False
+    oledStatus = 0
     try:
         helpmsg = '''
         options:
-            -s slient mode:turn off the oled
+            -h --help :Show help message
+            -s --slient :Slient mode,turn off the oled
+            -m --mode env/sys : Oled display mode:env or sys
         '''
-        opts, args = getopt.getopt(sys.argv[1:], 'sh', ['slient','help'])
+        opts, args = getopt.getopt(sys.argv[1:], 'shm:', ['slient','help','mode='])
     except:
         print(helpmsg)
         sys.exit(2)
     for opt, arg in opts:
-        if opt in ('-s', '--slient'):
+        if opt in ('-s', '--slient'):           # 静默模式
             oledOFF = True
             print('Slient Mode,OLED OFF')
-        if opt in ('-h', '--help'):
+        if opt in ('-h', '--help'):             # 输出帮助信息
             print(helpmsg)
             sys.exit(2)
+        if opt in ('-m', '--mode'):             # 设置OLED显示模式
+            if arg == 'env':
+                oledStatus = 0
+            elif arg == 'sys':
+                oledStatus = 1
+
 
 def main():
     try:
@@ -807,7 +824,6 @@ def main():
         # GPIO.setwarnings(False)
 
         isINT = False
-        oledStatus = 0
         allStatus = 2
         humi22 = temp22 = illuminance = pressure = temperature = altitude = sealevel_pressure = -1
         haveco = 'E'
@@ -917,5 +933,5 @@ def termHandler(arg1, arg2):
     exit(0)
 
 if __name__ == '__main__':
-    argparse()
+    argParse()
     main()

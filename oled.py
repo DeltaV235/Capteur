@@ -47,7 +47,7 @@ class oledDisplay():
     __width = __disp.width
     __height = __disp.height
     __image = Image.new('1', (__width, __height))
-    __blackImage = __image.copy()
+    # __blackImage = __image.copy()
 
     # Get drawing object to draw on image.
     __draw = ImageDraw.Draw(__image)
@@ -65,7 +65,12 @@ class oledDisplay():
     # Load default font.
     __font = ImageFont.load_default()
 
-    __offset = 0
+    # __offset = 0
+    # 数据变量
+    __seq = []
+    __data = {}
+    __unit = {}
+    __status = 0
 
     def __init__(self):
         # Initialize library.
@@ -89,26 +94,30 @@ class oledDisplay():
     #     self.__disp.image(self.__image)
     #     self.__disp.display()
 
+    def getData(self, seq, data, unit):
+        self.__seq = seq
+        self.__data = data
+        self.__unit = unit
 
-
-    def showData(self, seq, data, unit, status):
+    def showData(self, status):
         # self.__image = self.__blackImage.copy()
         # self.__disp.clear()
         # self.__disp.display()
+        self.__status = status
         x = self.__left
         y = self.__top
         xoffset = 0   # 列偏移量
-        xstep = 10   # 列距
-        ystep = 8   # 行距
+        xstep = 10   # 列距(像素)
+        ystep = 8   # 行距(像素)
         row = 0     # 行
         col = 0     # 列
         temp = 0    # 最小列距
         charrate = 6.2  # 字符/像素点
-        self.__draw.rectangle((0, -2, self.__width, self.__height), outline=0, fill=0)  # edge area , refresh OLED
+        self.__draw.rectangle((0, -2, self.__width, self.__height), outline=0, fill=0)  # edge area , refresh whole OLED
         # self.__draw.rectangle((x, y, self.__right, self.__bottom), outline=1, fill=0)  # show area
-        if status == 0:
-            for title in seq:
-                string = title + ':' + str(data[title]) + unit[title]
+        if self.__status == 0:
+            for title in self.__seq:
+                string = title + ':' + str(self.__data[title]) + self.__unit[title]
                 if charrate * len(string) > temp:
                     temp = charrate * len(string)
                 self.__draw.text((x + xoffset, y + row * ystep), string, font=self.__font, fill=255)
@@ -152,4 +161,4 @@ if __name__ == '__main__':
     unit = {'temp':'C', 'humi':'%', 'illu':'l', 'test':'', 'test2':''}
     # data = [20 ,60 ,200 ,1 ]
     oled = oledDisplay()
-    oled.showData(seq, data, unit)
+    # oled.showData(seq, data, unit)
