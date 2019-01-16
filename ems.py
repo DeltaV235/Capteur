@@ -7,34 +7,20 @@ import Adafruit_BMP.BMP085 as BMP
 import time
 import pymysql
 import smbus
-#import socket
 import threading
 import os
 import signal
 import smtplib
 from email.mime.text import MIMEText
-import logging
 import getopt
 import sys
 
 from oled import oledDisplay as OLED
 
 
-# bcmChannel=3
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setwarnings(True)
-# GPIO.setup(bcmChannel,GPIO.OUT)
-# GPIO.input(bcmChannel)
-# GPIO.output(bcmChannel,GPIO.HIGH)
-# print(GPIO.VERSION)
-# GPIO.cleanup()
-# class dht22:
-#    def __init__(self):
-#        pass
-
 class ems:
     # 各线程检测频率
-    _saveFreq = _warnFreq =  0
+    _saveFreq = _warnFreq = 0
     _acqFreq = 1/6
     # 采集到的数据
     _humi22 = _temp22 = _illuminance = _pressure = _temperature = _altitude = _sealevel_pressure = -1
@@ -46,10 +32,18 @@ class ems:
     # 是否键盘中断 & 是否关闭OLED
     _isINT = _oledOFF = False
 
+    #采集线程是否运行
+    _isAcqRun = False
+
     # OLED显示状态
     _oledStatus = 0
     # OLED总状态数
     _allStatus = 2
+
+    _oled = OLED()
+    # oled显示状态切换 线程锁
+    _oledLock = threading.Lock()
+    _acqLock = threading.Lock()
 
     def getLocalTime(self):
         localtime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
@@ -154,7 +148,6 @@ class ems:
 
     def insert(self):
         # global _humi22, _temp22, _illuminance, _haveco, _pressure, _temperature, _altitude, _sealevel_pressure, _saveFreq
-        lock = threading.Lock()
         try:
             connCloud = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'sensors_data')
             while (True):
@@ -162,36 +155,41 @@ class ems:
                 date = self.travValue(connCloud, 'all_sensors_data', 'date', 'order by date desc limit 1')
                 distance = (time.mktime(time.localtime(time.time())) - time.mktime(
                     time.strptime(str(date[0][0]), "%Y-%m-%d %H:%M:%S")))
-                if distance >= self._saveFreq * 60 or date == None:
-                    if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None :
-                        lock.acquire()
-                        print('Cloud Server:')
-                        self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
-                        self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
-                        self.insertDataMQ7(connCloud, 'mq7', self._haveco)
-                        self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude, self._sealevel_pressure)
-                        self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22), ('%.2f' % self._humi22), ('%.1f' % self._illuminance), ('%.2f' % self._pressure), self._haveco)
-                        # date[0][0] = getLocalTime()
-                        lock.release()
-                    else:  # 错误输出错误信息，和校验数据
-                        print (self.getLocalTimeHuman(), "Insert Data Wrong! Waiting For ReAcquirt")
+                if self._isAcqRun:
+                    if distance >= self._saveFreq * 60 or date == None:
+                        if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None :
+                            self._acqLock.acquire()
+                            print('Cloud Server:')
+                            self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
+                            self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
+                            self.insertDataMQ7(connCloud, 'mq7', self._haveco)
+                            self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude, self._sealevel_pressure)
+                            self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22), ('%.2f' % self._humi22), ('%.1f' % self._illuminance), ('%.2f' % self._pressure), self._haveco)
+                            # date[0][0] = getLocalTime()
+                            self._acqLock.release()
+                        else:  # 错误输出错误信息，和校验数据
+                            print (self.getLocalTimeHuman(), "Insert Data Wrong! Waiting For ReAcquirt")
+                            time.sleep(10)
+
+                    elif self._saveFreq * 60 - distance > 600:
+                        time.sleep(540)
+                    elif self._saveFreq * 60 - distance > 300:
+                        time.sleep(240)
+                    elif self._saveFreq * 60 - distance > 80:
+                        time.sleep(60)
+                    elif self._saveFreq * 60 - distance > 50:
+                        time.sleep(30)
+                    elif self._saveFreq * 60 - distance > 20:
                         time.sleep(10)
-                elif self._saveFreq * 60 - distance > 600:
-                    time.sleep(540)
-                elif self._saveFreq * 60 - distance > 300:
-                    time.sleep(240)
-                elif self._saveFreq * 60 - distance > 80:
-                    time.sleep(60)
-                elif self._saveFreq * 60 - distance > 50:
-                    time.sleep(30)
-                elif self._saveFreq * 60 - distance > 20:
+                    elif self._saveFreq * 60 - distance > 10:
+                        time.sleep(5)
+                    elif self._saveFreq * 60 - distance > 1:
+                        time.sleep(1)
+                    elif self._saveFreq * 60 - distance <= 1:
+                        pass
+                else:       # 采集进程未正常运行，等待10秒后继续尝试
+                    print(self.getLocalTimeHuman(), 'insert: Acquire thread is not ready,waitting for recover.')
                     time.sleep(10)
-                elif self._saveFreq * 60 - distance > 10:
-                    time.sleep(5)
-                elif self._saveFreq * 60 - distance > 1:
-                    time.sleep(1)
-                elif self._saveFreq * 60 - distance <= 1:
-                    pass
         except KeyboardInterrupt:
             exit(0)
 
@@ -205,7 +203,6 @@ class ems:
         try:
             connection = self.getConnection('localhost', 'root', '960123%W78u&', 'setting')
             connection_vps = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'setting')
-            lock = threading.Lock()
             dht22Pin = 4
 
             bus_GY30 = smbus.SMBus(1)
@@ -226,6 +223,7 @@ class ems:
                 Freq = self.travValue(connection_vps, 'setting')
                 if count >= 2:                      # 前2次采集不更新采集频率，使用main中的短采集周期，提高程序的启动速度
                     self._acqFreq = Freq[0][0]
+                    self._isAcqRun = True
                 else:
                     count += 1
                 self._saveFreq = Freq[0][1]
@@ -234,7 +232,7 @@ class ems:
 
                 # 采集数据
                 # read temp from dht22
-                lock.acquire()
+                self._acqLock.acquire()
                 self._humi22, self._temp22 = DHT.read_retry(DHT.DHT22, dht22Pin)
                 # read illum from gy30
                 data = bus_GY30.read_i2c_block_data(addr_GY30, 0x11)
@@ -259,12 +257,12 @@ class ems:
                 #       .format(temp22, humi22, illuminance, pressure, haveco, temperature, altitude, sealevel_pressure, acqFreq * 60))
                 if self._temp22 is None or self._humi22 is None or self._humi22 > 100.0 or self._illuminance is None or self._haveco is None:
                     print(self.getLocalTimeHuman(), 'Data Wrong! Retry after 10 secs!')
-                    lock.release()
+                    self._acqLock.release()
                     time.sleep(10)
                     continue
                 self.checkWarning(connection, connection_vps)
                 # print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
-                lock.release()
+                self._acqLock.release()
                 time.sleep(self._acqFreq * 60)
 
         except KeyboardInterrupt:
@@ -456,16 +454,16 @@ class ems:
                 curData = ''
                 if env_args == 'temp':
                     temp = self._temp22
-                    curData = str('%.1f' % _temp22) + ' ℃'
+                    curData = str('%.1f' % self._temp22) + ' ℃'
                 elif env_args == 'humi':
                     temp = self._humi22
-                    curData = str('%.1f' % _humi22) + ' %'
+                    curData = str('%.1f' % self._humi22) + ' %'
                 elif env_args == 'illu':
                     temp = self._illuminance
-                    curData = str('%.1f' % _illuminance) + ' lux'
+                    curData = str('%.1f' % self._illuminance) + ' lux'
                 elif env_args == 'press':
                     temp = self._pressure
-                    curData = str('%.1f' % _pressure) + ' hPa'
+                    curData = str('%.1f' % self._pressure) + ' hPa'
                 elif env_args == 'haveco':
                     if self._haveco == 'Y':
                         temp = 1
@@ -667,37 +665,40 @@ class ems:
                 warning_list = self.travValue(connCloud, 'warning_list',
                                          'name,env_args,compare,value,phone,email,date,user,last_warn_date,status,islook')
                 # print (warning_list)
-                if warning_list:
-                    for (name, env_args, compare, value, phone, email, date, user, last_warn_date, status, islook) in warning_list:
-                        if last_warn_date is None or (time.mktime(time.localtime(time.time())) - time.mktime(
-                                time.strptime((str(last_warn_date)), "%Y-%m-%d %H:%M:%S"))) > (
-                                self._warnFreq * 60 - 10) and status == 'warning':
-                            curData = ''
-                            if env_args == 'temp':
-                                curData = str('%.1f' % self._temp22) + ' ℃'
-                            elif env_args == 'humi':
-                                curData = str('%.1f' % self._humi22) + ' %'
-                            elif env_args == 'illu':
-                                curData = str('%.1f' % self._illuminance) + ' lux'
-                            elif env_args == 'press':
-                                curData = str('%.1f' % self._pressure) + ' hPa'
-                            elif env_args == 'haveco':
-                                if self._haveco == 'Y':
-                                    curData = '有 一氧化碳'
+                if self._isAcqRun:
+                    if warning_list:
+                        for (name, env_args, compare, value, phone, email, date, user, last_warn_date, status, islook) in warning_list:
+                            if last_warn_date is None or (time.mktime(time.localtime(time.time())) - time.mktime(
+                                    time.strptime((str(last_warn_date)), "%Y-%m-%d %H:%M:%S"))) > (
+                                    self._warnFreq * 60 - 10) and status == 'warning':
+                                curData = ''
+                                if env_args == 'temp':
+                                    curData = str('%.1f' % self._temp22) + ' ℃'
+                                elif env_args == 'humi':
+                                    curData = str('%.1f' % self._humi22) + ' %'
+                                elif env_args == 'illu':
+                                    curData = str('%.1f' % self._illuminance) + ' lux'
+                                elif env_args == 'press':
+                                    curData = str('%.1f' % self._pressure) + ' hPa'
+                                elif env_args == 'haveco':
+                                    if self._haveco == 'Y':
+                                        curData = '有 一氧化碳'
+                                    else:
+                                        curData = '无 一氧化碳'
+                                phone_email = self.travValue(connCloud, 'user_profile', 'phone,email', 'where name = "' + user + '"')
+                                if phone_email:
+                                    if phone_email[0][0] is not None and phone == 'Y':
+                                        self.sendMsg(phone_email[0][0], compareName[env_args][compare], value, name, str(date), curData)
+                                    if phone_email[0][1] is not None and email == 'Y':
+                                        self.sendWarnEmail(smtpserver, username, password, sender, str(phone_email[0][1]), subject, user,
+                                                      compareName[env_args][compare],
+                                                      value, name, curData, date)
                                 else:
-                                    curData = '无 一氧化碳'
-                            phone_email = self.travValue(connCloud, 'user_profile', 'phone,email', 'where name = "' + user + '"')
-                            if phone_email:
-                                if phone_email[0][0] is not None and phone == 'Y':
-                                    self.sendMsg(phone_email[0][0], compareName[env_args][compare], value, name, str(date), curData)
-                                if phone_email[0][1] is not None and email == 'Y':
-                                    self.sendWarnEmail(smtpserver, username, password, sender, str(phone_email[0][1]), subject, user,
-                                                  compareName[env_args][compare],
-                                                  value, name, curData, date)
-                            else:
-                                pass #联系人不存在，告警策略已修改
-                            self.updateLastWarnDate(connCloud, 'warning_list', name, date, self.getLocalTime())
-                time.sleep(self._acqFreq)
+                                    pass #联系人不存在，告警策略已修改
+                                self.updateLastWarnDate(connCloud, 'warning_list', name, date, self.getLocalTime())
+                else:
+                    print(self.getLocalTimeHuman(), 'sendWarning: Acquire theard is not ready.')
+                time.sleep(self._acqFreq * 60)
         except KeyboardInterrupt:
             pass
         # except Exception as exc:
@@ -709,28 +710,31 @@ class ems:
 
     # LED闪烁线程&OLED刷新线程
     def ledFlicker(self, redLED, greenLED, toggle_1, toggle_2, ftime):
-        # global humi22, temp22, illuminance, haveco, pressure, temperature, altitude, sealevel_pressure
+
+        GPIO.cleanup()
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(False)
         GPIO.setup(redLED, GPIO.OUT)
         GPIO.setup(greenLED, GPIO.OUT)
         GPIO.setup(toggle_1, GPIO.IN)
-        GPIO.add_event_detect(toggle_1, GPIO.RISING, callback=self.oledToggleInt, bouncetime=700)
+        GPIO.add_event_detect(toggle_1, GPIO.RISING, callback=self.oledToggleInt, bouncetime=1000)
         GPIO.setup(toggle_2, GPIO.IN)
-        GPIO.add_event_detect(toggle_2, GPIO.RISING, callback=self.statusToggleInt, bouncetime=500)
+        GPIO.add_event_detect(toggle_2, GPIO.RISING, callback=self.statusToggleInt, bouncetime=1000)
         GPIO.output(redLED, GPIO.LOW)
         GPIO.output(greenLED, GPIO.LOW)
-        oled = OLED()
         seq = ['H', 'T', 'I', 'CO', 'P', 'AF']
         unit= {'H':'%', 'T':'C', 'I':' l', 'CO':'', 'P':'hPa', 'AF':'s'}
         isrunning = False
         isExecuted = False
         isOFF = False
         # try:
+
         while not self._isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
+            self._oledLock.acquire()
             data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
-            oled.getData(seq, data, unit)
-            oled.showData(self._oledStatus)
+            self._oled.getData(seq, data, unit)
+            self._oled.showData(self._oledStatus)
+            self._oledLock.release()
             GPIO.output(greenLED, GPIO.HIGH)
             time.sleep(ftime)
             GPIO.output(greenLED, GPIO.LOW)
@@ -762,43 +766,50 @@ class ems:
 
             if self._oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
                 if not isOFF:
-                    oled.clear()
+                    self._oled.clear()
                     isOFF = True
                 time.sleep(5)
                 continue
             else:
                 isOFF = False
+            self._oledLock.acquire()
             data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
-            oled.getData(seq, data, unit)
-            oled.showData(self._oledStatus)
+            self._oled.getData(seq, data, unit)
+            self._oled.showData(self._oledStatus)
+            self._oledLock.release()
             time.sleep(1)
 
-        oled.clear()    # 键盘中断，熄灭OLED屏幕
+        self._oled.clear()    # 键盘中断，熄灭OLED屏幕
         # except Exception as exc:
         #     print(getLocalTimeHuman(), 'thrLED:', exc)
 
     # 按键1中断，点亮/熄灭OLED屏幕
-    def oledToggleInt(self):
-        # global _oledOFF
+    def oledToggleInt(self, pin):
+        self._oledLock.acquire()
         self._oledOFF = not self._oledOFF
         if self._oledOFF:
             print(self.getLocalTimeHuman(), 'OLED OFF')
-            oled.clear()
+            self._oled.clear()
         else:
             print(self.getLocalTimeHuman(), 'OLED ON')
-            oled.showData(self._oledStatus)
+            self._oled.showData(self._oledStatus)
+        self._oledLock.release()
 
     # 按键2中断，改变OLED显示内容
-    def statusToggleInt(self):
-        # global _oledStatus
+    def statusToggleInt(self, pin):
+        self._oledLock.acquire()
         self._oledStatus += 1
         if self._oledStatus == self._allStatus:
             self._oledStatus = 0
             print(self.getLocalTimeHuman(), 'Change display concent to Env_Args')
-            oled.showData(self._oledStatus)         # 按键中断产生后，立即刷新OLED显示的内容
+
+            self._oled.showData(self._oledStatus)         # 按键中断产生后，立即刷新OLED显示的内容
+            # lock.release()
         else:
             print(self.getLocalTimeHuman(), 'Change display concent to Sys_Status')
-            oled.showData(self._oledStatus)
+            # lock.acquire()
+            self._oled.showData(self._oledStatus)
+        self._oledLock.release()
 
 
     def argParse(self):
@@ -806,13 +817,13 @@ class ems:
         # Default setting
         self._oledOFF = False
         self._oledStatus = 0
+        helpmsg = '''
+                    options:
+                        -h --help :Show help message
+                        -s --slient :Slient mode,turn off the oled
+                        -m --mode env/sys : Oled display mode:env or sys
+                    '''
         try:
-            helpmsg = '''
-            options:
-                -h --help :Show help message
-                -s --slient :Slient mode,turn off the oled
-                -m --mode env/sys : Oled display mode:env or sys
-            '''
             opts, args = getopt.getopt(sys.argv[1:], 'shm:', ['slient','help','mode='])
         except:
             print(helpmsg)
@@ -852,15 +863,16 @@ class ems:
             thrAcq = threading.Thread(target = self.acquire, name= 'Thread_Acq')
             thrAcq.setDaemon(True)
             thrAcq.start()
-            time.sleep(10)
-
-            time.sleep(self._acqFreq * 60)
+            # time.sleep(10)
+            #
+            # time.sleep(self._acqFreq * 60)
             thrSave = threading.Thread(target = self.insert, name = 'Thread_Save')
             thrSave.setDaemon(True)
             thrSave.start()
             thrSend = threading.Thread(target = self.sendWarning, name = 'Thread_Send')
             thrSend .setDaemon(True)
             thrSend.start()
+            time.sleep(3)
             self._isFirstStarted = True
 
             # 判断各线程是否成功启动，若未启动，则重启对应的线程
@@ -874,6 +886,7 @@ class ems:
                     self._thrSaveAlive = True
                 if thrSend.isAlive():
                     self._thrSendAlive = True
+
                 if not self._thrLEDAlive:
                     print(self.getLocalTimeHuman(), 'Restarting LED thread!')
                     thrLED = threading.Thread(target=self.ledFlicker, name='Thread_LED',args=(redLED, greenLED, toggle_1, toggle_2, .5))
@@ -881,12 +894,13 @@ class ems:
                     thrLED.start()
                 if not self._thrAcqAlive:
                     self._acqFreq = 1 / 6
+                    self._isAcqRun = False
                     print(self.getLocalTimeHuman(), 'Restarting Acquire thread!')
                     thrAcq = threading.Thread(target=self.acquire, name='Thread_Acq')
                     thrAcq.setDaemon(True)
                     thrAcq.start()
-                    time.sleep(10)
-                    time.sleep(self._acqFreq * 60)
+                    # time.sleep(10)
+                    # time.sleep(self._acqFreq * 60)
                 if not self._thrSaveAlive:
                     print(self.getLocalTimeHuman(), 'Restarting Save thread!')
                     thrSave = threading.Thread(target=self.insert, name='Thread_Save')
@@ -930,6 +944,7 @@ class ems:
         time.sleep(2)  # kill LED thread for turn off the OLED and two LED
         GPIO.output(greenLED, GPIO.LOW)
         GPIO.output(redLED, GPIO.LOW)
+
         exit(0)
 
 if __name__ == '__main__':
