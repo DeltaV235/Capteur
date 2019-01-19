@@ -2,23 +2,45 @@
 # coding=utf-8
 
 import datetime,time
-import logging,logging.config
+import logging, logging.config
 
 class mylogger():
 
+    _dictConfig = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'common': {
+                'format': '%(levelname)-9s%(asctime)s %(threadName)s: %(message)s',
+                'datefmt': '%Y-%m-%d %H:%M:%S'
+            }
+        },
+        'handlers': {
+            'file': {
+                'level': 'INFO',
+                'class': 'logging.handlers.TimedRotatingFileHandler',
+                'filename': str(datetime.date.today())+'.log',
+                'encoding': 'utf-8',
+                'when': 'D',
+                'interval': 1,
+                'formatter': 'common'
+            },
+            'console': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'common'
+            }
+        },
+        'loggers': {
+            'ems': {
+                'handlers': ['file', 'console'],
+                'level': 'INFO'
+            }
+        }
+    }
     def __init__(self, loggerName):
-        # create logger
+        logging.config.dictConfig(self._dictConfig)
         self._logger = logging.getLogger(loggerName)
-        self._logger.setLevel(logging.INFO)
-        # create fileHandler
-        self._fh = logging.FileHandler(str(datetime.date.today())+'.log', mode='a', encoding='utf-8')
-        # self._fh = logging.FileHandler(localtime + '.log', mode='a', encoding='utf-8')
-        self._fh.setLevel(logging.INFO)
-
-        self._fmt = logging.Formatter(fmt='%(levelname)s\t%(asctime)s %(threadName)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-        self._fh.formatter = self._fmt
-
-        self._logger.addHandler(self._fh)
 
     def info(self, msg):
         self._logger.info(msg)

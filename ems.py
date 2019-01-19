@@ -44,7 +44,7 @@ class ems:
     # oled显示状态切换 线程锁
     _oledLock = threading.Lock()
     _acqLock = threading.Lock()
-    _logger = mylogger('test')
+    _logger = mylogger('ems')
 
     def getLocalTime(self):
         localtime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
