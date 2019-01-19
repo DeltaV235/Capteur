@@ -16,7 +16,7 @@ import getopt
 import sys
 
 from oled import oledDisplay as OLED
-
+from mylogger import mylogger
 
 class ems:
     # 各线程检测频率
@@ -44,6 +44,7 @@ class ems:
     # oled显示状态切换 线程锁
     _oledLock = threading.Lock()
     _acqLock = threading.Lock()
+    _logger = mylogger('test')
 
     def getLocalTime(self):
         localtime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
@@ -71,6 +72,7 @@ class ems:
             cout = cursor.execute(sql)
             if cout >= 1:
                 print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
+                self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
 
@@ -87,6 +89,7 @@ class ems:
             cout = cursor.execute(sql)
             if cout >= 1:
                 print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
+                self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
 
@@ -103,6 +106,7 @@ class ems:
             cout = cursor.execute(sql)
             if cout >= 1:
                 print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
+                self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
 
@@ -120,6 +124,7 @@ class ems:
             cout = cursor.execute(sql)
             if cout >= 1:
                 print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
+                self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
 
@@ -137,6 +142,7 @@ class ems:
             cout = cursor.execute(sql)
             if cout >= 1:
                 print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
+                self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
 
@@ -147,7 +153,6 @@ class ems:
     #     connection.rollback()
 
     def insert(self):
-        # global _humi22, _temp22, _illuminance, _haveco, _pressure, _temperature, _altitude, _sealevel_pressure, _saveFreq
         try:
             connCloud = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'sensors_data')
             while (True):
@@ -189,9 +194,11 @@ class ems:
                         pass
                 else:       # 采集进程未正常运行，等待10秒后继续尝试
                     print(self.getLocalTimeHuman(), 'insert: Acquire thread is not ready,waitting for recover.')
+                    self._logger.warning('Acquire thread is not ready,waitting for recover.')
                     time.sleep(10)
-        except KeyboardInterrupt:
-            exit(0)
+        except Exception as e:
+            self._logger.exception(e)
+
 
         # except Exception as exc:
         #     print(getLocalTimeHuman(),'thrSave:',exc)
@@ -199,7 +206,6 @@ class ems:
 
 
     def acquire(self):
-        # global _humi22, _temp22, _illuminance, _haveco, _pressure, _temperature, _altitude, _sealevel_pressure, _acqFreq, _saveFreq, _warnFreq
         try:
             connection = self.getConnection('localhost', 'root', '960123%W78u&', 'setting')
             connection_vps = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'setting')
@@ -252,11 +258,12 @@ class ems:
                       'Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
                       'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
                       .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco, self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
-                # logging.ERROR('Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
-                #       'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
-                #       .format(temp22, humi22, illuminance, pressure, haveco, temperature, altitude, sealevel_pressure, acqFreq * 60))
+                self._logger.info('Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
+                      'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
+                      .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco, self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
                 if self._temp22 is None or self._humi22 is None or self._humi22 > 100.0 or self._illuminance is None or self._haveco is None:
                     print(self.getLocalTimeHuman(), 'Data Wrong! Retry after 10 secs!')
+                    self._logger.error('Data Wrong! Retry after 10 secs!')
                     self._acqLock.release()
                     time.sleep(10)
                     continue
@@ -265,12 +272,12 @@ class ems:
                 self._acqLock.release()
                 time.sleep(self._acqFreq * 60)
 
-        except KeyboardInterrupt:
+        # except KeyboardInterrupt:
+        #     GPIO.cleanup()
+        #     exit(0)
+        except Exception as exc:
             GPIO.cleanup()
-            exit(0)
-        # except Exception as exc:
-        #     print(getLocalTimeHuman(), 'thrAqr:', exc)
-        #     time.sleep(5)
+            self._logger.exception(exc)
 
 
     def findLastDate(self, connection, table, showKeys='date'):
@@ -282,6 +289,7 @@ class ems:
             date = (int(row[0].timestamp()) * 1000)
 
         print(self.getLocalTimeHuman(), 'Find ', cout, 'row(s)  date : ', str(date))
+        self._logger.info('Find '+str(cout)+'row(s)  date : '+str(date))
         return date
 
 
@@ -349,6 +357,7 @@ class ems:
         smtp.login(sender, password)
         smtp.sendmail(sender, receiver, message.as_string())
         print(self.getLocalTimeHuman(), "Email Send!")
+        self._logger.info("Email Send!")
         smtp.quit()
 
 
@@ -410,6 +419,7 @@ class ems:
             cout = cursor.execute(sql)
             if cout >= 1:
                 print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in setting.warn_list' + table)
+                self._logger.info('Insert '+str(cout)+' row(s) in setting.warn_list '+table)
             connection.commit()
 
 
@@ -698,90 +708,93 @@ class ems:
                                 self.updateLastWarnDate(connCloud, 'warning_list', name, date, self.getLocalTime())
                 else:
                     print(self.getLocalTimeHuman(), 'sendWarning: Acquire theard is not ready.')
+                    self._logger.warning('Acquire theard is not ready.')
                 time.sleep(self._acqFreq * 60)
         except KeyboardInterrupt:
             pass
-        # except Exception as exc:
-        #     print(getLocalTimeHuman(), 'thrSend:', exc)
-        #     time.sleep(5)
+        except Exception as exc:
+            self._logger.exception(exc)
+            # print(getLocalTimeHuman(), 'thrSend:', exc)
+            # time.sleep(5)
 
     def syncDatabase(self):
         pass
 
     # LED闪烁线程&OLED刷新线程
     def ledFlicker(self, redLED, greenLED, toggle_1, toggle_2, ftime):
-
-        GPIO.cleanup()
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(redLED, GPIO.OUT)
-        GPIO.setup(greenLED, GPIO.OUT)
-        GPIO.setup(toggle_1, GPIO.IN)
-        GPIO.add_event_detect(toggle_1, GPIO.RISING, callback=self.oledToggleInt, bouncetime=1000)
-        GPIO.setup(toggle_2, GPIO.IN)
-        GPIO.add_event_detect(toggle_2, GPIO.RISING, callback=self.statusToggleInt, bouncetime=1000)
-        GPIO.output(redLED, GPIO.LOW)
-        GPIO.output(greenLED, GPIO.LOW)
-        seq = ['H', 'T', 'I', 'CO', 'P', 'AF']
-        unit= {'H':'%', 'T':'C', 'I':' l', 'CO':'', 'P':'hPa', 'AF':'s'}
-        isrunning = False
-        isExecuted = False
-        isOFF = False
-        # try:
-
-        while not self._isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
-            self._oledLock.acquire()
-            data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
-            self._oled.getData(seq, data, unit)
-            self._oled.showData(self._oledStatus)
-            self._oledLock.release()
-            GPIO.output(greenLED, GPIO.HIGH)
-            time.sleep(ftime)
+        try:
+            GPIO.cleanup()
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setwarnings(False)
+            GPIO.setup(redLED, GPIO.OUT)
+            GPIO.setup(greenLED, GPIO.OUT)
+            GPIO.setup(toggle_1, GPIO.IN)
+            GPIO.add_event_detect(toggle_1, GPIO.RISING, callback=self.oledToggleInt, bouncetime=1000)
+            GPIO.setup(toggle_2, GPIO.IN)
+            GPIO.add_event_detect(toggle_2, GPIO.RISING, callback=self.statusToggleInt, bouncetime=1000)
+            GPIO.output(redLED, GPIO.LOW)
             GPIO.output(greenLED, GPIO.LOW)
-            time.sleep(ftime)
-            if self._isFirstStarted is True:
-                GPIO.output(greenLED, GPIO.LOW)
-                break
+            seq = ['H', 'T', 'I', 'CO', 'P', 'AF']
+            unit= {'H':'%', 'T':'C', 'I':' l', 'CO':'', 'P':'hPa', 'AF':'s'}
+            isrunning = False
+            isExecuted = False
+            isOFF = False
+            # try:
 
-        while not self._isINT:                #所有线程启动1次后
-            if self._thrAcqAlive is False or self._thrSaveAlive is False or self._thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
-                isExecuted = False              # 是否已经使green LED常亮
-                isrunning = False
-                # 置空所有LED
+            while not self._isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
+                self._oledLock.acquire()
+                data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
+                self._oled.getData(seq, data, unit)
+                self._oled.showData(self._oledStatus)
+                self._oledLock.release()
+                GPIO.output(greenLED, GPIO.HIGH)
+                time.sleep(ftime)
                 GPIO.output(greenLED, GPIO.LOW)
-                GPIO.output(redLED, GPIO.LOW)
-                # LED闪烁
-                GPIO.output(redLED, GPIO.HIGH)
                 time.sleep(ftime)
-                GPIO.output(redLED, GPIO.LOW)
-                time.sleep(ftime)
-            else:                                   # 所有线程正常运行，绿LED常亮
-                if not isExecuted:
+                if self._isFirstStarted is True:
+                    GPIO.output(greenLED, GPIO.LOW)
+                    break
+
+            while not self._isINT:                #所有线程启动1次后
+                if self._thrAcqAlive is False or self._thrSaveAlive is False or self._thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
+                    isExecuted = False              # 是否已经使green LED常亮
+                    isrunning = False
+                    # 置空所有LED
+                    GPIO.output(greenLED, GPIO.LOW)
                     GPIO.output(redLED, GPIO.LOW)
-                    GPIO.output(greenLED, GPIO.HIGH)
-                    isExecuted = True
-                if isrunning is False:
-                    print(self.getLocalTimeHuman(), 'All threads is running')
-                    isrunning = True
+                    # LED闪烁
+                    GPIO.output(redLED, GPIO.HIGH)
+                    time.sleep(ftime)
+                    GPIO.output(redLED, GPIO.LOW)
+                    time.sleep(ftime)
+                else:                                   # 所有线程正常运行，绿LED常亮
+                    if not isExecuted:
+                        GPIO.output(redLED, GPIO.LOW)
+                        GPIO.output(greenLED, GPIO.HIGH)
+                        isExecuted = True
+                    if isrunning is False:
+                        print(self.getLocalTimeHuman(), 'All threads is running')
+                        self._logger.info('All threads is running')
+                        isrunning = True
 
-            if self._oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
-                if not isOFF:
-                    self._oled.clear()
-                    isOFF = True
-                time.sleep(5)
-                continue
-            else:
-                isOFF = False
-            self._oledLock.acquire()
-            data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
-            self._oled.getData(seq, data, unit)
-            self._oled.showData(self._oledStatus)
-            self._oledLock.release()
-            time.sleep(1)
+                if self._oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
+                    if not isOFF:
+                        self._oled.clear()
+                        isOFF = True
+                    time.sleep(5)
+                    continue
+                else:
+                    isOFF = False
+                self._oledLock.acquire()
+                data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
+                self._oled.getData(seq, data, unit)
+                self._oled.showData(self._oledStatus)
+                self._oledLock.release()
+                time.sleep(1)
 
-        self._oled.clear()    # 键盘中断，熄灭OLED屏幕
-        # except Exception as exc:
-        #     print(getLocalTimeHuman(), 'thrLED:', exc)
+            self._oled.clear()    # 键盘中断，熄灭OLED屏幕
+        except Exception as exc:
+            self._logger.exception(exc)
 
     # 按键1中断，点亮/熄灭OLED屏幕
     def oledToggleInt(self, pin):
@@ -789,9 +802,11 @@ class ems:
         self._oledOFF = not self._oledOFF
         if self._oledOFF:
             print(self.getLocalTimeHuman(), 'OLED OFF')
+            self._logger.info('OLED OFF')
             self._oled.clear()
         else:
             print(self.getLocalTimeHuman(), 'OLED ON')
+            self._logger.info('OLED ON')
             self._oled.showData(self._oledStatus)
         self._oledLock.release()
 
@@ -802,13 +817,16 @@ class ems:
         if self._oledStatus == self._allStatus:
             self._oledStatus = 0
             print(self.getLocalTimeHuman(), 'Change display concent to Env_Args')
-
+            self._logger.info('Change display concent to Env_Args')
             self._oled.showData(self._oledStatus)         # 按键中断产生后，立即刷新OLED显示的内容
-            # lock.release()
         else:
             print(self.getLocalTimeHuman(), 'Change display concent to Sys_Status')
-            # lock.acquire()
+            self._logger.info('Change display concent to Sys_Status')
             self._oled.showData(self._oledStatus)
+        if self._oledOFF:
+            self._oledOFF = False
+            print('OLED ON by status change')
+            self._logger.info('OLED ON by status change')
         self._oledLock.release()
 
 
@@ -832,18 +850,27 @@ class ems:
             if opt in ('-s', '--slient'):           # 静默模式
                 self._oledOFF = True
                 print('Slient Mode,OLED OFF')
+                self._logger.info('Slient Mode,OLED OFF')
             if opt in ('-h', '--help'):             # 输出帮助信息
                 print(helpmsg)
                 sys.exit(2)
             if opt in ('-m', '--mode'):             # 设置OLED显示模式
                 if arg == 'env':
                     self._oledStatus = 0
+                    print('Display mode is env')
+                    self._logger.info('Display mode is env')
                 elif arg == 'sys':
                     self._oledStatus = 1
+                    print('Display mode is sys')
+                    self._logger.info('Display mode is sys')
+            else:
+                print('Display mode is env(default)')
+                self._logger.info('Display mode is env(default)')
 
 
     def main(self):
         try:
+            self._logger.info('Environmental Monitoring System start running')
             greenLED = 17
             redLED = 27
             toggle_1 = 26
@@ -889,6 +916,7 @@ class ems:
 
                 if not self._thrLEDAlive:
                     print(self.getLocalTimeHuman(), 'Restarting LED thread!')
+                    self._logger.error('Restarting LED thread!')
                     thrLED = threading.Thread(target=self.ledFlicker, name='Thread_LED',args=(redLED, greenLED, toggle_1, toggle_2, .5))
                     thrLED.setDaemon(True)
                     thrLED.start()
@@ -896,6 +924,7 @@ class ems:
                     self._acqFreq = 1 / 6
                     self._isAcqRun = False
                     print(self.getLocalTimeHuman(), 'Restarting Acquire thread!')
+                    self._logger.error('Restarting Acquire thread!')
                     thrAcq = threading.Thread(target=self.acquire, name='Thread_Acq')
                     thrAcq.setDaemon(True)
                     thrAcq.start()
@@ -903,11 +932,13 @@ class ems:
                     # time.sleep(self._acqFreq * 60)
                 if not self._thrSaveAlive:
                     print(self.getLocalTimeHuman(), 'Restarting Save thread!')
+                    self._logger.error('Restarting Save thread!')
                     thrSave = threading.Thread(target=self.insert, name='Thread_Save')
                     thrSave.setDaemon(True)
                     thrSave.start()
                 if not self._thrSendAlive:
                     print(self.getLocalTimeHuman(), 'Restarting Send thread!')
+                    self._logger.error('Restarting Send thread!')
                     thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
                     thrSend.setDaemon(True)
                     thrSend.start()
@@ -917,6 +948,7 @@ class ems:
         # 异常处理：键盘中断
         except KeyboardInterrupt:
             print('\n'+self.getLocalTimeHuman(), 'KeyboardInterrupt')
+            self._logger.warning('KeyboardInterrupt')
             greenLED = 17
             redLED = 27
             self._isINT = True
@@ -926,6 +958,7 @@ class ems:
             exit(0)
         except Exception as exc:
             print(self.getLocalTimeHuman(), exc)
+            self._logger.exception(exc)
             greenLED = 17
             redLED = 27
             self._isINT = True
@@ -937,6 +970,7 @@ class ems:
     # 处理KeyboardsInterrupt
     def termHandler(self, arg1, arg2):
         print (self.getLocalTimeHuman(), '\nCatch SIGTERM', arg1, arg2)
+        self._logger.warning('Catch SIGTERM')
         # global _isINT
         greenLED = 17
         redLED = 27
@@ -944,7 +978,6 @@ class ems:
         time.sleep(2)  # kill LED thread for turn off the OLED and two LED
         GPIO.output(greenLED, GPIO.LOW)
         GPIO.output(redLED, GPIO.LOW)
-
         exit(0)
 
 if __name__ == '__main__':

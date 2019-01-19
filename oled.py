@@ -1,21 +1,13 @@
 # coding=utf-8
 
-import subprocess
-import time
-
-import Adafruit_SSD1306
-
 import time
 import os
-import RPi.GPIO as GPIO
-import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-import subprocess
 
 class oledDisplay():
     # Raspberry Pi pin configuration:
