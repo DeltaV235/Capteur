@@ -88,7 +88,6 @@ class ems:
             sql = 'insert into ' + table + '(date,illuminance) values (' + self.getLocalTime() + ',' + str(illuminance) + ');'
             cout = cursor.execute(sql)
             if cout >= 1:
-                print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
                 self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
@@ -105,7 +104,6 @@ class ems:
             sql = 'insert into ' + table + '(date,haveco) values (' + self.getLocalTime() + ',"' + haveco + '");'
             cout = cursor.execute(sql)
             if cout >= 1:
-                print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
                 self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
@@ -123,7 +121,6 @@ class ems:
                 pressure) + ',' + str(temperature) + ',' + str(altitude) + ',' + str(sealevel_pressure) + ');'
             cout = cursor.execute(sql)
             if cout >= 1:
-                print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
                 self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
@@ -141,7 +138,6 @@ class ems:
                 temp) + ',' + str(humi) + ',' + str(illuminance) + ',' + str(pressure) + ',"' + haveco + '");'
             cout = cursor.execute(sql)
             if cout >= 1:
-                print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
                 self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
@@ -164,7 +160,7 @@ class ems:
                     if distance >= self._saveFreq * 60 or date == None:
                         if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None :
                             self._acqLock.acquire()
-                            print('Cloud Server:')
+                            self._logger.info('Cloud Server:')
                             self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
                             self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
                             self.insertDataMQ7(connCloud, 'mq7', self._haveco)
@@ -173,7 +169,7 @@ class ems:
                             # date[0][0] = getLocalTime()
                             self._acqLock.release()
                         else:  # 错误输出错误信息，和校验数据
-                            print (self.getLocalTimeHuman(), "Insert Data Wrong! Waiting For ReAcquirt")
+                            self._logger.error("Insert Data Wrong! Waiting For ReAcquirt")
                             time.sleep(10)
 
                     elif self._saveFreq * 60 - distance > 600:
@@ -193,7 +189,6 @@ class ems:
                     elif self._saveFreq * 60 - distance <= 1:
                         pass
                 else:       # 采集进程未正常运行，等待10秒后继续尝试
-                    print(self.getLocalTimeHuman(), 'insert: Acquire thread is not ready,waitting for recover.')
                     self._logger.warning('Acquire thread is not ready,waitting for recover.')
                     time.sleep(10)
         except Exception as e:
@@ -254,15 +249,10 @@ class ems:
                     self._haveco = 'N'
                 elif GPIO.input(mq7Pin) == 0:
                     self._haveco = 'Y'
-                print(self.getLocalTimeHuman(),
-                      'Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
-                      'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
-                      .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco, self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
                 self._logger.info('Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
                       'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
                       .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco, self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
                 if self._temp22 is None or self._humi22 is None or self._humi22 > 100.0 or self._illuminance is None or self._haveco is None:
-                    print(self.getLocalTimeHuman(), 'Data Wrong! Retry after 10 secs!')
                     self._logger.error('Data Wrong! Retry after 10 secs!')
                     self._acqLock.release()
                     time.sleep(10)
@@ -288,7 +278,6 @@ class ems:
             row = cursor.fetchone()
             date = (int(row[0].timestamp()) * 1000)
 
-        print(self.getLocalTimeHuman(), 'Find ', cout, 'row(s)  date : ', str(date))
         self._logger.info('Find '+str(cout)+'row(s)  date : '+str(date))
         return date
 
@@ -356,7 +345,6 @@ class ems:
         smtp.set_debuglevel(0)
         smtp.login(sender, password)
         smtp.sendmail(sender, receiver, message.as_string())
-        print(self.getLocalTimeHuman(), "Email Send!")
         self._logger.info("Email Send!")
         smtp.quit()
 
@@ -418,7 +406,6 @@ class ems:
             # print (sql)
             cout = cursor.execute(sql)
             if cout >= 1:
-                print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in setting.warn_list' + table)
                 self._logger.info('Insert '+str(cout)+' row(s) in setting.warn_list '+table)
             connection.commit()
 
@@ -707,7 +694,6 @@ class ems:
                                     pass #联系人不存在，告警策略已修改
                                 self.updateLastWarnDate(connCloud, 'warning_list', name, date, self.getLocalTime())
                 else:
-                    print(self.getLocalTimeHuman(), 'sendWarning: Acquire theard is not ready.')
                     self._logger.warning('Acquire theard is not ready.')
                 time.sleep(self._acqFreq * 60)
         except KeyboardInterrupt:
@@ -773,7 +759,6 @@ class ems:
                         GPIO.output(greenLED, GPIO.HIGH)
                         isExecuted = True
                     if isrunning is False:
-                        print(self.getLocalTimeHuman(), 'All threads is running')
                         self._logger.info('All threads is running')
                         isrunning = True
 
@@ -801,11 +786,9 @@ class ems:
         self._oledLock.acquire()
         self._oledOFF = not self._oledOFF
         if self._oledOFF:
-            print(self.getLocalTimeHuman(), 'OLED OFF')
             self._logger.info('OLED OFF')
             self._oled.clear()
         else:
-            print(self.getLocalTimeHuman(), 'OLED ON')
             self._logger.info('OLED ON')
             self._oled.showData(self._oledStatus)
         self._oledLock.release()
@@ -816,16 +799,13 @@ class ems:
         self._oledStatus += 1
         if self._oledStatus == self._allStatus:
             self._oledStatus = 0
-            print(self.getLocalTimeHuman(), 'Change display concent to Env_Args')
             self._logger.info('Change display concent to Env_Args')
             self._oled.showData(self._oledStatus)         # 按键中断产生后，立即刷新OLED显示的内容
         else:
-            print(self.getLocalTimeHuman(), 'Change display concent to Sys_Status')
             self._logger.info('Change display concent to Sys_Status')
             self._oled.showData(self._oledStatus)
         if self._oledOFF:
             self._oledOFF = False
-            print('OLED ON by status change')
             self._logger.info('OLED ON by status change')
         self._oledLock.release()
 
@@ -849,7 +829,6 @@ class ems:
         for opt, arg in opts:
             if opt in ('-s', '--slient'):           # 静默模式
                 self._oledOFF = True
-                print('Slient Mode,OLED OFF')
                 self._logger.info('Slient Mode,OLED OFF')
             if opt in ('-h', '--help'):             # 输出帮助信息
                 print(helpmsg)
@@ -857,14 +836,11 @@ class ems:
             if opt in ('-m', '--mode'):             # 设置OLED显示模式
                 if arg == 'env':
                     self._oledStatus = 0
-                    print('Display mode is env')
                     self._logger.info('Display mode is env')
                 elif arg == 'sys':
                     self._oledStatus = 1
-                    print('Display mode is sys')
                     self._logger.info('Display mode is sys')
             else:
-                print('Display mode is env(default)')
                 self._logger.info('Display mode is env(default)')
 
 
@@ -915,7 +891,6 @@ class ems:
                     self._thrSendAlive = True
 
                 if not self._thrLEDAlive:
-                    print(self.getLocalTimeHuman(), 'Restarting LED thread!')
                     self._logger.error('Restarting LED thread!')
                     thrLED = threading.Thread(target=self.ledFlicker, name='Thread_LED',args=(redLED, greenLED, toggle_1, toggle_2, .5))
                     thrLED.setDaemon(True)
@@ -923,7 +898,6 @@ class ems:
                 if not self._thrAcqAlive:
                     self._acqFreq = 1 / 6
                     self._isAcqRun = False
-                    print(self.getLocalTimeHuman(), 'Restarting Acquire thread!')
                     self._logger.error('Restarting Acquire thread!')
                     thrAcq = threading.Thread(target=self.acquire, name='Thread_Acq')
                     thrAcq.setDaemon(True)
@@ -931,13 +905,11 @@ class ems:
                     # time.sleep(10)
                     # time.sleep(self._acqFreq * 60)
                 if not self._thrSaveAlive:
-                    print(self.getLocalTimeHuman(), 'Restarting Save thread!')
                     self._logger.error('Restarting Save thread!')
                     thrSave = threading.Thread(target=self.insert, name='Thread_Save')
                     thrSave.setDaemon(True)
                     thrSave.start()
                 if not self._thrSendAlive:
-                    print(self.getLocalTimeHuman(), 'Restarting Send thread!')
                     self._logger.error('Restarting Send thread!')
                     thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
                     thrSend.setDaemon(True)
@@ -947,7 +919,6 @@ class ems:
 
         # 异常处理：键盘中断
         except KeyboardInterrupt:
-            print('\n'+self.getLocalTimeHuman(), 'KeyboardInterrupt')
             self._logger.warning('KeyboardInterrupt')
             greenLED = 17
             redLED = 27
@@ -957,7 +928,6 @@ class ems:
             GPIO.output(redLED, GPIO.LOW)
             exit(0)
         except Exception as exc:
-            print(self.getLocalTimeHuman(), exc)
             self._logger.exception(exc)
             greenLED = 17
             redLED = 27
@@ -969,7 +939,6 @@ class ems:
 
     # 处理KeyboardsInterrupt
     def termHandler(self, arg1, arg2):
-        print (self.getLocalTimeHuman(), '\nCatch SIGTERM', arg1, arg2)
         self._logger.warning('Catch SIGTERM')
         # global _isINT
         greenLED = 17

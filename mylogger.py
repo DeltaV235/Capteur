@@ -1,7 +1,7 @@
 #!/usr/bin/python3.4
 # coding=utf-8
 
-import datetime,time
+import datetime
 import logging, logging.config
 
 class mylogger():
