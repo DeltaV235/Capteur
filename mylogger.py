@@ -1,17 +1,26 @@
 #!/usr/bin/python3.4
 # coding=utf-8
 
-import datetime
-import logging, logging.config
+import time
+import logging
+import logging.config
+import os
 
 class mylogger():
+
+    _loggerName = ''
+    _logDirName = ''
 
     _dictConfig = {
         'version': 1,
         'disable_existing_loggers': True,
         'formatters': {
             'common': {
-                'format': '%(levelname)-9s%(asctime)s %(threadName)s: %(message)s',
+                'format': '%(levelname)-9s%(asctime)s  %(threadName)-12s: %(message)s',
+                'datefmt': '%Y-%m-%d %H:%M:%S'
+            },
+            'error': {
+                'format': '%(levelname)-9s%(asctime)s  %(processName)s %(threadName)-12s: %(message)s',
                 'datefmt': '%Y-%m-%d %H:%M:%S'
             }
         },
@@ -19,7 +28,7 @@ class mylogger():
             'file': {
                 'level': 'INFO',
                 'class': 'logging.handlers.TimedRotatingFileHandler',
-                'filename': str(datetime.date.today())+'.log',
+                'filename': 'ems-'+str(time.strftime('%Y%m%d', time.localtime())) + '-info.log',
                 'encoding': 'utf-8',
                 'when': 'D',
                 'interval': 1,
@@ -29,18 +38,34 @@ class mylogger():
                 'level': 'INFO',
                 'class': 'logging.StreamHandler',
                 'formatter': 'common'
+            },
+            'error': {
+                'level': 'ERROR',
+                'class': 'logging.handlers.TimedRotatingFileHandler',
+                'filename': 'ems-'+str(time.strftime('%Y%m%d', time.localtime())) + '-error.log',
+                'encoding': 'utf-8',
+                'when': 'D',
+                'interval': 1,
+                'formatter': 'error'
             }
         },
         'loggers': {
             'ems': {
-                'handlers': ['file', 'console'],
+                'handlers': ['file', 'console', 'error'],
                 'level': 'INFO'
             }
         }
     }
-    def __init__(self, loggerName):
+    def __init__(self, loggerName, logDirName='log'):
+        self._loggerName = loggerName
+        self._logDirName = logDirName
+        if not os.path.exists(self._logDirName):
+            os.mkdir(self._logDirName)
+            os.chdir(self._logDirName)
+        else:
+            os.chdir(self._logDirName)
         logging.config.dictConfig(self._dictConfig)
-        self._logger = logging.getLogger(loggerName)
+        self._logger = logging.getLogger(self._loggerName)
 
     def info(self, msg):
         self._logger.info(msg)

@@ -44,7 +44,7 @@ class ems:
     # oled显示状态切换 线程锁
     _oledLock = threading.Lock()
     _acqLock = threading.Lock()
-    _logger = mylogger('ems')
+    _logger = mylogger('ems', 'log_ems')
 
     def getLocalTime(self):
         localtime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
@@ -71,7 +71,6 @@ class ems:
                 humi) + ');'
             cout = cursor.execute(sql)
             if cout >= 1:
-                print(self.getLocalTimeHuman(), 'Insert', cout, 'row(s) in sensors_data.' + table)
                 self._logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
@@ -815,6 +814,7 @@ class ems:
         # Default setting
         self._oledOFF = False
         self._oledStatus = 0
+        hasModeArg = False
         helpmsg = '''
                     options:
                         -h --help :Show help message
@@ -834,17 +834,18 @@ class ems:
                 print(helpmsg)
                 sys.exit(2)
             if opt in ('-m', '--mode'):             # 设置OLED显示模式
+                hasModeArg = True
                 if arg == 'env':
                     self._oledStatus = 0
                     self._logger.info('Display mode is env')
                 elif arg == 'sys':
                     self._oledStatus = 1
                     self._logger.info('Display mode is sys')
-            else:
-                self._logger.info('Display mode is env(default)')
+        if not hasModeArg:
+            self._logger.info('Display mode is env(default)')
 
 
-    def main(self):
+    def __init__(self):
         try:
             self._logger.info('Environmental Monitoring System start running')
             greenLED = 17
@@ -951,4 +952,4 @@ class ems:
 
 if __name__ == '__main__':
     EMS = ems()
-    EMS.main()
+    # EMS.main()
