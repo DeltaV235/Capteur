@@ -5,6 +5,8 @@ import time
 import logging
 import logging.config
 import os
+import coloredlogs
+
 
 class mylogger():
 
@@ -20,7 +22,7 @@ class mylogger():
                 'datefmt': '%Y-%m-%d %H:%M:%S'
             },
             'error': {
-                'format': '%(levelname)-9s%(asctime)s  %(processName)s %(threadName)-12s: %(message)s',
+                'format': '%(levelname)-9s%(asctime)s %(name)s %(processName)s[%(process)d] %(threadName)s[%(thread)d]: %(message)s',
                 'datefmt': '%Y-%m-%d %H:%M:%S'
             }
         },
@@ -32,11 +34,6 @@ class mylogger():
                 'encoding': 'utf-8',
                 'when': 'D',
                 'interval': 1,
-                'formatter': 'common'
-            },
-            'console': {
-                'level': 'INFO',
-                'class': 'logging.StreamHandler',
                 'formatter': 'common'
             },
             'error': {
@@ -51,7 +48,7 @@ class mylogger():
         },
         'loggers': {
             'ems': {
-                'handlers': ['file', 'console', 'error'],
+                'handlers': ['file', 'error'],
                 'level': 'INFO'
             }
         }
@@ -66,6 +63,9 @@ class mylogger():
             os.chdir(self._logDirName)
         logging.config.dictConfig(self._dictConfig)
         self._logger = logging.getLogger(self._loggerName)
+        coloredlogs.install(logger=self._logger,
+                            level='INFO', fmt=self._dictConfig['formatters']['common']['format'],
+                            datefmt=self._dictConfig['formatters']['common']['datefmt'])
 
     def info(self, msg):
         self._logger.info(msg)

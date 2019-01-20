@@ -847,12 +847,11 @@ class ems:
 
     def __init__(self):
         try:
-            self._logger.info('Environmental Monitoring System start running')
+            self._logger.info('-------------Environmental Monitoring System start running-------------')
             greenLED = 17
             redLED = 27
             toggle_1 = 26
             toggle_2 = 13
-
             # terminal(kill)信号处理
             signal.signal(signal.SIGTERM, self.termHandler)
 
@@ -928,15 +927,22 @@ class ems:
             GPIO.output(greenLED, GPIO.LOW)
             GPIO.output(redLED, GPIO.LOW)
             exit(0)
+
         except Exception as exc:
-            self._logger.exception(exc)
             greenLED = 17
             redLED = 27
-            self._isINT = True
-            time.sleep(2)  # kill LED thread for turn off the OLED and two LED
+            self._logger.exception(exc)
+            self._logger.critical('A critical mistake occurred,system down!')
+            GPIO.cleanup()
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setwarnings(False)
+            GPIO.setup(redLED, GPIO.OUT)
+            GPIO.setup(greenLED, GPIO.OUT)
             GPIO.output(greenLED, GPIO.LOW)
             GPIO.output(redLED, GPIO.LOW)
-            exit(0)
+            self._isINT = True
+            time.sleep(2)  # kill LED thread for turn off the OLED and two LED
+            exit(-1)
 
     # 处理KeyboardsInterrupt
     def termHandler(self, arg1, arg2):
