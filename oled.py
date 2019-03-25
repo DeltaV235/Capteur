@@ -2,6 +2,7 @@
 
 import time
 import os
+import subprocess
 import Adafruit_SSD1306
 
 from PIL import Image
@@ -124,22 +125,28 @@ class oledDisplay():
 
         if status == 1:
             self.__sysDraw.rectangle((0, -2, self.__width, self.__height), outline=0, fill=0)  # edge area , refresh whole OLED
+
             # Shell scripts for system monitoring from here : https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
-            # cmd = "hostname -I | cut -d\' \' -f1"
-            # IP = subprocess.check_output(cmd, shell=True)
-            # cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-            # CPU = subprocess.check_output(cmd, shell=True)
-            # cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
-            # MemUsage = subprocess.check_output(cmd, shell=True)
-            # cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
-            # Disk = subprocess.check_output(cmd, shell=True)
-            ip = os.popen('hostname -I | cut -d\' \' -f1').read()
-            cpu = os.popen('top -bn1 | grep load | awk \'{printf \"CPU Load: %.2f\", $(NF-2)}\'').read()
-            mem = os.popen('free -m | awk \'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }\'').read()
-            disk = os.popen('df -h | awk \'$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}\'').read()
+            cmd = "hostname -I | cut -d\' \' -f1"
+            ip = subprocess.check_output(cmd, shell=True).decode('utf-8')
+            cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+            cpu = subprocess.check_output(cmd, shell=True).decode('utf-8')
+            cmd = "vcgencmd measure_temp"
+            cpu_temp = subprocess.check_output(cmd, shell=True).decode('utf-8')[5:]
+            cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
+            mem = subprocess.check_output(cmd, shell=True).decode('utf-8')
+            cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
+            disk = subprocess.check_output(cmd, shell=True).decode('utf-8')
+
+            # ip = os.popen('hostname -I | cut -d\' \' -f1').read()
+            # cpu = os.popen('top -bn1 | grep load | awk \'{printf \"CPU Load: %.2f\", $(NF-2)}\'').read() \
+            #       + ' ' + os.popen('vcgencmd measure_temp').read()[5:]
+            # mem = os.popen('free -m | awk \'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }\'').read()
+            # disk = os.popen('df -h | awk \'$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}\'').read()
+
             # Write two lines of text.
             self.__sysDraw.text((x, y), "IP: " + ip, font=self.__font, fill=255)
-            self.__sysDraw.text((x, y + ystep), cpu, font=self.__font, fill=255)
+            self.__sysDraw.text((x, y + ystep), cpu + ' ' + cpu_temp, font=self.__font, fill=255)
             self.__sysDraw.text((x, y + 2*ystep), mem, font=self.__font, fill=255)
             self.__sysDraw.text((x, y + 3*ystep), disk, font=self.__font, fill=255)
             self.__disp.image(self.__sysImage)
@@ -150,10 +157,10 @@ class oledDisplay():
         # self.__image.save('./display_test.png')
 
 
-
     def clear(self):
         self.__disp.image(self.__blackImage)
         self.__disp.display()
+        self.__disp.begin()
 
 
 if __name__ == '__main__':
