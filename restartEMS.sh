@@ -14,7 +14,7 @@ else
     done
 fi
 
-# 确保进程停止后再启动程序
+# 确保进程停止后再进行下一步
 while true
 do
     processCount=`ps -ef|grep 'python3'|grep 'main.py' -c`

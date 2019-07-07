@@ -280,6 +280,7 @@ class ems:
         except Exception as exc:
             # GPIO.cleanup()
             self._isAcqRun = False
+            self._acqLock.release()
             self.logger.exception(exc)
 
 
@@ -722,9 +723,10 @@ class ems:
     # LED闪烁线程&OLED刷新线程
     def ledFlicker(self, redLED, greenLED, toggle_1, toggle_2, ftime):
         try:
-            # GPIO.cleanup()
             GPIO.setmode(GPIO.BCM)
             GPIO.setwarnings(False)
+            GPIO.cleanup(toggle_1)          # 若线程重启，则置空两个物理按键的GPIO设置，防止异常的产生
+            GPIO.cleanup(toggle_2)
             GPIO.setup(redLED, GPIO.OUT)
             GPIO.setup(greenLED, GPIO.OUT)
             GPIO.setup(toggle_1, GPIO.IN)
@@ -796,6 +798,7 @@ class ems:
 
             self._oled.clear()    # 键盘中断，熄灭OLED屏幕
         except Exception as exc:
+            self._oledLock.release()
             self.logger.exception(exc)
 
     # 按键1中断，点亮/熄灭OLED屏幕
