@@ -16,7 +16,7 @@ import getopt
 import sys
 
 from oled import oledDisplay as OLED
-from mylogger import mylogger
+from mylogger import mylogger,getCFG
 from power_controller import PowerControl
 
 class ems:
@@ -55,6 +55,7 @@ class ems:
     _oledLock = threading.Lock()
     _acqLock = threading.Lock()
 
+    _config = getCFG('../config.json')
 
     def getLocalTime(self):
         localtime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
@@ -159,7 +160,7 @@ class ems:
 
     def insert(self):
         try:
-            connCloud = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'sensors_data')
+            connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'], self._config['database']['password'], 'sensors_data')
             while (True):
                 connCloud.commit()
                 date = self.travValue(connCloud, 'all_sensors_data', 'date', 'order by date desc limit 1')
@@ -211,8 +212,8 @@ class ems:
 
     def acquire(self):
         try:
-            connection = self.getConnection('localhost', 'root', '960123%W78u&', 'setting')
-            connection_vps = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'setting')
+            # connection = self.getConnection('localhost', 'root', '', 'setting')
+            connection_vps = self.getConnection(self._config['database']['host'], self._config['database']['user'], self._config['database']['password'], 'setting')
             dht22Pin = 4
 
             bus_GY30 = smbus.SMBus(1)
@@ -228,7 +229,7 @@ class ems:
             isExecuted = False
             count = 0
             while (True):
-                connection.commit()
+                # connection.commit()
                 connection_vps.commit()
                 Freq = self.travValue(connection_vps, 'setting')
                 if count >= 2:                      # 前2次采集不更新采集频率，使用main中的短采集周期，提高程序的启动速度
@@ -269,7 +270,7 @@ class ems:
                     self._acqLock.release()
                     time.sleep(10)
                     continue
-                self.checkWarning(connection, connection_vps)
+                self.checkWarning('', connection_vps)
                 # print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
                 self._acqLock.release()
                 time.sleep(self._acqFreq * 60)
@@ -455,7 +456,7 @@ class ems:
                        }
         # global _humi22, _temp22, _illuminance, _haveco, _pressure, _temperature, _altitude, _sealevel_pressure
         try:
-            connection.commit()
+            # connection.commit()
             connection_vps.commit()
             warning_policy = self.travValue(connection_vps, 'warning_policy',
                                        'name,env_args,compare,value,phone,email,date,user')
@@ -663,16 +664,16 @@ class ems:
         }
         # global _warnFreq, _acqFreq, _humi22, _temp22, _illuminance, _haveco, _pressure, _temperature, _altitude, _sealevel_pressure
         try:
-            connCloud = self.getConnection('118.25.46.104', 'DeltaV', '960123W78u', 'setting')
-            connLocal = self.getConnection('localhost', 'root', '960123%W78u&', 'setting')
-            smtpserver = 'smtp.qq.com'
-            username = '1749491282'
-            password = 'xsnamqlsyozmdjaa'
-            sender = '1749491282@qq.com'
+            connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'], self._config['database']['password'], 'setting')
+            # connLocal = self.getConnection('localhost', 'root', '', 'setting')
+            smtpserver = self._config['email']['smtpserver']
+            username = self._config['email']['username']
+            password = self._config['email']['password']
+            sender = self._config['email']['sender']
             subject = '【环境监测】触发监控告警'
             while (True):
                 connCloud.commit()
-                connLocal.commit()
+                # connLocal.commit()
                 warning_list = self.travValue(connCloud, 'warning_list',
                                          'name,env_args,compare,value,phone,email,date,user,last_warn_date,status,islook')
                 # print (warning_list)

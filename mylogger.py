@@ -7,6 +7,7 @@ import logging.config
 import os
 import coloredlogs      # 使StreamHandler能够根据level来改变文字颜色
 # import logging.handlers
+import json             # read MariaDB configure
 
 class mylogger():
 
@@ -87,6 +88,17 @@ class mylogger():
         self._logger.critical(msg)
     def exception(self,msg):
         self._logger.exception(msg)
+
+# get database's host, user and password
+def getCFG(path):
+    with open(path, 'r') as confFile:
+        conf = json.JSONDecoder().decode(confFile.read())
+    # host = conf['database']['host']
+    # user = conf['database']['user']
+    # password = conf['database']['password']
+    # database = {'host': host, 'user': user, 'password': password}
+    # print(database)                     # for test
+    return conf
 
 if __name__ == '__main__':
     logger = mylogger('test_logger')

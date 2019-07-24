@@ -1,0 +1,13 @@
+{
+    "database":{
+        "host":"118.25.46.104",
+        "user":"DeltaV",
+        "password":"960123W78u"
+    },
+    "email":{
+        "smtpserver":"smtp.qq.com",
+        "username":"1749491282",
+        "password":"xsnamqlsyozmdjaa",
+        "sender":"1749491282@qq.com"
+    }
+}
