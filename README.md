@@ -4,8 +4,8 @@
 Raspberry pi通过Adafruit_python库控制各类传感器，获取各类环境数据。同时判断是否有告警被触发，若有触发的告警，则通过SMTP发送告警通知邮件，通过ADB调用连接在pi上的Android手机，自动发送提醒短信。  
 连线示意图如下图所示：
 ![连线示意图](https://github.com/DeltaV235/EMS/raw/master/img/%E8%BF%9E%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg)
-   
+
 运行环境：
-* raspbian
-* python3.4
+* Raspbian Buster Lite July 2019
+* python3.7.3
 * Adafruit
