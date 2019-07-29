@@ -6,8 +6,10 @@
 
 echo -e "\nChecking python environment ...\n"
 
-aptInsList="python3.7 python3-pip"          # 需要安装的包名
-aptShouldIns=""                             # 将要被安装的包名
+# 需要安装的包名
+aptInsList="python3.7 python3-pip libopenjp2-7"
+# 将要被安装的包名
+aptShouldIns=""
 
 # 判断那些包需要被安装
 for package in $aptInsList
@@ -20,13 +22,13 @@ done
 # 若首次因为网络原因安装失败，则重试3次后依然失败，则提示检查网络或手动安装相应的包,并返回255
 if [ "$aptShouldIns" != "" ];then
     declare -i count=0
+    sudo apt-get update
     while true
     do
         ((count++))
         echo "These package(s) will be installed:"
-        echo -e "\t$pipShouldIns\n" && sleep 3
-        sudo apt-get install -y "$pipShouldIns"
-        if [ "$?" == true ];then
+        echo -e "\t$aptShouldIns\n" && sleep 3
+        if sudo apt-get install -y "$aptShouldIns";then
             printf "\n\033[1;32m%s\033[0m\n\n" "Package install SUCC"
             break
         else
@@ -48,17 +50,23 @@ do
         printf "%-30sversion: %s\n" "$package" "$(apt list "$package" 2>/dev/null|grep "\[installed\]"|cut -d " " -f2)"
 done
 
+sleep 1
 echo -e "\n\033[1;32mPython check complete\033[0m"
-echo "---------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------"
 echo -e "\nChecking python3 package environment ...\n"
 
-pipInsList="Adafruit-BMP Adafruit-DHT Adafruit-GPIO Adafruit-PureIO Adafruit-SSD1306 coloredlogs PyMySQL smbus RPi.GPIO pillow"         # 需要安装的python库
-pipInsedPackage=$(pip3 list|awk 'NR>2{printf "%s\n",$0}')                                                                               # 已安装的python库
-pipShouldIns=""                                                                                                                         # 将要安装的库
+# 需要安装的python库
+pipInsList="Adafruit-BMP Adafruit-DHT Adafruit-GPIO Adafruit-PureIO Adafruit-SSD1306 coloredlogs PyMySQL smbus RPi.GPIO Pillow PillowImage"
+
+# 已安装的python库
+pipInsedPackage=$(pip3 list|awk 'NR>2{printf "%s\n",$0}')
+
+# 将要安装的库
+pipShouldIns=""
 
 for package in $pipInsList
 do
-    if [ "$(echo "$pipInsedPackage"|grep "$package"|cut -d " " -f1)" != "$package" ];then
+    if [ "$(echo "$pipInsedPackage"|grep "$package "|cut -d " " -f1)" != "$package" ];then
         pipShouldIns="$pipShouldIns $package"
     fi
 done
@@ -70,8 +78,7 @@ if [ "$pipShouldIns" != "" ];then
         ((count++))
         echo "These package(s) will be installed:"
         echo -e "\t$pipShouldIns\n"
-        sudo pip3 install "$pipShouldIns"
-        if [ "$?" == true ];then
+        if sudo pip3 install "$pipShouldIns";then
             printf "\n\033[1;32m%s\033[0m\n" "Package install SUCC"
             break
         else
@@ -87,14 +94,15 @@ if [ "$pipShouldIns" != "" ];then
     done
 fi
 
+pipInsedPackage=$(pip3 list|awk 'NR>2{printf "%s\n",$0}')               # 更新已安装的包
 printf "%-30s%s\n\n" "package" "version"
-for list in $pipInsList
+for package in $pipInsList
 do
-    echo "$pipInsedPackage"|grep "$list"|awk '{printf "%-30s%s\n",$1,$2}'
+    echo "$pipInsedPackage"|grep "$package "|awk '{printf "%-30s%s\n",$1,$2}'
 done
 
-
+# 测试test.py是否能正常运行
 echo
-python3 test.py && printf "\033[1;32m%s\033[0m\n\n" "TEST PASS" || printf "\033[1;31m%s\033[0m\n\n" "TEST FAIL"
+python3 test.py && printf "\n\033[1;32m%s\033[0m\n\n" "TEST PASS" || printf "\n\033[1;31m%s\033[0m\n\n" "TEST FAIL"
 #uninstallPackage=""
 #for package in $pipInsedPackage
