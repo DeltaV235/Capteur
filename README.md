@@ -8,4 +8,31 @@ Raspberry pi通过Adafruit_python库控制各类传感器，获取各类环境�
 运行环境：
 * Raspbian Buster Lite July 2019
 * python3.7.3
-* Adafruit
+
+>python3 Library:  
+>>Adafruit-BMP  
+Adafruit-DHT  
+Adafruit-GPIO  
+Adafruit-PureIO  
+Adafruit-SSD1306  
+coloredlogs 
+PyMySQL  
+smbus  
+RPi.GPIO  
+Pillow  
+PillowImage
+
+如何运行：
+```bash
+git clone https://github.com/DeltaV235/EMS.git
+cd EMS
+chmod a+x install_env.sh
+
+# 安装所需要的运行环境
+./install_env.sh
+```
+等待所有环境安装完成，打开I2C总线，并通过测试后：
+```bash
+./startEMS.sh
+```
+程序默认静默运行，OLED显示屏在所有进程正常运行后就将熄灭。

@@ -4,6 +4,7 @@
 # History:
 #   2019/07/28  DeltaV235   V1.0
 
+chmod a+x ./*.sh
 echo -e "\nChecking python environment ...\n"
 
 # 需要安装的包名
