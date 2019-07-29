@@ -15,7 +15,7 @@ Adafruit-DHT
 Adafruit-GPIO  
 Adafruit-PureIO  
 Adafruit-SSD1306  
-coloredlogs 
+coloredlogs  
 PyMySQL  
 smbus  
 RPi.GPIO  
