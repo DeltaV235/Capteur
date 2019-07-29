@@ -7,7 +7,7 @@
 echo -e "\nChecking python environment ...\n"
 
 # 需要安装的包名
-aptInsList="python3.7 python3-pip libopenjp2-7 python3-libtiff"
+aptInsList="python3.7 python3-pip libopenjp2-7 python3-libtiff i2c-tools"
 # 将要被安装的包名
 aptShouldIns=""
 
@@ -104,6 +104,9 @@ do
     echo "$pipInsedPackage"|grep "$package "|awk '{printf "%-30s%s\n",$1,$2}'
 done
 
+# 检查i2c总线是否开启
+i2cdetect -y 1 &>/dev/null && printf "\n\033[1;32m%s\033[0m\n" "I2C Checked" || printf "\n\033[1;31m%s\033[0m\n%s\n" "I2C Error" \
+"Please enable I2C interface by use command 'sudo raspi-config'"
+
 # 测试test.py是否能正常运行
-echo
 python3 test.py && printf "\n\033[1;32m%s\033[0m\n\n" "TEST PASS" || printf "\n\033[1;31m%s\033[0m\n\n" "TEST FAIL"
