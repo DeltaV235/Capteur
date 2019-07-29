@@ -7,7 +7,7 @@
 echo -e "\nChecking python environment ...\n"
 
 # 需要安装的包名
-aptInsList="python3.7 python3-pip libopenjp2-7"
+aptInsList="python3.7 python3-pip libopenjp2-7 python3-libtiff"
 # 将要被安装的包名
 aptShouldIns=""
 
@@ -28,13 +28,15 @@ if [ "$aptShouldIns" != "" ];then
         ((count++))
         echo "These package(s) will be installed:"
         echo -e "\t$aptShouldIns\n" && sleep 3
-        if sudo apt-get install -y "$aptShouldIns";then
+        # shellcheck disable=SC2086
+        if sudo apt-get install -y $aptShouldIns;then
             printf "\n\033[1;32m%s\033[0m\n\n" "Package install SUCC"
             break
         else
             printf "\n\033[1;31m%s\033[0m\n\n" "Package install FAIL"
             if [ $count -lt 4 ];then
                 echo -e "Reinstalling(remain $((4-count)) times) ...\n"
+                sleep 3
             else
                 echo -e "Please check your network or install these package(s) manually"
                 echo -e "\t$aptShouldIns\n"
@@ -85,6 +87,7 @@ if [ "$pipShouldIns" != "" ];then
             printf "\n\033[1;31m%s\033[0m\n" "Package install FAIL"
             if [ $count -lt 4 ]; then
                 echo -e "Reinstalling(remain $((4-count)) times) ...\n"
+                sleep 3
             else
                 echo -e "Please check your network or install these package(s) manually"
                 echo -e "\t$pipShouldIns\n"
@@ -104,5 +107,3 @@ done
 # 测试test.py是否能正常运行
 echo
 python3 test.py && printf "\n\033[1;32m%s\033[0m\n\n" "TEST PASS" || printf "\n\033[1;31m%s\033[0m\n\n" "TEST FAIL"
-#uninstallPackage=""
-#for package in $pipInsedPackage
