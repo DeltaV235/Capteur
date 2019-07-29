@@ -47,12 +47,21 @@ do
 done
 
 #echo "$shouldInstall"
-if [ "$shouldInstall" != "" ];then
-    echo "This package will be installed:"
-    echo "$shouldInstall"
-    sleep 3
-    sudo pip3 install "$shouldInstall"
-fi
+while true
+do
+    if [ "$shouldInstall" != "" ];then
+        echo "This package will be installed:"
+        echo "$shouldInstall"
+        sudo pip3 install "$shouldInstall"
+        if [ "$?" == true ];then
+            printf "\n\033[1;32m%s\033[0m\n" "Install package SUCC"
+            break
+        else
+            printf "\n\033[1;31m%s\033[0m\n" "Install package FAIL"
+            echo -e "Reinstalling ...\n"
+        fi
+    fi
+done
     printf "%-30s%s\n\n" "package" "version"
     for list in $installList
     do
