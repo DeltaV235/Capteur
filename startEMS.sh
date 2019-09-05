@@ -10,7 +10,11 @@ then
 else
     nohup python3 main.py --slient &>/dev/null &
     pid=`ps -ef|grep 'python3'|grep 'main.py'|awk '{printf "%d\t",$2}'`
-    echo -e "EMS is RUNNING\nPID = ${pid}"
+    echo -e "EMS is RUNNING\nPID = ${pid}\n------------------------------------"
+fi
+
+if [ $1 == '-f' ]; then
+    ./tailLog.sh
 fi
 
 exit 0

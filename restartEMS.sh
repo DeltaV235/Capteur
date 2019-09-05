@@ -2,8 +2,7 @@
 
 # 停进程
 processCount=`ps -ef|grep 'python3'|grep 'main.py' -c`
-if [[ ${processCount} == 0 ]]
-then
+if [[ ${processCount} == 0 ]]; then
     echo 'EMS is NOT RUNIING!'
 else
     pids=`ps -ef|grep main|grep python3|awk '{printf "%d ",$2}'`
@@ -36,7 +35,11 @@ then
 else
     nohup python3 main.py --slient &>/dev/null &
     pid=`ps -ef|grep 'python3'|grep 'main.py'|awk '{printf "%d\t",$2}'`
-    echo -e "EMS is RUNNING\nPID = ${pid}"
+    echo -e "EMS is RUNNING\nPID = ${pid}\n------------------------------------"
+fi
+
+if [ $1 == '-f' ]; then
+    ./tailLog.sh
 fi
 
 exit 0
