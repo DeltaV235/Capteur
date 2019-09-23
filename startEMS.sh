@@ -13,7 +13,7 @@ else
     echo -e "EMS is RUNNING\nPID = ${pid}\n------------------------------------"
 fi
 
-if [ $1 == '-f' ]; then
+if [ $1 = '-f' ]; then
     ./tailLog.sh
 fi
 

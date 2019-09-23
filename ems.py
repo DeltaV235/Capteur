@@ -16,8 +16,9 @@ import getopt
 import sys
 
 from oled import oledDisplay as OLED
-from mylogger import mylogger,getCFG
+from mylogger import mylogger, getCFG
 from power_controller import PowerControl
+
 
 class ems:
     # logger
@@ -25,7 +26,7 @@ class ems:
 
     # 各线程检测频率
     _saveFreq = _warnFreq = 0
-    _acqFreq = 1/6
+    _acqFreq = 1 / 6
 
     # 采集到的数据
     _humi22 = _temp22 = _illuminance = _pressure = _temperature = _altitude = _sealevel_pressure = -1
@@ -37,7 +38,7 @@ class ems:
     # 是否键盘中断 & 是否关闭OLED
     _isINT = _oledOFF = False
 
-    #采集线程是否运行
+    # 采集线程是否运行
     _isAcqRun = False
 
     # OLED显示状态
@@ -61,16 +62,13 @@ class ems:
         localtime = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
         return localtime
 
-
     def getLocalTimeHuman(self):
         localtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         return localtime
 
-
     def getConnection(self, host, user, password, db, port=3306, charset='utf8'):
         connection = pymysql.connect(host=host, user=user, password=password, db=db, port=port, charset=charset)
         return connection
-
 
     # except Exception as exc:
     #     print(getLocalTime(),exc)
@@ -78,13 +76,13 @@ class ems:
     def insertDataDHT22(self, connection, table, temp, humi):
         # try:
         with connection.cursor() as cursor:
-            sql = 'insert into ' + table + '(date,temp,humi) values (' + self.getLocalTime() + ',' + str(temp) + ',' + str(
+            sql = 'insert into ' + table + '(date,temp,humi) values (' + self.getLocalTime() + ',' + str(
+                temp) + ',' + str(
                 humi) + ');'
             cout = cursor.execute(sql)
             if cout >= 1:
                 self.logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
-
 
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
@@ -95,12 +93,12 @@ class ems:
     def insertDataGY30(self, connection, table, illuminance):
         # try:
         with connection.cursor() as cursor:
-            sql = 'insert into ' + table + '(date,illuminance) values (' + self.getLocalTime() + ',' + str(illuminance) + ');'
+            sql = 'insert into ' + table + '(date,illuminance) values (' + self.getLocalTime() + ',' + str(
+                illuminance) + ');'
             cout = cursor.execute(sql)
             if cout >= 1:
                 self.logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
-
 
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
@@ -116,7 +114,6 @@ class ems:
             if cout >= 1:
                 self.logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
-
 
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
@@ -134,7 +131,6 @@ class ems:
                 self.logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
-
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
     # except Exception as exc:
@@ -151,7 +147,6 @@ class ems:
                 self.logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
             connection.commit()
 
-
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
     # except Exception as exc:
@@ -160,7 +155,8 @@ class ems:
 
     def insert(self):
         try:
-            connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'], self._config['database']['password'], 'sensors_data')
+            connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'],
+                                           self._config['database']['password'], 'sensors_data')
             while (True):
                 connCloud.commit()
                 date = self.travValue(connCloud, 'all_sensors_data', 'date', 'order by date desc limit 1')
@@ -168,14 +164,17 @@ class ems:
                     time.strptime(str(date[0][0]), "%Y-%m-%d %H:%M:%S")))
                 if self._isAcqRun:
                     if distance >= self._saveFreq * 60 or date == None:
-                        if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None :
+                        if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None:
                             self._acqLock.acquire()
                             self.logger.info('Cloud Server:')
                             self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
                             self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
                             self.insertDataMQ7(connCloud, 'mq7', self._haveco)
-                            self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude, self._sealevel_pressure)
-                            self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22), ('%.2f' % self._humi22), ('%.1f' % self._illuminance), ('%.2f' % self._pressure), self._haveco)
+                            self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude,
+                                                self._sealevel_pressure)
+                            self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22),
+                                               ('%.2f' % self._humi22), ('%.1f' % self._illuminance),
+                                               ('%.2f' % self._pressure), self._haveco)
                             # date[0][0] = getLocalTime()
                             self._acqLock.release()
                         else:  # 错误输出错误信息，和校验数据
@@ -198,22 +197,21 @@ class ems:
                         time.sleep(1)
                     elif self._saveFreq * 60 - distance <= 1:
                         pass
-                else:       # 采集进程未正常运行，等待10秒后继续尝试
+                else:  # 采集进程未正常运行，等待10秒后继续尝试
                     self.logger.warning('Acquire thread is not ready,waitting for recover.')
                     time.sleep(10)
         except Exception as e:
             self.logger.exception(e)
 
-
         # except Exception as exc:
         #     print(getLocalTimeHuman(),'thrSave:',exc)
         #     time.sleep(5)
 
-
     def acquire(self):
         try:
             # connection = self.getConnection('localhost', 'root', '', 'setting')
-            connection_vps = self.getConnection(self._config['database']['host'], self._config['database']['user'], self._config['database']['password'], 'setting')
+            connection_vps = self.getConnection(self._config['database']['host'], self._config['database']['user'],
+                                                self._config['database']['password'], 'setting')
             dht22Pin = 4
 
             bus_GY30 = smbus.SMBus(1)
@@ -232,7 +230,7 @@ class ems:
                 # connection.commit()
                 connection_vps.commit()
                 Freq = self.travValue(connection_vps, 'setting')
-                if count >= 2:                      # 前2次采集不更新采集频率，使用main中的短采集周期，提高程序的启动速度
+                if count >= 2:  # 前2次采集不更新采集频率，使用main中的短采集周期，提高程序的启动速度
                     self._acqFreq = Freq[0][0]
                     if not isExecuted:
                         self._isAcqRun = True
@@ -262,14 +260,24 @@ class ems:
                     self._haveco = 'N'
                 elif GPIO.input(mq7Pin) == 0:
                     self._haveco = 'Y'
-                self.logger.info('Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
-                      'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
-                                 .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco, self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
                 if self._temp22 is None or self._humi22 is None or self._humi22 > 100.0 or self._illuminance is None or self._haveco is None:
                     self.logger.error('Data Wrong! Retry after 10 secs!')
+                    if self._illuminance is None:
+                        self.logger.warning("illuminance is wrong!")
+                    if self._haveco is None:
+                        self.logger.warning("co is wrong!")
+                    if self._pressure is None:
+                        self.logger.warning("pressure is wrong!")
+                    if self._temp22 is None:
+                        self.logger.warning("temp is wrong!")
                     self._acqLock.release()
                     time.sleep(10)
                     continue
+                self.logger.info(
+                    'Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
+                    'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
+                        .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco,
+                                self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
                 self.checkWarning('', connection_vps)
                 # print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
                 self._acqLock.release()
@@ -284,7 +292,6 @@ class ems:
             self._acqLock.release()
             self.logger.exception(exc)
 
-
     def findLastDate(self, connection, table, showKeys='date'):
         sql = 'select ' + showKeys + ' from ' + table + ' order by date desc limit 1;'
         # try:
@@ -295,7 +302,6 @@ class ems:
 
         self.logger.info('Find ' + str(cout) + 'row(s)  date : ' + str(date))
         return date
-
 
     def travValue(self, connection, table, showKeys='*', where=''):
         sql = 'select ' + showKeys + ' from ' + table + ' ' + where + ';'
@@ -313,8 +319,8 @@ class ems:
         # print(getLocalTimeHuman(), 'Find ', cout, 'row(s) from ',table,showKeys,where)
         return data
 
-
-    def sendWarnEmail(self, smtpserver, username, password, sender, receiver, subject, user, compareName, value, name, curData,
+    def sendWarnEmail(self, smtpserver, username, password, sender, receiver, subject, user, compareName, value, name,
+                      curData,
                       date):
         HTML = '''
                 <div  style="margin-left: 8px; margin-top: 8px; margin-bottom: 8px; margin-right: 8px;">
@@ -363,7 +369,6 @@ class ems:
         self.logger.info("Email Send!")
         smtp.quit()
 
-
     def sendMsg(self, phone, compareName, value, name, date, curData, recoverDate=None):
         if recoverDate == None:
             msg1 = '【环境监测系统】监控警告触发'
@@ -411,8 +416,8 @@ class ems:
             os.system('adb shell input keyevent 66')
             os.system('adb shell input keyevent 26')
 
-
-    def insertWarnList(self, connection, table, name, env_args, compare, value, phone, email, date, user, status, islook):
+    def insertWarnList(self, connection, table, name, env_args, compare, value, phone, email, date, user, status,
+                       islook):
         # try:
         with connection.cursor() as cursor:
             sql = 'insert into ' + table + '(name,env_args,compare,value,phone,email,date,user,status,islook) ' \
@@ -424,7 +429,6 @@ class ems:
                 self.logger.info('Insert ' + str(cout) + ' row(s) in setting.warn_list ' + table)
             connection.commit()
 
-
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
     # except Exception as exc:
@@ -434,22 +438,23 @@ class ems:
     def checkExist(self, connection, name):
         isExist = False
         warning_list = self.travValue(connection, 'warning_list',
-                                 'name,env_args,compare,value,phone,email,date,user,last_warn_date,status,islook',
-                                 'where name = "' + name + '"')
+                                      'name,env_args,compare,value,phone,email,date,user,last_warn_date,status,islook',
+                                      'where name = "' + name + '"')
         for (
-        name_list, env_args_list, compare_list, value_list, phone_list, email_list, date_list, user_list, last_warn_date,
-        status, islook) in warning_list:
+                name_list, env_args_list, compare_list, value_list, phone_list, email_list, date_list, user_list,
+                last_warn_date,
+                status, islook) in warning_list:
             if name == name_list and status == 'warning':
                 isExist = True
             else:
                 isExist = False
         return isExist
 
-
     def checkWarning(self, connection, connection_vps):
         compareName = {'temp': {'g': '温度大于', 'ge': '温度大于等于', 'l': '温度小于', 'le': '温度小于等于', 'e': '温度等于', 'ne': '温度不等于'},
                        'humi': {'g': '湿度大于', 'ge': '湿度大于等于', 'l': '湿度小于', 'le': '湿度小于等于', 'e': '湿度等于', 'ne': '湿度不等于'},
-                       'illu': {'g': '光照度大于', 'ge': '光照度大于等于', 'l': '光照度小于', 'le': '光照度小于等于', 'e': '光照度等于', 'ne': '光照度不等于'},
+                       'illu': {'g': '光照度大于', 'ge': '光照度大于等于', 'l': '光照度小于', 'le': '光照度小于等于', 'e': '光照度等于',
+                                'ne': '光照度不等于'},
                        'press': {'g': '气压大于', 'ge': '气压大于等于', 'l': '气压小于', 'le': '气压小于等于', 'e': '气压等于', 'ne': '气压不等于'},
                        'haveco': {'g': '一氧化碳大于', 'ge': '一氧化碳大于等于', 'l': '一氧化碳小于', 'le': '一氧化碳小于等于', 'e': '一氧化碳等于',
                                   'ne': '一氧化碳不等于'}
@@ -459,7 +464,7 @@ class ems:
             # connection.commit()
             connection_vps.commit()
             warning_policy = self.travValue(connection_vps, 'warning_policy',
-                                       'name,env_args,compare,value,phone,email,date,user')
+                                            'name,env_args,compare,value,phone,email,date,user')
             # print (warning_policy)
             for (name, env_args, compare, value, phone, email, date, user) in warning_policy:
                 temp = 0
@@ -487,86 +492,103 @@ class ems:
                 if compare == 'g':
                     if temp > value:
                         if not self.checkExist(connection_vps, name):
-                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone, email,
-                                           self.getLocalTime(),
-                                           user, 'warning', 'N')
+                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone,
+                                                email,
+                                                self.getLocalTime(),
+                                                user, 'warning', 'N')
                     elif self.checkExist(connection_vps, name):
                         self.updateStatus(connection_vps, 'warning_list', name)  # 此处可以添加恢复时间
                         self.updateRecoverDate(connection_vps, 'warning_list', name, self.getLocalTime())
                         if phone == 'Y':
-                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone', 'where name = "' + user + '"')
-                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date), curData,
-                                    self.getLocalTimeHuman())
+                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone',
+                                                         'where name = "' + user + '"')
+                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date),
+                                         curData,
+                                         self.getLocalTimeHuman())
                 elif compare == 'ge':
                     if temp >= value:
                         if not self.checkExist(connection_vps, name):
-                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone, email,
-                                           self.getLocalTime(),
-                                           user, 'warning', 'N')
+                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone,
+                                                email,
+                                                self.getLocalTime(),
+                                                user, 'warning', 'N')
                     elif self.checkExist(connection_vps, name):
                         self.updateStatus(connection_vps, 'warning_list', name)
                         self.updateRecoverDate(connection_vps, 'warning_list', name, self.getLocalTime())
                         if phone == 'Y':
-                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone', 'where name = "' + user + '"')
-                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date), curData,
-                                    self.getLocalTimeHuman())
+                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone',
+                                                         'where name = "' + user + '"')
+                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date),
+                                         curData,
+                                         self.getLocalTimeHuman())
                 elif compare == 'l':
                     if temp < value:
                         if not self.checkExist(connection_vps, name):
-                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone, email,
-                                           self.getLocalTime(),
-                                           user, 'warning', 'N')
+                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone,
+                                                email,
+                                                self.getLocalTime(),
+                                                user, 'warning', 'N')
                     elif self.checkExist(connection_vps, name):
                         self.updateStatus(connection_vps, 'warning_list', name)
                         self.updateRecoverDate(connection_vps, 'warning_list', name, self.getLocalTime())
                         if phone == 'Y':
-                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone', 'where name = "' + user + '"')
-                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date), curData,
-                                    self.getLocalTimeHuman())
+                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone',
+                                                         'where name = "' + user + '"')
+                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date),
+                                         curData,
+                                         self.getLocalTimeHuman())
                 elif compare == 'le':
                     if temp <= value:
                         if not self.checkExist(connection_vps, name):
-                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone, email,
-                                           self.getLocalTime(),
-                                           user, 'warning', 'N')
+                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone,
+                                                email,
+                                                self.getLocalTime(),
+                                                user, 'warning', 'N')
                     elif self.checkExist(connection_vps, name):
                         self.updateStatus(connection_vps, 'warning_list', name)
                         self.updateRecoverDate(connection_vps, 'warning_list', name, self.getLocalTime())
                         if phone == 'Y':
-                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone', 'where name = "' + user + '"')
-                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date), curData,
-                                    self.getLocalTimeHuman())
+                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone',
+                                                         'where name = "' + user + '"')
+                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date),
+                                         curData,
+                                         self.getLocalTimeHuman())
                 elif compare == 'e':
                     if temp == value:
                         if not self.checkExist(connection_vps, name):
-                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone, email,
-                                           self.getLocalTime(),
-                                           user, 'warning', 'N')
+                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone,
+                                                email,
+                                                self.getLocalTime(),
+                                                user, 'warning', 'N')
                     elif self.checkExist(connection_vps, name):
                         self.updateStatus(connection_vps, 'warning_list', name)
                         self.updateRecoverDate(connection_vps, 'warning_list', name, self.getLocalTime())
                         if phone == 'Y':
-                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone', 'where name = "' + user + '"')
-                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date), curData,
-                                    self.getLocalTimeHuman())
+                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone',
+                                                         'where name = "' + user + '"')
+                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date),
+                                         curData,
+                                         self.getLocalTimeHuman())
 
                 elif compare == 'ne':
                     if temp != value:
                         if not self.checkExist(connection_vps, name):
-                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone, email,
-                                           self.getLocalTime(),
-                                           user, 'warning', 'N')
+                            self.insertWarnList(connection_vps, 'warning_list', name, env_args, compare, value, phone,
+                                                email,
+                                                self.getLocalTime(),
+                                                user, 'warning', 'N')
                     elif self.checkExist(connection_vps, name):
                         self.updateStatus(connection_vps, 'warning_list', name)
                         self.updateRecoverDate(connection_vps, 'warning_list', name, self.getLocalTime())
                         if phone == 'Y':
-                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone', 'where name = "' + user + '"')
-                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date), curData,
-                                    self.getLocalTimeHuman())
+                            phoneNumber = self.travValue(connection_vps, 'user_profile', 'phone',
+                                                         'where name = "' + user + '"')
+                            self.sendMsg(phoneNumber[0][0], compareName[env_args][compare], value, name, str(date),
+                                         curData,
+                                         self.getLocalTimeHuman())
 
         except KeyboardInterrupt:
             exit(0)
-
 
     def updateStatus(self, connection, table, name):
         # try:
@@ -577,7 +599,6 @@ class ems:
             # if cout>=1:
             #     print(getLocalTimeHuman(),'LastWarnTime for',name,'has update!')
             connection.commit()
-
 
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
@@ -596,7 +617,6 @@ class ems:
             #     print(getLocalTimeHuman(),'LastWarnTime for',name,'has update!')
             connection.commit()
 
-
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
     # except Exception as exc:
@@ -612,7 +632,6 @@ class ems:
             # if cout>=1:
             #     print(getLocalTimeHuman(),'LastWarnTime for',name,'has update!')
             connection.commit()
-
 
     # except AttributeError as exc:
     #     print(getLocalTimeHuman(),'Connection hasnt opened!',exc)
@@ -664,7 +683,8 @@ class ems:
         }
         # global _warnFreq, _acqFreq, _humi22, _temp22, _illuminance, _haveco, _pressure, _temperature, _altitude, _sealevel_pressure
         try:
-            connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'], self._config['database']['password'], 'setting')
+            connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'],
+                                           self._config['database']['password'], 'setting')
             # connLocal = self.getConnection('localhost', 'root', '', 'setting')
             smtpserver = self._config['email']['smtpserver']
             username = self._config['email']['username']
@@ -675,11 +695,12 @@ class ems:
                 connCloud.commit()
                 # connLocal.commit()
                 warning_list = self.travValue(connCloud, 'warning_list',
-                                         'name,env_args,compare,value,phone,email,date,user,last_warn_date,status,islook')
+                                              'name,env_args,compare,value,phone,email,date,user,last_warn_date,status,islook')
                 # print (warning_list)
                 if self._isAcqRun:
                     if warning_list:
-                        for (name, env_args, compare, value, phone, email, date, user, last_warn_date, status, islook) in warning_list:
+                        for (name, env_args, compare, value, phone, email, date, user, last_warn_date, status,
+                             islook) in warning_list:
                             if last_warn_date is None or (time.mktime(time.localtime(time.time())) - time.mktime(
                                     time.strptime((str(last_warn_date)), "%Y-%m-%d %H:%M:%S"))) > (
                                     self._warnFreq * 60 - 10) and status == 'warning':
@@ -697,16 +718,19 @@ class ems:
                                         curData = '有 一氧化碳'
                                     else:
                                         curData = '无 一氧化碳'
-                                phone_email = self.travValue(connCloud, 'user_profile', 'phone,email', 'where name = "' + user + '"')
+                                phone_email = self.travValue(connCloud, 'user_profile', 'phone,email',
+                                                             'where name = "' + user + '"')
                                 if phone_email:
                                     if phone_email[0][0] is not None and phone == 'Y':
-                                        self.sendMsg(phone_email[0][0], compareName[env_args][compare], value, name, str(date), curData)
+                                        self.sendMsg(phone_email[0][0], compareName[env_args][compare], value, name,
+                                                     str(date), curData)
                                     if phone_email[0][1] is not None and email == 'Y':
-                                        self.sendWarnEmail(smtpserver, username, password, sender, str(phone_email[0][1]), subject, user,
-                                                      compareName[env_args][compare],
-                                                      value, name, curData, date)
+                                        self.sendWarnEmail(smtpserver, username, password, sender,
+                                                           str(phone_email[0][1]), subject, user,
+                                                           compareName[env_args][compare],
+                                                           value, name, curData, date)
                                 else:
-                                    pass #联系人不存在，告警策略已修改
+                                    pass  # 联系人不存在，告警策略已修改
                                 self.updateLastWarnDate(connCloud, 'warning_list', name, date, self.getLocalTime())
                 else:
                     self.logger.warning('Acquire theard is not ready.')
@@ -726,7 +750,7 @@ class ems:
         try:
             GPIO.setmode(GPIO.BCM)
             GPIO.setwarnings(False)
-            GPIO.cleanup(toggle_1)          # 若线程重启，则置空两个物理按键的GPIO设置，防止异常的产生
+            GPIO.cleanup(toggle_1)  # 若线程重启，则置空两个物理按键的GPIO设置，防止异常的产生
             GPIO.cleanup(toggle_2)
             GPIO.setup(redLED, GPIO.OUT)
             GPIO.setup(greenLED, GPIO.OUT)
@@ -737,15 +761,16 @@ class ems:
             GPIO.output(redLED, GPIO.LOW)
             GPIO.output(greenLED, GPIO.LOW)
             self._seq = ['H', 'T', 'I', 'CO', 'P', 'AF']
-            self._unit= {'H': '%', 'T': 'C', 'I': ' l', 'CO': '', 'P': 'hPa', 'AF': 's'}
+            self._unit = {'H': '%', 'T': 'C', 'I': ' l', 'CO': '', 'P': 'hPa', 'AF': 's'}
             isrunning = False
             isExecuted = False
             isOFF = False
             # try:
 
-            while not self._isINT:                # 初始化：绿LED闪烁，等待所有线程正常启动
+            while not self._isINT:  # 初始化：绿LED闪烁，等待所有线程正常启动
                 self._oledLock.acquire()
-                self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
+                self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance),
+                              'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
                 self._oled.getData(self._seq, self._data, self._unit)
                 self._oled.showData(self._oledStatus)
                 self._oledLock.release()
@@ -757,9 +782,9 @@ class ems:
                     GPIO.output(greenLED, GPIO.LOW)
                     break
 
-            while not self._isINT:                #所有线程启动1次后
-                if self._thrAcqAlive is False or self._thrSaveAlive is False or self._thrSendAlive is False:      # 如有线程未正常运行，则红LED闪烁
-                    isExecuted = False              # 是否已经使green LED常亮
+            while not self._isINT:  # 所有线程启动1次后
+                if self._thrAcqAlive is False or self._thrSaveAlive is False or self._thrSendAlive is False:  # 如有线程未正常运行，则红LED闪烁
+                    isExecuted = False  # 是否已经使green LED常亮
                     isrunning = False
                     # 置空所有LED
                     GPIO.output(greenLED, GPIO.LOW)
@@ -769,7 +794,7 @@ class ems:
                     time.sleep(ftime)
                     GPIO.output(redLED, GPIO.LOW)
                     time.sleep(ftime)
-                else:                                   # 所有线程正常运行，绿LED常亮
+                else:  # 所有线程正常运行，绿LED常亮
                     if not isExecuted:
                         GPIO.output(redLED, GPIO.LOW)
                         GPIO.output(greenLED, GPIO.HIGH)
@@ -778,7 +803,7 @@ class ems:
                         self.logger.info('All threads is running')
                         isrunning = True
 
-                if self._oledOFF:                 # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
+                if self._oledOFF:  # 如果触发了按键1中断，则停止刷新OLED并熄灭屏幕
                     if not isOFF:
                         self._oled.clear()
                         isOFF = True
@@ -791,13 +816,14 @@ class ems:
                 else:
                     isOFF = False
                 self._oledLock.acquire()
-                self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance), 'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF':int(self._acqFreq * 60)}
+                self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance),
+                              'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
                 self._oled.getData(self._seq, self._data, self._unit)
                 self._oled.showData(self._oledStatus)
                 self._oledLock.release()
                 time.sleep(1)
 
-            self._oled.clear()    # 键盘中断，熄灭OLED屏幕
+            self._oled.clear()  # 键盘中断，熄灭OLED屏幕
         except Exception as exc:
             self._oledLock.release()
             self.logger.exception(exc)
@@ -821,7 +847,7 @@ class ems:
         if self._oledStatus == self._allStatus:
             self._oledStatus = 0
             self.logger.info('Change display concent to Env_Args')
-            self._oled.showData(self._oledStatus)         # 按键中断产生后，立即刷新OLED显示的内容
+            self._oled.showData(self._oledStatus)  # 按键中断产生后，立即刷新OLED显示的内容
         else:
             self.logger.info('Change display concent to Sys_Status')
             self._oled.showData(self._oledStatus)
@@ -829,7 +855,6 @@ class ems:
             self._oledOFF = False
             self.logger.info('OLED ON by status change')
         self._oledLock.release()
-
 
     def argParse(self):
         # global _oledOFF, _oledStatus
@@ -844,18 +869,18 @@ class ems:
                         -m --mode env/sys : Oled display mode:env or sys
                     '''
         try:
-            opts, args = getopt.getopt(sys.argv[1:], 'shm:', ['slient','help','mode='])
+            opts, args = getopt.getopt(sys.argv[1:], 'shm:', ['slient', 'help', 'mode='])
         except getopt.GetoptError:
             print(helpmsg)
             sys.exit(-1)
         for opt, arg in opts:
-            if opt in ('-s', '--slient'):           # 静默模式
+            if opt in ('-s', '--slient'):  # 静默模式
                 self._oledOFF = True
                 self.logger.info('Slient Mode,OLED OFF')
-            if opt in ('-h', '--help'):             # 输出帮助信息
+            if opt in ('-h', '--help'):  # 输出帮助信息
                 print(helpmsg)
                 sys.exit(2)
-            if opt in ('-m', '--mode'):             # 设置OLED显示模式
+            if opt in ('-m', '--mode'):  # 设置OLED显示模式
                 hasModeArg = True
                 if arg == 'env':
                     self._oledStatus = 0
@@ -865,7 +890,6 @@ class ems:
                     self.logger.info('Display mode is sys')
         if not hasModeArg:
             self.logger.info('Display mode is env(default)')
-
 
     def __init__(self):
         try:
@@ -885,16 +909,16 @@ class ems:
             thrLED.setDaemon(True)
             thrLED.start()
 
-            thrAcq = threading.Thread(target = self.acquire, name= 'Thread_Acq')
+            thrAcq = threading.Thread(target=self.acquire, name='Thread_Acq')
             thrAcq.setDaemon(True)
             thrAcq.start()
 
-            thrSave = threading.Thread(target = self.insert, name = 'Thread_Save')
+            thrSave = threading.Thread(target=self.insert, name='Thread_Save')
             thrSave.setDaemon(True)
             thrSave.start()
 
-            thrSend = threading.Thread(target = self.sendWarning, name = 'Thread_Send')
-            thrSend .setDaemon(True)
+            thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
+            thrSend.setDaemon(True)
             thrSend.start()
             time.sleep(3)
             self._isFirstStarted = True
@@ -913,7 +937,8 @@ class ems:
 
                 if not self._thrLEDAlive:
                     self.logger.error('Restarting LED thread!')
-                    thrLED = threading.Thread(target=self.ledFlicker, name='Thread_LED',args=(redLED, greenLED, toggle_1, toggle_2, .5))
+                    thrLED = threading.Thread(target=self.ledFlicker, name='Thread_LED',
+                                              args=(redLED, greenLED, toggle_1, toggle_2, .5))
                     thrLED.setDaemon(True)
                     thrLED.start()
                 if not self._thrAcqAlive:
@@ -941,7 +966,7 @@ class ems:
             # greenLED = 17
             # redLED = 27
             self._isINT = True
-            time.sleep(2)                   # kill LED thread for turn off the OLED and two LED
+            time.sleep(2)  # kill LED thread for turn off the OLED and two LED
             self.PC.power_off()
             GPIO.cleanup()
             # GPIO.setmode(GPIO.BCM)
