@@ -164,22 +164,22 @@ class ems:
                     time.strptime(str(date[0][0]), "%Y-%m-%d %H:%M:%S")))
                 if self._isAcqRun:
                     if distance >= self._saveFreq * 60 or date == None:
-                        if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None:
-                            self._acqLock.acquire()
-                            self.logger.info('Cloud Server:')
-                            self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
-                            self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
-                            self.insertDataMQ7(connCloud, 'mq7', self._haveco)
-                            self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude,
-                                                self._sealevel_pressure)
-                            self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22),
-                                               ('%.2f' % self._humi22), ('%.1f' % self._illuminance),
-                                               ('%.2f' % self._pressure), self._haveco)
-                            # date[0][0] = getLocalTime()
-                            self._acqLock.release()
-                        else:  # 错误输出错误信息，和校验数据
-                            self.logger.error("Insert Data Wrong! Waiting For ReAcquirt")
-                            time.sleep(10)
+                        # if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None:
+                        self._acqLock.acquire()
+                        self.logger.info('Cloud Server:')
+                        self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
+                        self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
+                        self.insertDataMQ7(connCloud, 'mq7', self._haveco)
+                        self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude,
+                                            self._sealevel_pressure)
+                        self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22),
+                                           ('%.2f' % self._humi22), ('%.1f' % self._illuminance),
+                                           ('%.2f' % self._pressure), self._haveco)
+                        # date[0][0] = getLocalTime()
+                        self._acqLock.release()
+                    # else:  # 错误输出错误信息，和校验数据
+                    #     self.logger.error("Insert Data Wrong! Waiting For ReAcquire")
+                    #     time.sleep(10)
 
                     elif self._saveFreq * 60 - distance > 600:
                         time.sleep(540)
@@ -226,6 +226,7 @@ class ems:
 
             isExecuted = False
             count = 0
+            retryCount = 0
             while (True):
                 # connection.commit()
                 connection_vps.commit()
@@ -270,13 +271,38 @@ class ems:
                         self.logger.warning("pressure is wrong!")
                     if self._temp22 is None:
                         self.logger.warning("temp is wrong!")
-                    self._acqLock.release()
-                    time.sleep(10)
-                    continue
+                    retryCount += 1
+                    if retryCount > 3:
+                        self.logger.error("Some Sensors is not work properly!")
+                        retryCount = 0
+                    else:
+                        self._acqLock.release()
+                        time.sleep(10)
+                        continue
+                if self._temp22 is None:
+                    temp = 0
+                else:
+                    temp = self._temp22
+                if self._humi22 is None:
+                    humi = 0
+                else:
+                    humi = self._humi22
+                if self._pressure is None:
+                    pressure = 0
+                else:
+                    pressure = self._pressure
+                if self._haveco is None:
+                    haveco = 'E'
+                else:
+                    haveco = self._haveco
+                if self._illuminance is None:
+                    illuminance = 0
+                else:
+                    illuminance = self._illuminance
                 self.logger.info(
                     'Temp:{0:0.2f} *C  Humidity:{1:0.2f} %  Illuminance:{2:0.1f} lux  Pressure:{3:0.2f} Pa  CO:{4}  '
                     'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
-                        .format(self._temp22, self._humi22, self._illuminance, self._pressure, self._haveco,
+                        .format(temp, humi, illuminance, pressure, haveco,
                                 self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
                 self.checkWarning('', connection_vps)
                 # print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
@@ -769,8 +795,28 @@ class ems:
 
             while not self._isINT:  # 初始化：绿LED闪烁，等待所有线程正常启动
                 self._oledLock.acquire()
-                self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance),
-                              'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
+                if self._temp22 is None:
+                    temp = 0
+                else:
+                    temp = self._temp22
+                if self._humi22 is None:
+                    humi = 0
+                else:
+                    humi = self._humi22
+                if self._pressure is None:
+                    pressure = 0
+                else:
+                    pressure = self._pressure
+                if self._haveco is None:
+                    haveco = 'E'
+                else:
+                    haveco = self._haveco
+                if self._illuminance is None:
+                    illuminance = 0
+                else:
+                    illuminance = self._illuminance
+                self._data = {'H': round(humi, 1), 'T': round(temp, 1), 'I': int(illuminance),
+                              'CO': haveco, 'P': round(pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
                 self._oled.getData(self._seq, self._data, self._unit)
                 self._oled.showData(self._oledStatus)
                 self._oledLock.release()
@@ -807,17 +853,56 @@ class ems:
                     if not isOFF:
                         self._oled.clear()
                         isOFF = True
-                    self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance),
-                                  'CO': self._haveco, 'P': round(self._pressure / 100.0, 2),
-                                  'AF': int(self._acqFreq * 60)}
+                    if self._temp22 is None:
+                        temp = 0
+                    else:
+                        temp = self._temp22
+                    if self._humi22 is None:
+                        humi = 0
+                    else:
+                        humi = self._humi22
+                    if self._pressure is None:
+                        pressure = 0
+                    else:
+                        pressure = self._pressure
+                    if self._haveco is None:
+                        haveco = 'E'
+                    else:
+                        haveco = self._haveco
+                    if self._illuminance is None:
+                        illuminance = 0
+                    else:
+                        illuminance = self._illuminance
+                    self._data = {'H': round(humi, 1), 'T': round(temp, 1), 'I': int(illuminance),
+                                  'CO': haveco, 'P': round(pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
                     self._oled.getData(self._seq, self._data, self._unit)
                     time.sleep(5)
                     continue
                 else:
                     isOFF = False
                 self._oledLock.acquire()
-                self._data = {'H': round(self._humi22, 1), 'T': round(self._temp22, 1), 'I': int(self._illuminance),
-                              'CO': self._haveco, 'P': round(self._pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
+                if self._temp22 is None:
+                    temp = 0
+                else:
+                    temp = self._temp22
+                if self._humi22 is None:
+                    humi = 0
+                else:
+                    humi = self._humi22
+                if self._pressure is None:
+                    pressure = 0
+                else:
+                    pressure = self._pressure
+                if self._haveco is None:
+                    haveco = 'E'
+                else:
+                    haveco = self._haveco
+                if self._illuminance is None:
+                    illuminance = 0
+                else:
+                    illuminance = self._illuminance
+                self._data = {'H': round(humi, 1), 'T': round(temp, 1), 'I': int(illuminance),
+                              'CO': haveco, 'P': round(pressure / 100.0, 2), 'AF': int(self._acqFreq * 60)}
                 self._oled.getData(self._seq, self._data, self._unit)
                 self._oled.showData(self._oledStatus)
                 self._oledLock.release()
