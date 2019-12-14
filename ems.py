@@ -66,7 +66,7 @@ class ems:
         localtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
         return localtime
 
-    def getConnection(self, host, user, password, db, port=3306, charset='utf8'):
+    def getConnection(self, host, user, password, db, port=int(_config['database']['port']), charset='utf8'):
         connection = pymysql.connect(host=host, user=user, password=password, db=db, port=port, charset=charset)
         return connection
 
