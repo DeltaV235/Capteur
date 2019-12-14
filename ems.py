@@ -985,6 +985,7 @@ class ems:
             redLED = 27
             toggle_1 = 26
             toggle_2 = 13
+            restartCount = 0
             # terminal(kill)信号处理
             signal.signal(signal.SIGTERM, self.termHandler)
 
@@ -1026,6 +1027,7 @@ class ems:
                                               args=(redLED, greenLED, toggle_1, toggle_2, .5))
                     thrLED.setDaemon(True)
                     thrLED.start()
+                    restartCount = restartCount + 1
                 if not self._thrAcqAlive:
                     self._acqFreq = 1 / 6
                     self._isAcqRun = False
@@ -1033,16 +1035,21 @@ class ems:
                     thrAcq = threading.Thread(target=self.acquire, name='Thread_Acq')
                     thrAcq.setDaemon(True)
                     thrAcq.start()
+                    restartCount = restartCount + 1
                 if not self._thrSaveAlive:
                     self.logger.error('Restarting Save thread!')
                     thrSave = threading.Thread(target=self.insert, name='Thread_Save')
                     thrSave.setDaemon(True)
                     thrSave.start()
+                    restartCount = restartCount + 1
                 if not self._thrSendAlive:
                     self.logger.error('Restarting Send thread!')
                     thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
                     thrSend.setDaemon(True)
                     thrSend.start()
+                    restartCount = restartCount + 1
+                if restartCount >= 200:
+                    exit(200)
                 time.sleep(10)
 
         # 异常处理：键盘中断
