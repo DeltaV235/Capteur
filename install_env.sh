@@ -109,5 +109,10 @@ done
 i2cdetect -y 1 &>/dev/null && printf "\n\033[1;32m%s\033[0m\n" "I2C Checked" || printf "\n\033[1;31m%s\033[0m\n%s\n" "I2C Error" \
 "Please enable I2C interface by use command 'sudo raspi-config'"
 
+# 未测试(树莓派开机自启动EMS)
+sudo cp systemd/* /lib/systemd/system/ && sudo systemctl enable before_ems.service && sudo systemctl enable ems.service \
+&& printf "\n\033[1;32m%s\033[0m\n" "EMS will start when system boot" || printf "\n\033[1;31m%s\033[0m\n\n" "Self-starting set failed"
+
+
 # 测试test.py是否能正常运行
 python3 test.py && printf "\n\033[1;32m%s\033[0m\n\n" "TEST PASS" || printf "\n\033[1;31m%s\033[0m\n\n" "TEST FAIL"

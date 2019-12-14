@@ -1,0 +1,14 @@
+[Unit]
+Description=EMS Acquire Program
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+Restart=always
+RestartSec=25s
+ExecStart=python3 /home/pi/ems/main.py --slient &>/dev/null
+WorkingDirectory=/home/pi/ems
+
+[Install]
+WantedBy=multi-user.target

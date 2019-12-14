@@ -1,0 +1,13 @@
+[Unit]
+Description=Before EMS Acquire Program Start
+After=network.target
+After=ems.service
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/ems/restartAfterBoot.sh
+WorkingDirectory=/home/pi/ems
+
+[Install]
+WantedBy=multi-user.target
