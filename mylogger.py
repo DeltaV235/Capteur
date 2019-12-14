@@ -69,9 +69,9 @@ class mylogger():
         logging.config.dictConfig(self._dictConfig)
         self._logger = logging.getLogger(self._loggerName)
         # handler=StreamHandler,formatter=common. coloredlogs.coloredHandler will replace logging.StreamHandler
-        coloredlogs.install(logger=self._logger,
-                            level='INFO', fmt=self._dictConfig['formatters']['common']['format'],
-                            datefmt=self._dictConfig['formatters']['common']['datefmt'])
+        # coloredlogs.install(logger=self._logger,
+        #                     level='INFO', fmt=self._dictConfig['formatters']['common']['format'],
+        #                     datefmt=self._dictConfig['formatters']['common']['datefmt'])
 
     def tarLogs(self):  # 未完成，用于打包过往的log
         if not os.system('*.log.*'):
