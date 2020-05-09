@@ -137,7 +137,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="pages/widgets.html" class="nav-link">
+                        <a href="data.html" class="nav-link">
                             <i class="nav-icon fas fa-th"></i>
                             <p>
                                 数据表格
@@ -145,7 +145,7 @@
                         </a>
                     </li>
                     <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
+                        <a href="javascript:void(0);" class="nav-link">
                             <i class="nav-icon fas fa-exclamation-triangle"></i>
                             <p>
                                 告警策略
@@ -176,7 +176,7 @@
                         </ul>
                     </li>
                     <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link">
+                        <a href="setting.html" class="nav-link">
                             <i class="nav-icon fas fa-tools"></i>
                             <p>
                                 设置
@@ -291,39 +291,99 @@
                                 </div>
                             </div>
                             <!-- /.card-header -->
-                            <div class="card-body">
-                                <div class="alert alert-danger alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                                        &times;
-                                    </button>
-                                    <h5><i class="icon fas fa-ban"></i> 警告！</h5>
-                                    Danger 警告预览。
-                                    此警告是可忽略的。
-                                    一种奇妙的宁静占据了我的整个灵魂，就像春天的早晨，我尽情享受。
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table m-0">
+                                        <thead>
+                                        <tr>
+                                            <th>告警ID</th>
+                                            <th>告警名称</th>
+                                            <th>状态</th>
+                                            <th>开始时间</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td>使命召唤 4</td>
+                                            <td><span class="badge badge-success">已发货</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                                    90,80,90,-70,61,-83,63
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>三星智能电视</td>
+                                            <td><span class="badge badge-warning">待处理</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#f39c12" data-height="20">
+                                                    90,80,-90,70,61,-83,68
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                                            <td>iPhone 6 Plus</td>
+                                            <td><span class="badge badge-danger">已交付</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#f56954" data-height="20">
+                                                    90,-80,90,70,-61,83,63
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                                            <td>三星智能电视</td>
+                                            <td><span class="badge badge-info">处理中</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#00c0ef" data-height="20">
+                                                    90,80,-90,70,-61,83,63
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR1848</a></td>
+                                            <td>三星智能电视</td>
+                                            <td><span class="badge badge-warning">待处理</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#f39c12" data-height="20">
+                                                    90,80,-90,70,61,-83,68
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR7429</a></td>
+                                            <td>iPhone 6 Plus</td>
+                                            <td><span class="badge badge-danger">已交付</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#f56954" data-height="20">
+                                                    90,-80,90,70,-61,83,63
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                                            <td>使命召唤 4</td>
+                                            <td><span class="badge badge-success">已发货</span></td>
+                                            <td>
+                                                <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                                    90,80,90,-70,61,-83,63
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="alert alert-info alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                                        &times;
-                                    </button>
-                                    <h5><i class="icon fas fa-info"></i> 警告！</h5>
-                                    Info 警告预览。此警告是可忽略的。
-                                </div>
-                                <div class="alert alert-warning alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                                        &times;
-                                    </button>
-                                    <h5><i class="icon fas fa-exclamation-triangle"></i> 警告！</h5>
-                                    Warning 警告预览。此警告是可忽略的。
-                                </div>
-                                <div class="alert alert-success alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                                        &times;
-                                    </button>
-                                    <h5><i class="icon fas fa-check"></i> 警告！</h5>
-                                    Success 警告预览。此警告是可忽略的。.
-                                </div>
+                                <!-- /.table-responsive -->
                             </div>
                             <!-- /.card-body -->
+                            <div class="card-footer clearfix">
+                                <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">查看所有告警</a>
+                            </div>
+                            <!-- /.card-footer -->
                         </div>
                         <!-- /.card -->
 
@@ -459,48 +519,48 @@
 
 <script>
     var areaChartData = {
-        labels  : ['一月', '二月', '三月', '四月', '五月', '六月', '七月'],
+        labels: ['一月', '二月', '三月', '四月', '五月', '六月', '七月'],
         datasets: [
             {
-                label               : '数字产品',
-                backgroundColor     : 'rgba(60,141,188,0.9)',
-                borderColor         : 'rgba(60,141,188,0.8)',
-                pointRadius          : false,
-                pointColor          : '#3b8bba',
-                pointStrokeColor    : 'rgba(60,141,188,1)',
-                pointHighlightFill  : '#fff',
+                label: '数字产品',
+                backgroundColor: 'rgba(60,141,188,0.9)',
+                borderColor: 'rgba(60,141,188,0.8)',
+                pointRadius: false,
+                pointColor: '#3b8bba',
+                pointStrokeColor: 'rgba(60,141,188,1)',
+                pointHighlightFill: '#fff',
                 pointHighlightStroke: 'rgba(60,141,188,1)',
-                data                : [28, 48, 40, 19, 86, 27, 90]
+                data: [28, 48, 40, 19, 86, 27, 90]
             },
             {
-                label               : '电子产品',
-                backgroundColor     : 'rgba(210, 214, 222, 1)',
-                borderColor         : 'rgba(210, 214, 222, 1)',
-                pointRadius         : false,
-                pointColor          : 'rgba(210, 214, 222, 1)',
-                pointStrokeColor    : '#c1c7d1',
-                pointHighlightFill  : '#fff',
+                label: '电子产品',
+                backgroundColor: 'rgba(210, 214, 222, 1)',
+                borderColor: 'rgba(210, 214, 222, 1)',
+                pointRadius: false,
+                pointColor: 'rgba(210, 214, 222, 1)',
+                pointStrokeColor: '#c1c7d1',
+                pointHighlightFill: '#fff',
                 pointHighlightStroke: 'rgba(220,220,220,1)',
-                data                : [65, 59, 80, 81, 56, 55, 40]
+                data: [65, 59, 80, 81, 56, 55, 40]
             },
         ]
     }
 
     var areaChartOptions = {
-        maintainAspectRatio : false,
-        responsive : true,
+        maintainAspectRatio: false,
+        responsive: true,
         legend: {
             display: false
         },
         scales: {
             xAxes: [{
-                gridLines : {
-                    display : false,
+                gridLines: {
+                    display: false,
                 }
             }],
             yAxes: [{
-                gridLines : {
-                    display : false,
+                gridLines: {
+                    display: false,
                 }
             }]
         }
