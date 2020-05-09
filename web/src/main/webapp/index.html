@@ -25,7 +25,9 @@
     <!-- summernote -->
     <link rel="stylesheet" href="plugins/summernote/summernote-bs4.css">
     <!-- 离线 Google 字体: Source Sans Pro -->
-    <link href="/AdminLTE/AdminLTE-3.x/dist/css/google.css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link href="dist/css/google.css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -38,7 +40,7 @@
                 <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="index3.html" class="nav-link">主页</a>
+                <a href="index.html" class="nav-link">主页</a>
             </li>
         </ul>
 
@@ -184,9 +186,6 @@
                     </li>
 
 
-
-
-
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->
@@ -218,591 +217,181 @@
         <section class="content">
             <div class="container-fluid">
                 <!-- Small boxes (Stat box) -->
-                <div class="row">
-                    <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <h3>150</h3>
 
-                                <p>新订单</p>
-                            </div>
-                            <div class="icon">
-                                <i class="ion ion-bag"></i>
-                            </div>
-                            <a href="#" class="small-box-footer">更多信息 <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                    <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box bg-success">
-                            <div class="inner">
-                                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                                <p>跳出率</p>
-                            </div>
-                            <div class="icon">
-                                <i class="ion ion-stats-bars"></i>
-                            </div>
-                            <a href="#" class="small-box-footer">更多信息 <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                    <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box bg-warning">
-                            <div class="inner">
-                                <h3>44</h3>
-
-                                <p>用户注册</p>
-                            </div>
-                            <div class="icon">
-                                <i class="ion ion-person-add"></i>
-                            </div>
-                            <a href="#" class="small-box-footer">更多信息 <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                    <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box bg-danger">
-                            <div class="inner">
-                                <h3>65</h3>
-
-                                <p>唯一访客</p>
-                            </div>
-                            <div class="icon">
-                                <i class="ion ion-pie-graph"></i>
-                            </div>
-                            <a href="#" class="small-box-footer">更多信息 <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
-                    <!-- ./col -->
-                </div>
                 <!-- /.row -->
                 <!-- Main row -->
                 <div class="row">
                     <!-- Left col -->
-                    <section class="col-lg-7 connectedSortable">
-                        <!-- 自定义标签（带标签的图表）-->
+                    <section class="col-lg-6 connectedSortable">
+
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="fas fa-chart-pie mr-1"></i>
-                                    销售
-                                </h3>
+                                <h3 class="card-title">室内环境</h3>
+
                                 <div class="card-tools">
-                                    <ul class="nav nav-pills ml-auto">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" href="#revenue-chart" data-toggle="tab">趋势</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#sales-chart" data-toggle="tab">饼型图</a>
-                                        </li>
-                                    </ul>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                            class="fas fa-minus"></i>
+                                    </button>
                                 </div>
-                            </div><!-- /.card-header -->
+                            </div>
                             <div class="card-body">
-                                <div class="tab-content p-0">
-                                    <!-- Morris 图表 - 销售 -->
-                                    <div class="chart tab-pane active" id="revenue-chart"
-                                         style="position: relative; height: 300px;">
-                                        <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
+                                <div class="row" style="margin-top: 20px; margin-bottom: 20px">
+                                    <div class="col-6 col-md-3 text-center">
+                                        <input type="text" class="knob" value="25.6" data-skin="tron"
+                                               data-thickness="0.2" data-readonly="true"
+                                               data-angleArc="250" data-angleOffset="-125" data-width="140"
+                                               data-height="120" data-min="-10" data-max="50"
+                                               data-fgColor="#28a745">
+
+                                        <div class="knob-label">温度(℃)</div>
                                     </div>
-                                    <div class="chart tab-pane" id="sales-chart"
-                                         style="position: relative; height: 300px;">
-                                        <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
+                                    <div class="col-6 col-md-3 text-center">
+                                        <input type="text" class="knob" value="50" data-skin="tron"
+                                               data-thickness="0.2" data-readonly="true"
+                                               data-angleArc="250" data-angleOffset="-125" data-width="140"
+                                               data-height="120" data-min="0" data-max="100"
+                                               data-fgColor="#28a745">
+
+                                        <div class="knob-label">湿度(%)</div>
+                                    </div>
+                                    <div class="col-6 col-md-3 text-center">
+                                        <input type="text" class="knob" value="50" data-skin="tron" data-thickness="0.2"
+                                               data-angleArc="250" data-angleOffset="-125" data-width="140"
+                                               data-height="120" data-readonly="true"
+                                               data-fgColor="#28a745">
+
+                                        <div class="knob-label">气压(hPa)</div>
+                                    </div>
+                                    <div class="col-6 col-md-3 text-center">
+                                        <input type="text" class="knob" value="90" data-skin="tron" data-thickness="0.2"
+                                               data-angleArc="250" data-angleOffset="-125" data-width="140"
+                                               data-height="120" data-readonly="true"
+                                               data-fgColor="#28a745">
+
+                                        <div class="knob-label">亮度(lux)</div>
                                     </div>
                                 </div>
-                            </div><!-- /.card-body -->
+                            </div>
                         </div>
+                        <!-- /.card-body -->
                         <!-- /.card -->
 
-                        <!-- 聊天 -->
-                        <div class="card direct-chat direct-chat-primary">
+
+                        <div class="card card-default">
                             <div class="card-header">
-                                <h3 class="card-title">聊天</h3>
+                                <h3 class="card-title">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    最近告警列表
+                                </h3>
 
                                 <div class="card-tools">
-                                    <span data-toggle="tooltip" title="3 条新消息" class="badge badge-primary">3</span>
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" data-toggle="tooltip" title="联系人"
-                                            data-widget="chat-pane-toggle">
-                                        <i class="fas fa-comments"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i
-                                            class="fas fa-times"></i>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                            class="fas fa-minus"></i>
                                     </button>
                                 </div>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-                                <!-- 对话在这里加载 -->
-                                <div class="direct-chat-messages">
-                                    <!-- 信息。默认为左对齐 -->
-                                    <div class="direct-chat-msg">
-                                        <div class="direct-chat-infos clearfix">
-                                            <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                            <span class="direct-chat-timestamp float-right">1月23日 下午2:00</span>
-                                        </div>
-                                        <!-- /.direct-chat-infos -->
-                                        <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="用户头像">
-                                        <!-- /.direct-chat-img -->
-                                        <div class="direct-chat-text">
-                                            这个模板真的是免费的吗？太不可思议了！
-                                        </div>
-                                        <!-- /.direct-chat-text -->
-                                    </div>
-                                    <!-- /.direct-chat-msg -->
-
-                                    <!-- 消息右对齐 -->
-                                    <div class="direct-chat-msg right">
-                                        <div class="direct-chat-infos clearfix">
-                                            <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                            <span class="direct-chat-timestamp float-left">1月23日 下午2:05</span>
-                                        </div>
-                                        <!-- /.direct-chat-infos -->
-                                        <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="用户头像">
-                                        <!-- /.direct-chat-img -->
-                                        <div class="direct-chat-text">
-                                            是的，确实如此！
-                                        </div>
-                                        <!-- /.direct-chat-text -->
-                                    </div>
-                                    <!-- /.direct-chat-msg -->
-
-                                    <!-- 信息。默认为左对齐 -->
-                                    <div class="direct-chat-msg">
-                                        <div class="direct-chat-infos clearfix">
-                                            <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                            <span class="direct-chat-timestamp float-right">1月23日 下午5:37</span>
-                                        </div>
-                                        <!-- /.direct-chat-infos -->
-                                        <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="用户头像">
-                                        <!-- /.direct-chat-img -->
-                                        <div class="direct-chat-text">
-                                            使用 AdminLTE 开发强大的应用！想加入吗？
-                                        </div>
-                                        <!-- /.direct-chat-text -->
-                                    </div>
-                                    <!-- /.direct-chat-msg -->
-
-                                    <!-- 消息右对齐 -->
-                                    <div class="direct-chat-msg right">
-                                        <div class="direct-chat-infos clearfix">
-                                            <span class="direct-chat-name float-right">Sarah Bullock</span>
-                                            <span class="direct-chat-timestamp float-left">1月23日 下午6:10</span>
-                                        </div>
-                                        <!-- /.direct-chat-infos -->
-                                        <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="用户头像">
-                                        <!-- /.direct-chat-img -->
-                                        <div class="direct-chat-text">
-                                            是的，我想。
-                                        </div>
-                                        <!-- /.direct-chat-text -->
-                                    </div>
-                                    <!-- /.direct-chat-msg -->
-
+                                <div class="alert alert-danger alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h5><i class="icon fas fa-ban"></i> 警告！</h5>
+                                    Danger 警告预览。
+                                    此警告是可忽略的。
+                                    一种奇妙的宁静占据了我的整个灵魂，就像春天的早晨，我尽情享受。
                                 </div>
-                                <!--/.direct-chat-messages-->
-
-                                <!-- 联系人在这里加载 -->
-                                <div class="direct-chat-contacts">
-                                    <ul class="contacts-list">
-                                        <li>
-                                            <a href="#">
-                                                <img class="contacts-list-img" src="dist/img/user1-128x128.jpg">
-
-                                                <div class="contacts-list-info">
-                          <span class="contacts-list-name">
-                            Count Dracula
-                            <small class="contacts-list-date float-right">2/28/2015</small>
-                          </span>
-                                                    <span class="contacts-list-msg">你最近怎么样？我是……</span>
-                                                </div>
-                                                <!-- /.contacts-list-info -->
-                                            </a>
-                                        </li>
-                                        <!-- 结束联系人项目 -->
-                                        <li>
-                                            <a href="#">
-                                                <img class="contacts-list-img" src="dist/img/user7-128x128.jpg">
-
-                                                <div class="contacts-list-info">
-                          <span class="contacts-list-name">
-                            Sarah Doe
-                            <small class="contacts-list-date float-right">2/23/2015</small>
-                          </span>
-                                                    <span class="contacts-list-msg">我会等……</span>
-                                                </div>
-                                                <!-- /.contacts-list-info -->
-                                            </a>
-                                        </li>
-                                        <!-- 结束联系人项目 -->
-                                        <li>
-                                            <a href="#">
-                                                <img class="contacts-list-img" src="dist/img/user3-128x128.jpg">
-
-                                                <div class="contacts-list-info">
-                          <span class="contacts-list-name">
-                            Nadia Jolie
-                            <small class="contacts-list-date float-right">2/20/2015</small>
-                          </span>
-                                                    <span class="contacts-list-msg">我会打电话给你……</span>
-                                                </div>
-                                                <!-- /.contacts-list-info -->
-                                            </a>
-                                        </li>
-                                        <!-- 结束联系人项目 -->
-                                        <li>
-                                            <a href="#">
-                                                <img class="contacts-list-img" src="dist/img/user5-128x128.jpg">
-
-                                                <div class="contacts-list-info">
-                          <span class="contacts-list-name">
-                            Nora S. Vans
-                            <small class="contacts-list-date float-right">2/10/2015</small>
-                          </span>
-                                                    <span class="contacts-list-msg">你的新……</span>
-                                                </div>
-                                                <!-- /.contacts-list-info -->
-                                            </a>
-                                        </li>
-                                        <!-- 结束联系人项目 -->
-                                        <li>
-                                            <a href="#">
-                                                <img class="contacts-list-img" src="dist/img/user6-128x128.jpg">
-
-                                                <div class="contacts-list-info">
-                          <span class="contacts-list-name">
-                            John K.
-                            <small class="contacts-list-date float-right">1/27/2015</small>
-                          </span>
-                                                    <span class="contacts-list-msg">我能看看……</span>
-                                                </div>
-                                                <!-- /.contacts-list-info -->
-                                            </a>
-                                        </li>
-                                        <!-- 结束联系人项目 -->
-                                        <li>
-                                            <a href="#">
-                                                <img class="contacts-list-img" src="dist/img/user8-128x128.jpg">
-
-                                                <div class="contacts-list-info">
-                          <span class="contacts-list-name">
-                            Kenneth M.
-                            <small class="contacts-list-date float-right">1/4/2015</small>
-                          </span>
-                                                    <span class="contacts-list-msg">没关系我发现……</span>
-                                                </div>
-                                                <!-- /.contacts-list-info -->
-                                            </a>
-                                        </li>
-                                        <!-- 结束联系人项目 -->
-                                    </ul>
-                                    <!-- /.contacts-list -->
+                                <div class="alert alert-info alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h5><i class="icon fas fa-info"></i> 警告！</h5>
+                                    Info 警告预览。此警告是可忽略的。
                                 </div>
-                                <!-- /.direct-chat-pane -->
+                                <div class="alert alert-warning alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h5><i class="icon fas fa-exclamation-triangle"></i> 警告！</h5>
+                                    Warning 警告预览。此警告是可忽略的。
+                                </div>
+                                <div class="alert alert-success alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h5><i class="icon fas fa-check"></i> 警告！</h5>
+                                    Success 警告预览。此警告是可忽略的。.
+                                </div>
                             </div>
                             <!-- /.card-body -->
-                            <div class="card-footer">
-                                <form action="#" method="post">
-                                    <div class="input-group">
-                                        <input type="text" name="message" placeholder="输入消息 ..." class="form-control">
-                                        <span class="input-group-append">
-                      <button type="button" class="btn btn-primary">发送</button>
-                    </span>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- /.card-footer-->
-                        </div>
-                        <!--/.direct-chat -->
-
-                        <!-- TO DO List -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">
-                                    <i class="ion ion-clipboard mr-1"></i>
-                                    待办事项列表
-                                </h3>
-
-                                <div class="card-tools">
-                                    <ul class="pagination pagination-sm">
-                                        <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">1</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                                        <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- /.card-header -->
-                            <div class="card-body">
-                                <ul class="todo-list" data-widget="todo-list">
-                                    <li>
-                                        <!-- drag handle -->
-                                        <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                                        <!-- checkbox -->
-                                        <div class="icheck-primary d-inline ml-2">
-                                            <input type="checkbox" value="" name="todo1" id="todoCheck1">
-                                            <label for="todoCheck1"></label>
-                                        </div>
-                                        <!-- todo text -->
-                                        <span class="text">设计一个不错的主题</span>
-                                        <!-- 强调标签 -->
-                                        <small class="badge badge-danger"><i class="far fa-clock"></i> 2 分钟前</small>
-                                        <!-- 常用工具如编辑或删除-->
-                                        <div class="tools">
-                                            <i class="fas fa-edit"></i>
-                                            <i class="fas fa-trash-o"></i>
-                                        </div>
-                                    </li>
-                                    <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                                        <div class="icheck-primary d-inline ml-2">
-                                            <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
-                                            <label for="todoCheck2"></label>
-                                        </div>
-                                        <span class="text">实现响应式主题</span>
-                                        <small class="badge badge-info"><i class="far fa-clock"></i> 4 小时前</small>
-                                        <div class="tools">
-                                            <i class="fas fa-edit"></i>
-                                            <i class="fas fa-trash-o"></i>
-                                        </div>
-                                    </li>
-                                    <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                                        <div class="icheck-primary d-inline ml-2">
-                                            <input type="checkbox" value="" name="todo3" id="todoCheck3">
-                                            <label for="todoCheck3"></label>
-                                        </div>
-                                        <span class="text">让主题像星星一样闪耀</span>
-                                        <small class="badge badge-warning"><i class="far fa-clock"></i> 1 天前</small>
-                                        <div class="tools">
-                                            <i class="fas fa-edit"></i>
-                                            <i class="fas fa-trash-o"></i>
-                                        </div>
-                                    </li>
-                                    <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                                        <div class="icheck-primary d-inline ml-2">
-                                            <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                                            <label for="todoCheck4"></label>
-                                        </div>
-                                        <span class="text">让主题像星星一样闪耀</span>
-                                        <small class="badge badge-success"><i class="far fa-clock"></i> 3 天前</small>
-                                        <div class="tools">
-                                            <i class="fas fa-edit"></i>
-                                            <i class="fas fa-trash-o"></i>
-                                        </div>
-                                    </li>
-                                    <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                                        <div class="icheck-primary d-inline ml-2">
-                                            <input type="checkbox" value="" name="todo5" id="todoCheck5">
-                                            <label for="todoCheck5"></label>
-                                        </div>
-                                        <span class="text">检查你的消息和通知</span>
-                                        <small class="badge badge-primary"><i class="far fa-clock"></i> 1 周前</small>
-                                        <div class="tools">
-                                            <i class="fas fa-edit"></i>
-                                            <i class="fas fa-trash-o"></i>
-                                        </div>
-                                    </li>
-                                    <li>
-                    <span class="handle">
-                      <i class="fas fa-ellipsis-v"></i>
-                      <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                                        <div class="icheck-primary d-inline ml-2">
-                                            <input type="checkbox" value="" name="todo6" id="todoCheck6">
-                                            <label for="todoCheck6"></label>
-                                        </div>
-                                        <span class="text">让主题像星星一样闪耀</span>
-                                        <small class="badge badge-secondary"><i class="far fa-clock"></i> 1 月前</small>
-                                        <div class="tools">
-                                            <i class="fas fa-edit"></i>
-                                            <i class="fas fa-trash-o"></i>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- /.card-body -->
-                            <div class="card-footer clearfix">
-                                <button type="button" class="btn btn-info float-right"><i class="fas fa-plus"></i> 添加
-                                </button>
-                            </div>
                         </div>
                         <!-- /.card -->
+
                     </section>
                     <!-- /.Left col -->
                     <!-- right col （仅添加 ID 便可实现排序）-->
-                    <section class="col-lg-5 connectedSortable">
+                    <section class="col-lg-6 connectedSortable">
 
-                        <!-- Map card -->
-                        <div class="card bg-gradient-primary">
-                            <div class="card-header border-0">
-                                <h3 class="card-title">
-                                    <i class="fas fa-map-marker-alt mr-1"></i>
-                                    访客
-                                </h3>
-                                <!-- card tools -->
-                                <div class="card-tools">
-                                    <button type="button"
-                                            class="btn btn-primary btn-sm daterange"
-                                            data-toggle="tooltip"
-                                            title="日期范围">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </button>
-                                    <button type="button"
-                                            class="btn btn-primary btn-sm"
-                                            data-card-widget="collapse"
-                                            data-toggle="tooltip"
-                                            title="折叠">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
-                                <!-- /.card-tools -->
-                            </div>
-                            <div class="card-body">
-                                <div id="world-map" style="height: 250px; width: 100%;"></div>
-                            </div>
-                            <!-- /.card-body-->
-                            <div class="card-footer bg-transparent">
-                                <div class="row">
-                                    <div class="col-4 text-center">
-                                        <div id="sparkline-1"></div>
-                                        <div class="text-white">访客</div>
-                                    </div>
-                                    <!-- ./col -->
-                                    <div class="col-4 text-center">
-                                        <div id="sparkline-2"></div>
-                                        <div class="text-white">在线</div>
-                                    </div>
-                                    <!-- ./col -->
-                                    <div class="col-4 text-center">
-                                        <div id="sparkline-3"></div>
-                                        <div class="text-white">销量</div>
-                                    </div>
-                                    <!-- ./col -->
-                                </div>
-                                <!-- /.row -->
-                            </div>
-                        </div>
-                        <!-- /.card -->
 
-                        <!-- solid sales graph -->
-                        <div class="card bg-gradient-info">
-                            <div class="card-header border-0">
-                                <h3 class="card-title">
-                                    <i class="fas fa-th mr-1"></i>
-                                    销售图表
-                                </h3>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">最近24小时温度/湿度变化</h3>
 
                                 <div class="card-tools">
-                                    <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
-                                        <i class="fas fa-times"></i>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                            class="fas fa-minus"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <canvas class="chart" id="line-chart"
-                                        style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                <div class="chart">
+                                    <canvas id="lineChart_temp_humi" style="height:250px; min-height:250px"></canvas>
+                                </div>
                             </div>
                             <!-- /.card-body -->
-                            <div class="card-footer bg-transparent">
-                                <div class="row">
-                                    <div class="col-4 text-center">
-                                        <input type="text" class="knob" data-readonly="true" value="20" data-width="60"
-                                               data-height="60"
-                                               data-fgColor="#39CCCC">
-
-                                        <div class="text-white">邮购</div>
-                                    </div>
-                                    <!-- ./col -->
-                                    <div class="col-4 text-center">
-                                        <input type="text" class="knob" data-readonly="true" value="50" data-width="60"
-                                               data-height="60"
-                                               data-fgColor="#39CCCC">
-
-                                        <div class="text-white">在线</div>
-                                    </div>
-                                    <!-- ./col -->
-                                    <div class="col-4 text-center">
-                                        <input type="text" class="knob" data-readonly="true" value="30" data-width="60"
-                                               data-height="60"
-                                               data-fgColor="#39CCCC">
-
-                                        <div class="text-white">店内</div>
-                                    </div>
-                                    <!-- ./col -->
-                                </div>
-                                <!-- /.row -->
-                            </div>
-                            <!-- /.card-footer -->
                         </div>
                         <!-- /.card -->
 
-                        <!-- Calendar -->
-                        <div class="card bg-gradient-success">
-                            <div class="card-header border-0">
 
-                                <h3 class="card-title">
-                                    <i class="far fa-calendar-alt"></i>
-                                    日历
-                                </h3>
-                                <!-- tools card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">最近24小时气压变化</h3>
+
                                 <div class="card-tools">
-                                    <!-- 带有下拉菜单的按钮 -->
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-success btn-sm dropdown-toggle"
-                                                data-toggle="dropdown">
-                                            <i class="fas fa-bars"></i></button>
-                                        <div class="dropdown-menu float-right" role="menu">
-                                            <a href="#" class="dropdown-item">添加事件</a>
-                                            <a href="#" class="dropdown-item">清除事件</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="#" class="dropdown-item">查看日历</a>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-                                        <i class="fas fa-times"></i>
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                            class="fas fa-minus"></i>
                                     </button>
                                 </div>
-                                <!-- /. tools -->
                             </div>
-                            <!-- /.card-header -->
-                            <div class="card-body pt-0">
-                                <!--The calendar -->
-                                <div id="calendar" style="width: 100%"></div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <canvas id="lineChart_press" style="height:250px; min-height:250px"></canvas>
+                                </div>
                             </div>
                             <!-- /.card-body -->
                         </div>
+                        <!-- /.card -->
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">最近24小时光照变化</h3>
+
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                            class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart">
+                                    <canvas id="lineChart_light" style="height:250px; min-height:250px"></canvas>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+
+
                         <!-- /.card -->
                     </section>
                     <!-- right col -->
@@ -813,13 +402,13 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-    <footer class="main-footer">
-        <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>
-        保留所有权利。
-        <div class="float-right d-none d-sm-inline-block">
-            <b>版本</b> 3.0.0
-        </div>
-    </footer>
+    <!--    <footer class="main-footer">-->
+    <!--        <strong>Copyright &copy; 2014-2019 <a href="http://adminlte.io">AdminLTE.io</a>.</strong>-->
+    <!--        保留所有权利。-->
+    <!--        <div class="float-right d-none d-sm-inline-block">-->
+    <!--            <b>版本</b> 3.0.0-->
+    <!--        </div>-->
+    <!--    </footer>-->
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
@@ -864,7 +453,358 @@
 <script src="dist/js/pages/dashboard.js"></script>
 <!-- 用于演示 AdminLTE  -->
 <script src="dist/js/demo.js"></script>
-<script language="javascript" type="text/javascript" src="https://js.users.51.la/19196963.js"></script>
+
+
+<!-- 页面脚本 -->
+
+<script>
+    var areaChartData = {
+        labels  : ['一月', '二月', '三月', '四月', '五月', '六月', '七月'],
+        datasets: [
+            {
+                label               : '数字产品',
+                backgroundColor     : 'rgba(60,141,188,0.9)',
+                borderColor         : 'rgba(60,141,188,0.8)',
+                pointRadius          : false,
+                pointColor          : '#3b8bba',
+                pointStrokeColor    : 'rgba(60,141,188,1)',
+                pointHighlightFill  : '#fff',
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data                : [28, 48, 40, 19, 86, 27, 90]
+            },
+            {
+                label               : '电子产品',
+                backgroundColor     : 'rgba(210, 214, 222, 1)',
+                borderColor         : 'rgba(210, 214, 222, 1)',
+                pointRadius         : false,
+                pointColor          : 'rgba(210, 214, 222, 1)',
+                pointStrokeColor    : '#c1c7d1',
+                pointHighlightFill  : '#fff',
+                pointHighlightStroke: 'rgba(220,220,220,1)',
+                data                : [65, 59, 80, 81, 56, 55, 40]
+            },
+        ]
+    }
+
+    var areaChartOptions = {
+        maintainAspectRatio : false,
+        responsive : true,
+        legend: {
+            display: false
+        },
+        scales: {
+            xAxes: [{
+                gridLines : {
+                    display : false,
+                }
+            }],
+            yAxes: [{
+                gridLines : {
+                    display : false,
+                }
+            }]
+        }
+    }
+
+    //-------------
+    //- 折线图 -
+    //--------------
+    var lineChartCanvas = $('#lineChart_temp_humi').get(0).getContext('2d')
+    var lineChartOptions = jQuery.extend(true, {}, areaChartOptions)
+    var lineChartData = jQuery.extend(true, {}, areaChartData)
+    lineChartData.datasets[0].fill = false;
+    lineChartData.datasets[1].fill = false;
+    lineChartOptions.datasetFill = false
+
+    var lineChart = new Chart(lineChartCanvas, {
+        type: 'line',
+        data: lineChartData,
+        options: lineChartOptions
+    })
+</script>
+
+<script>
+    $(function () {
+        /* jQueryKnob */
+
+        $('.knob').knob({
+            /*change : function (value) {
+             //console.log("change : " + value);
+             },
+             release : function (value) {
+             console.log("release : " + value);
+             },
+             cancel : function () {
+             console.log("cancel : " + this.value);
+             },*/
+            draw: function () {
+
+                // "tron" 示例
+                if (this.$.data('skin') == 'tron') {
+
+                    var a = this.angle(this.cv)  // 角度
+                        ,
+                        sa = this.startAngle          // 之前开始角
+                        ,
+                        sat = this.startAngle         // 开始角度
+                        ,
+                        ea                            // 之前结束角
+                        ,
+                        eat = sat + a                 // 结束角度
+                        ,
+                        r = true
+
+                    this.g.lineWidth = this.lineWidth
+
+                    this.o.cursor
+                    && (sat = eat - 0.3)
+                    && (eat = eat + 0.3)
+
+                    if (this.o.displayPrevious) {
+                        ea = this.startAngle + this.angle(this.value)
+                        this.o.cursor
+                        && (sa = ea - 0.3)
+                        && (ea = ea + 0.3)
+                        this.g.beginPath()
+                        this.g.strokeStyle = this.previousColor
+                        this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false)
+                        this.g.stroke()
+                    }
+
+                    this.g.beginPath()
+                    this.g.strokeStyle = r ? this.o.fgColor : this.fgColor
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false)
+                    this.g.stroke()
+
+                    this.g.lineWidth = 2
+                    this.g.beginPath()
+                    this.g.strokeStyle = this.o.fgColor
+                    this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false)
+                    this.g.stroke()
+
+                    return false
+                }
+            }
+        })
+        /* 结束 JQUERY KNOB */
+
+        // 初始化 SPARKLINE 图表
+        $('.sparkline').each(function () {
+            var $this = $(this)
+            $this.sparkline('html', $this.data())
+        })
+
+        /* SPARKLINE 文档示例 http://omnipotent.net/jquery.sparkline/#s-about */
+        drawDocSparklines()
+        drawMouseSpeedDemo()
+
+    })
+
+    function drawDocSparklines() {
+
+        // 条形 + 折线复合图
+        $('#compositebar').sparkline('html', {
+            type: 'bar',
+            barColor: '#aaf'
+        })
+        $('#compositebar').sparkline([4, 1, 5, 7, 9, 9, 8, 7, 6, 6, 4, 7, 8, 4, 3, 2, 2, 5, 6, 7],
+            {
+                composite: true,
+                fillColor: false,
+                lineColor: 'red'
+            })
+
+
+        // 折线图从标记中获取值
+        $('.sparkline-1').sparkline()
+
+        // 文档的折线图较大
+        $('.largeline').sparkline('html',
+            {
+                type: 'line',
+                height: '2.5em',
+                width: '4em'
+            })
+
+        // 自定义折线图
+        $('#linecustom').sparkline('html',
+            {
+                height: '1.5em',
+                width: '8em',
+                lineColor: '#f00',
+                fillColor: '#ffa',
+                minSpotColor: false,
+                maxSpotColor: false,
+                spotColor: '#77f',
+                spotRadius: 3
+            })
+
+        // 条形图使用内置值
+        $('.sparkbar').sparkline('html', {type: 'bar'})
+
+        $('.barformat').sparkline([1, 3, 5, 3, 8], {
+            type: 'bar',
+            tooltipFormat: '{{value:levels}} - {{value}}',
+            tooltipValueLookups: {
+                levels: $.range_map({
+                    ':2': 'Low',
+                    '3:6': 'Medium',
+                    '7:': 'High'
+                })
+            }
+        })
+
+        // 三态图使用内置值
+        $('.sparktristate').sparkline('html', {type: 'tristate'})
+        $('.sparktristatecols').sparkline('html',
+            {
+                type: 'tristate',
+                colorMap: {
+                    '-2': '#fa7',
+                    '2': '#44f'
+                }
+            })
+
+        // 复合折线图，第二个使用 javascript 提供的值
+        $('#compositeline').sparkline('html', {
+            fillColor: false,
+            changeRangeMin: 0,
+            chartRangeMax: 10
+        })
+        $('#compositeline').sparkline([4, 1, 5, 7, 9, 9, 8, 7, 6, 6, 4, 7, 8, 4, 3, 2, 2, 5, 6, 7],
+            {
+                composite: true,
+                fillColor: false,
+                lineColor: 'red',
+                changeRangeMin: 0,
+                chartRangeMax: 10
+            })
+
+        // 带有正常范围标记的折线图
+        $('#normalline').sparkline('html',
+            {
+                fillColor: false,
+                normalRangeMin: -1,
+                normalRangeMax: 8
+            })
+        $('#normalExample').sparkline('html',
+            {
+                fillColor: false,
+                normalRangeMin: 80,
+                normalRangeMax: 95,
+                normalRangeColor: '#4f4'
+            })
+
+        // 离散图表
+        $('.discrete1').sparkline('html',
+            {
+                type: 'discrete',
+                lineColor: 'blue',
+                xwidth: 18
+            })
+        $('#discrete2').sparkline('html',
+            {
+                type: 'discrete',
+                lineColor: 'blue',
+                thresholdColor: 'red',
+                thresholdValue: 4
+            })
+
+        // 项目符号图
+        $('.sparkbullet').sparkline('html', {type: 'bullet'})
+
+        // 饼形图
+        $('.sparkpie').sparkline('html', {
+            type: 'pie',
+            height: '1.0em'
+        })
+
+        // 盒形图
+        $('.sparkboxplot').sparkline('html', {type: 'box'})
+        $('.sparkboxplotraw').sparkline([1, 3, 5, 8, 10, 15, 18],
+            {
+                type: 'box',
+                raw: true,
+                showOutliers: true,
+                target: 6
+            })
+
+        // 具有特定字段顺序的盒形图
+        $('.boxfieldorder').sparkline('html', {
+            type: 'box',
+            tooltipFormatFieldlist: ['med', 'lq', 'uq'],
+            tooltipFormatFieldlistKey: 'field'
+        })
+
+        // 迷你图点击事件演示
+        $('.clickdemo').sparkline()
+        $('.clickdemo').bind('sparklineClick', function (ev) {
+            var sparkline = ev.sparklines[0],
+                region = sparkline.getCurrentRegionFields()
+            value = region.y
+            alert('Clicked on x=' + region.x + ' y=' + region.y)
+        })
+
+        // 迷你图鼠标悬停事件演示
+        $('.mouseoverdemo').sparkline()
+        $('.mouseoverdemo').bind('sparklineRegionChange', function (ev) {
+            var sparkline = ev.sparklines[0],
+                region = sparkline.getCurrentRegionFields()
+            value = region.y
+            $('.mouseoverregion').text('x=' + region.x + ' y=' + region.y)
+        }).bind('mouseleave', function () {
+            $('.mouseoverregion').text('')
+        })
+    }
+
+    /**
+     ** 绘制鼠标移动速度图
+     ** 这只是将处理程序附加到 mousemove 事件以查看
+     ** 鼠标（大致）移动了多远
+     ** 然后每秒两次更新
+     ** setTimeout()
+     **/
+    function drawMouseSpeedDemo() {
+        var mrefreshinterval = 500 // 每 500ms 更新显示
+        var lastmousex = -1
+        var lastmousey = -1
+        var lastmousetime
+        var mousetravel = 0
+        var mpoints = []
+        var mpoints_max = 30
+        $('html').mousemove(function (e) {
+            var mousex = e.pageX
+            var mousey = e.pageY
+            if (lastmousex > -1) {
+                mousetravel += Math.max(Math.abs(mousex - lastmousex), Math.abs(mousey - lastmousey))
+            }
+            lastmousex = mousex
+            lastmousey = mousey
+        })
+        var mdraw = function () {
+            var md = new Date()
+            var timenow = md.getTime()
+            if (lastmousetime && lastmousetime != timenow) {
+                var pps = Math.round(mousetravel / (timenow - lastmousetime) * 1000)
+                mpoints.push(pps)
+                if (mpoints.length > mpoints_max) {
+                    mpoints.splice(0, 1)
+                }
+                mousetravel = 0
+                $('#mousespeed').sparkline(mpoints, {
+                    width: mpoints.length * 2,
+                    tooltipSuffix: ' 每秒像素'
+                })
+            }
+            lastmousetime = timenow
+            setTimeout(mdraw, mrefreshinterval)
+        }
+        // 我们可以改用 setInterval，但是我更喜欢这样
+        setTimeout(mdraw, mrefreshinterval);
+    }
+</script>
+
+
 <noscript><a href="https://www.51.la/?19196963" target="_blank"><img
         alt="&#x6211;&#x8981;&#x5566;&#x514D;&#x8D39;&#x7EDF;&#x8BA1;" src="https://img.users.51.la/19196963.asp"
         style="border:none"/></a></noscript>
