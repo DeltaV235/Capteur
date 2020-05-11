@@ -1,0 +1,13 @@
+.warn-list-table-card-no-margin {
+    margin: 0;
+}
+
+.warn-list-table-td {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.form-margin-top {
+    margin-top: 20px;
+}
+

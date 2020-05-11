@@ -1,3 +1,6 @@
+# Java Class File
+*.class
+
 # database configure
 
 #  configure file
@@ -18,7 +21,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+# dist/
 downloads/
 eggs/
 .eggs/
