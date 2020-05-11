@@ -43,7 +43,12 @@
     <!-- Ion 滑块 -->
     <link rel="stylesheet" href="plugins/ion-rangeslider/css/ion.rangeSlider.min.css">
     <!-- bootstrap slider -->
-    <link rel="stylesheet" href="plugins/bootstrap-slider/css/bootstrap-slider.min.css">
+    <!--    <link rel="stylesheet" href="plugins/bootstrap-slider/css/bootstrap-slider.min.css">-->
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -744,7 +749,8 @@
                                             <div class="input-group" id="firstCondition">
                                                 <div class="col-md-3">
                                                     <!-- 条件参数选择 -->
-                                                    <select class="form-control" id="warnCondition"
+                                                    <select class="form-control select2ConditionParam"
+                                                            id="warnCondition"
                                                             onchange="conditionParamOnChange(this)">
                                                         <option value="temp">温度</option>
                                                         <option value="humi">湿度</option>
@@ -764,6 +770,31 @@
                                     </div>
 
                                     <!-- /第二行 -->
+
+
+                                    <!-- 第三行 -->
+
+
+                                    <div class="col-md-5 form-margin-top">
+                                        <div class="form-group">
+
+                                            <label class="col-form-label" for="warnContact">告警联系人</label>
+                                            <select class="form-control select2bs4" multiple="multiple"
+                                                    style="width: 100%;" id="warnContact">
+                                                <option>邱晓波</option>
+                                                <option>柴国栋</option>
+                                                <option>SB孙一凯</option>
+                                                <option>裴立</option>
+                                                <option>贾栋</option>
+                                                <option>LJ集团</option>
+                                                <option>冯刚</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+
+                                    <!-- /第三行 -->
 
 
                                 </div>
@@ -807,7 +838,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"  onclick="reset()">重置</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="reset()">重置
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -847,6 +879,9 @@
 <script src="plugins/ion-rangeslider/js/ion.rangeSlider.min.js"></script>
 <!-- Bootstrap slider -->
 <script src="plugins/bootstrap-slider/bootstrap-slider.min.js"></script>
+
+<!-- Select2 -->
+<script src="plugins/select2/js/select2.full.min.js"></script>
 
 
 <!-- 页面脚本 -->
@@ -931,7 +966,7 @@
             '<div class="input-group" style="margin-top: 1px">' +
             '<div class="col-md-2">' +
             '<!-- 条件参数选择 -->' +
-            '<select class="form-control">' +
+            '<select class="form-control select2ConditionParam">' +
             '<option>and</option>' +
             '<option>or</option>' +
             '</select>' +
@@ -1047,9 +1082,30 @@
         conditionParamOnChange(document.getElementById("warnCondition"));
         // 禁用第一条件的删除按钮
         $("#firstCondition").find("button").remove();
+
+
+        // 清除联系人列表
+        $(".select2-results__option").attr("aria-selected", "false");
+        $(".select2bs4").val("")
+        $("span.select2-selection__clear").remove();
+        $(".select2-selection__rendered").find(".select2-selection__choice").remove();
     }
 
     $(function () {
+
+
+        //初始化 Select2 元素
+        $('.select2bs4').select2({
+            theme: 'bootstrap4',
+            closeOnSelect: false,
+            allowClear: false,
+        })
+        $(".select2ConditionParam").select2({
+            theme: 'bootstrap4',
+            closeOnSelect: true,
+            allowClear: false,
+            minimumResultsForSearch: -1
+        })
 
         $("#add-condition-btn").click(addCondition);
 
