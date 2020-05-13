@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+
     <#include "common-head.ftl">
+
+    <title>Capteur | 首页</title>
+
+    <#assign page="index">
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
-   <#include "common-navbar.ftl">
+    <#include "common-navbar.ftl">
 
-   <#include "common-sidebar.ftl">
+    <#include "common-sidebar.ftl">
+
 
     <!-- Content Wrapper. 包含页面内容 -->
     <div class="content-wrapper">
@@ -54,7 +62,7 @@
                             <div class="card-body">
                                 <div class="row" style="margin-top: 20px; margin-bottom: 20px">
                                     <div class="col-6 col-md-3 text-center">
-                                        <input type="text" class="knob" value="25.6" data-skin="tron"
+                                        <input type="text" class="knob" value="${curData.temp}" data-skin="tron"
                                                data-thickness="0.2" data-readonly="true"
                                                data-angleArc="250" data-angleOffset="-125" data-width="140"
                                                data-height="120" data-min="-10" data-max="50"
@@ -63,7 +71,7 @@
                                         <div class="knob-label">温度(℃)</div>
                                     </div>
                                     <div class="col-6 col-md-3 text-center">
-                                        <input type="text" class="knob" value="50" data-skin="tron"
+                                        <input type="text" class="knob" value="${curData.humi}" data-skin="tron"
                                                data-thickness="0.2" data-readonly="true"
                                                data-angleArc="250" data-angleOffset="-125" data-width="140"
                                                data-height="120" data-min="0" data-max="100"
@@ -72,15 +80,19 @@
                                         <div class="knob-label">湿度(%)</div>
                                     </div>
                                     <div class="col-6 col-md-3 text-center">
-                                        <input type="text" class="knob" value="50" data-skin="tron" data-thickness="0.2"
+                                        <input type="text" class="knob" value="${(curData.press/1000)?string["0.#"]}"
+                                               data-skin="tron"
+                                               data-thickness="0.2" data-min="95" data-max="110"
                                                data-angleArc="250" data-angleOffset="-125" data-width="140"
                                                data-height="120" data-readonly="true"
                                                data-fgColor="#28a745">
 
-                                        <div class="knob-label">气压(hPa)</div>
+                                        <div class="knob-label">气压(kPa)</div>
                                     </div>
                                     <div class="col-6 col-md-3 text-center">
-                                        <input type="text" class="knob" value="90" data-skin="tron" data-thickness="0.2"
+                                        <input type="text" class="knob" value="${(curData.light)?string["0.#"]}"
+                                               data-skin="tron"
+                                               data-thickness="0.2" data-min="0" data-max="200"
                                                data-angleArc="250" data-angleOffset="-125" data-width="140"
                                                data-height="120" data-readonly="true"
                                                data-fgColor="#28a745">
@@ -296,40 +308,40 @@
 <!-- ./wrapper -->
 
 <!-- jQuery -->
-<script src="../../plugins/jquery/jquery.min.js"></script>
+<script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- 解决使用 Bootstrap 提示工具与 jQuery UI 提示工具冲突 -->
 <script>
     $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
-<script src="../../plugins/chart.js/Chart.min.js"></script>
+<script src="plugins/chart.js/Chart.min.js"></script>
 <!-- Sparkline -->
-<script src="../../plugins/sparklines/sparkline.js"></script>
+<script src="plugins/sparklines/sparkline.js"></script>
 <!-- JQVMap -->
-<script src="../../plugins/jqvmap/jquery.vmap.min.js"></script>
-<script src="../../plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <!-- jQuery Knob Chart -->
-<script src="../../plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- daterangepicker -->
-<script src="../../plugins/moment/moment.min.js"></script>
-<script src="../../plugins/moment/locale/zh-cn.js"></script>
-<script src="../../plugins/daterangepicker/daterangepicker.js"></script>
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/moment/locale/zh-cn.js"></script>
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
-<script src="../../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <!-- Summernote -->
-<script src="../../plugins/summernote/summernote-bs4.min.js"></script>
+<script src="plugins/summernote/summernote-bs4.min.js"></script>
 <!-- overlayScrollbars -->
-<script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- AdminLTE App -->
-<script src="../../dist/js/adminlte.js"></script>
+<script src="dist/js/adminlte.js"></script>
 <!-- AdminLTE 仪表盘演示（仅用于演示） -->
-<script src="../../dist/js/pages/dashboard.js"></script>
+<script src="dist/js/pages/dashboard.js"></script>
 <!-- 用于演示 AdminLTE  -->
-<script src="../../dist/js/demo.js"></script>
+<script src="dist/js/demo.js"></script>
 
 
 <!-- 页面脚本 -->
@@ -362,6 +374,19 @@
             },
         ]
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     var areaChartOptions = {
         maintainAspectRatio: false,
@@ -681,10 +706,5 @@
     }
 </script>
 
-
-<noscript><a href="https://www.51.la/?19196963" target="_blank"><img
-                alt="&#x6211;&#x8981;&#x5566;&#x514D;&#x8D39;&#x7EDF;&#x8BA1;"
-                src="https://img.users.51.la/19196963.asp"
-                style="border:none"/></a></noscript>
 </body>
 </html>

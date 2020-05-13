@@ -81,7 +81,9 @@ create table if not exists contact_rule
 (
     rule_id    int not null comment '外键,告警规则id',
     contact_id int not null comment '外键,联系人id',
-    primary key (contact_id, rule_id)
+    primary key (contact_id, rule_id),
+    constraint fk_rule_id foreign key (rule_id) references rule_list (id),
+    constraint fk_contact_id foreign key (contact_id) references contact (id)
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

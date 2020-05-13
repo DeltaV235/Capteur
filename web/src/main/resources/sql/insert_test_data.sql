@@ -1,9 +1,9 @@
 truncate capteur.conditions;
-truncate capteur.contact;
 truncate capteur.contact_rule;
 truncate capteur.rule_list;
-truncate capteur.sensor_data;
+truncate capteur.contact;
 truncate capteur.warn_list;
+truncate capteur.sensor_data;
 
 use capteur;
 

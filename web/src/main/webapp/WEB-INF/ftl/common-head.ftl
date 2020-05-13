@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>AdminLTE 3 | 仪表盘</title>
+
 <!-- 告诉浏览器屏幕自适应 -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 

@@ -1,4 +1,4 @@
-drop procedure copy_data;
+drop procedure if exists copy_data;
 create procedure copy_data(IN num int)
 begin
     declare `date_var` datetime default null;

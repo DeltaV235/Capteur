@@ -6,7 +6,7 @@
             <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="index.ftl" class="nav-link">主页</a>
+            <a href="./" class="nav-link">主页</a>
         </li>
     </ul>
 

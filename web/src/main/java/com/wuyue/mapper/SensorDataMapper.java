@@ -2,8 +2,9 @@ package com.wuyue.mapper;
 
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.entity.SensorDataExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface SensorDataMapper {
     long countByExample(SensorDataExample example);
@@ -27,4 +28,22 @@ public interface SensorDataMapper {
     int updateByPrimaryKeySelective(SensorData record);
 
     int updateByPrimaryKey(SensorData record);
+
+    /**
+     * @return 最新数据的实体类
+     * @author DeltaV235
+     * @date 2020/5/14 2:15
+     * @description 获取最新的一条数据
+     */
+    SensorData selectsLatest();
+
+    /**
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     * @return 包含了SensorData实体类的List
+     * @author DeltaV235
+     * @date 2020/5/14 3:42
+     * @description 找出date字段的值在startTime和endTime之间的所有记录
+     */
+    List<SensorData> selectByTimeSlice(@Param("startTime") long startTime, @Param("endTime") long endTime);
 }
