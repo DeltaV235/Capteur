@@ -19,6 +19,34 @@ public class WarnList {
 
     private Integer ruleId;
 
+    public WarnList() {
+    }
+
+    public WarnList(Integer id, String status, Date startTime, Date lastTriggerTime, Date recoverTime, Date suppressStartTime, Date suppressTime, Integer ruleId) {
+        this.id = id;
+        this.status = status;
+        this.startTime = startTime;
+        this.lastTriggerTime = lastTriggerTime;
+        this.recoverTime = recoverTime;
+        this.suppressStartTime = suppressStartTime;
+        this.suppressTime = suppressTime;
+        this.ruleId = ruleId;
+    }
+
+    @Override
+    public String toString() {
+        return "WarnList{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                ", startTime=" + startTime +
+                ", lastTriggerTime=" + lastTriggerTime +
+                ", recoverTime=" + recoverTime +
+                ", suppressStartTime=" + suppressStartTime +
+                ", suppressTime=" + suppressTime +
+                ", ruleId=" + ruleId +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }

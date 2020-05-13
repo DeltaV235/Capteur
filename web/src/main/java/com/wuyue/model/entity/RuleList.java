@@ -15,6 +15,30 @@ public class RuleList {
 
     private String description;
 
+    public RuleList() {
+    }
+
+    public RuleList(Integer id, String name, String status, String level, Date createTime, String description) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+        this.level = level;
+        this.createTime = createTime;
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "RuleList{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                ", level='" + level + '\'' +
+                ", createTime=" + createTime +
+                ", description='" + description + '\'' +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }

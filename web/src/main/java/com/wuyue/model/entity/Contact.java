@@ -9,6 +9,26 @@ public class Contact {
 
     private String email;
 
+    public Contact() {
+    }
+
+    public Contact(Integer id, String name, String phone, String email) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }

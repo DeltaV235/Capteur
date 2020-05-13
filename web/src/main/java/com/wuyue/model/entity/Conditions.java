@@ -11,6 +11,28 @@ public class Conditions {
 
     private Integer ruleId;
 
+    public Conditions() {
+    }
+
+    public Conditions(Integer id, String param, String symbol, Double data, Integer ruleId) {
+        this.id = id;
+        this.param = param;
+        this.symbol = symbol;
+        this.data = data;
+        this.ruleId = ruleId;
+    }
+
+    @Override
+    public String toString() {
+        return "Conditions{" +
+                "id=" + id +
+                ", param='" + param + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", data=" + data +
+                ", ruleId=" + ruleId +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }

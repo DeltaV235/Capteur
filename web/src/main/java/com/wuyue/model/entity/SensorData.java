@@ -15,6 +15,30 @@ public class SensorData {
 
     private Double press;
 
+    public SensorData() {
+    }
+
+    public SensorData(Integer id, Date date, Double temp, Double humi, Double light, Double press) {
+        this.id = id;
+        this.date = date;
+        this.temp = temp;
+        this.humi = humi;
+        this.light = light;
+        this.press = press;
+    }
+
+    @Override
+    public String toString() {
+        return "SensorData{" +
+                "id=" + id +
+                ", date=" + date +
+                ", temp=" + temp +
+                ", humi=" + humi +
+                ", light=" + light +
+                ", press=" + press +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }

@@ -5,6 +5,22 @@ public class ContactRuleKey {
 
     private Integer ruleId;
 
+    public ContactRuleKey() {
+    }
+
+    public ContactRuleKey(Integer contactId, Integer ruleId) {
+        this.contactId = contactId;
+        this.ruleId = ruleId;
+    }
+
+    @Override
+    public String toString() {
+        return "ContactRuleKey{" +
+                "contactId=" + contactId +
+                ", ruleId=" + ruleId +
+                '}';
+    }
+
     public Integer getContactId() {
         return contactId;
     }
