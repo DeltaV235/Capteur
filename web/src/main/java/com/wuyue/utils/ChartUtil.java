@@ -1,5 +1,6 @@
 package com.wuyue.utils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,7 @@ import java.util.Objects;
  */
 public class ChartUtil {
     /**
-     * @param data 数据,不能为空,其中的元素也不能为null
+     * @param data 数据数组,不能为null,若数组为空,则返回NaN
      * @return 数据的平均值
      * @author DeltaV235
      * @date 2020/5/14 2:38
@@ -21,13 +22,16 @@ public class ChartUtil {
      */
     public static double calAverage(Double... data) {
         Objects.requireNonNull(data, "入参不能为null");
-        Double sum = 0d;
-        Integer count = 0;
+        double sum = 0d;
+        int count = 0;
         for (Double element : data) {
+            if (element == null)
+                continue;
             sum += element;
             count++;
         }
-        return sum / count;
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
+        return Double.parseDouble(decimalFormat.format(sum / count));
     }
 
     /**

@@ -4,6 +4,7 @@ import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.entity.SensorDataExample;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface SensorDataMapper {
@@ -45,5 +46,13 @@ public interface SensorDataMapper {
      * @date 2020/5/14 3:42
      * @description 找出date字段的值在startTime和endTime之间的所有记录
      */
-    List<SensorData> selectByTimeSlice(@Param("startTime") long startTime, @Param("endTime") long endTime);
+    List<SensorData> selectByTimeSlice(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    /**
+     * @return 最后一次更新数据的时间
+     * @author DeltaV235
+     * @date 2020/5/14 14:32
+     * @description 查询最后一次更新数据的时间
+     */
+    Date selectLatestUpdateTime();
 }

@@ -172,6 +172,12 @@
         </where>
         order by date asc;
     </select>
+    <select id="selectLatestUpdateTime" resultType="java.util.Date">
+        select date
+        from capteur.sensor_data
+        order by date desc
+        limit 1
+    </select>
     <update id="updateByExampleSelective" parameterType="map">
         update sensor_data
         <set>
