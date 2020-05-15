@@ -178,6 +178,10 @@
         order by date desc
         limit 1
     </select>
+    <select id="selectAllWithoutPrimaryKey" resultType="com.wuyue.model.entity.SensorData">
+        select date, temp, humi, light, press
+        from capteur.sensor_data
+    </select>
     <update id="updateByExampleSelective" parameterType="map">
         update sensor_data
         <set>

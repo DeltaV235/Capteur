@@ -1,10 +1,15 @@
 package com.wuyue.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class SensorData {
+    @JsonIgnore
     private Integer id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private Date date;
 
     private Double temp;
@@ -72,7 +77,7 @@ public class SensorData {
     }
 
     public Double getLight() {
-        return light;
+        return Math.round(light * 10) / 10.0;
     }
 
     public void setLight(Double light) {

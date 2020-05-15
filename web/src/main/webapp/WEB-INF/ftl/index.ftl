@@ -25,12 +25,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0 text-dark">仪表盘</h1>
+                        <h1 class="m-0 text-dark">主页</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">主页</a></li>
-                            <li class="breadcrumb-item active">仪表盘</li>
+                            <li class="breadcrumb-item active"></li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -343,80 +343,183 @@
 <!-- 用于演示 AdminLTE  -->
 <script src="dist/js/demo.js"></script>
 
+<!-- jquery-dateformat -->
+<script src="plugins/jquery-dateformat/jquery-dateformat.min.js"></script>
+
 
 <!-- 页面脚本 -->
 
 <script>
-    var areaChartData = {
-        labels: ['一月', '二月', '三月', '四月', '五月', '六月', '七月'],
-        datasets: [
-            {
-                label: '数字产品',
-                backgroundColor: 'rgba(60,141,188,0.9)',
-                borderColor: 'rgba(60,141,188,0.8)',
-                pointRadius: false,
-                pointColor: '#3b8bba',
-                pointStrokeColor: 'rgba(60,141,188,1)',
-                pointHighlightFill: '#fff',
-                pointHighlightStroke: 'rgba(60,141,188,1)',
-                data: [28, 48, 40, 19, 86, 27, 90]
-            },
-            {
-                label: '电子产品',
-                backgroundColor: 'rgba(210, 214, 222, 1)',
-                borderColor: 'rgba(210, 214, 222, 1)',
-                pointRadius: false,
-                pointColor: 'rgba(210, 214, 222, 1)',
-                pointStrokeColor: '#c1c7d1',
-                pointHighlightFill: '#fff',
-                pointHighlightStroke: 'rgba(220,220,220,1)',
-                data: [65, 59, 80, 81, 56, 55, 40]
-            },
-        ]
-    }
-
-
-    var areaChartOptions = {
-        maintainAspectRatio: false,
-        responsive: true,
-        legend: {
-            display: false
-        },
-        scales: {
-            xAxes: [{
-                gridLines: {
-                    display: false,
-                }
-            }],
-            yAxes: [{
-                gridLines: {
-                    display: false,
-                }
-            }]
-        }
-    }
-
-    //-------------
-    //- 折线图 -
-    //--------------
-    var lineChartCanvas = $('#lineChart_temp_humi').get(0).getContext('2d')
-    var lineChartOptions = jQuery.extend(true, {}, areaChartOptions)
-    var lineChartData = jQuery.extend(true, {}, areaChartData)
-    lineChartData.datasets[0].fill = false;
-    lineChartData.datasets[1].fill = false;
-    lineChartOptions.datasetFill = false
-
-    var lineChart = new Chart(lineChartCanvas, {
-        type: 'line',
-        data: lineChartData,
-        options: lineChartOptions
-    })
-
+    let labels = [];
+    let temp = [];
+    let humi = [];
+    let light = [];
+    let press = [];
 
     $(function () {
+
+        let successFunction = function (json) {
+            console.info(json)
+            let data = json.data;
+            // 返回成功
+            if (json.success) {
+                for (let count = 0; count < json.data.length; count++) {
+                    var tempDate = data[count].date
+                    // 格式化时间
+                    labels.push($.format.date(new Date(tempDate), 'H:mm'))
+                    temp.push(data[count].temp)
+                    humi.push(data[count].humi)
+                    light.push(data[count].light)
+                    press.push(data[count].press)
+                }
+            } else {
+                console.warn(json.msg)
+            }
+
+
+            // 温度图表
+            var lineChartTemp = document.getElementById('lineChart_temp_humi').getContext('2d');
+            var chartTemp = new Chart(lineChartTemp, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '温度',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.9)',
+                        pointRadius: 2,
+                        fill: false,
+                        spanGaps: false,
+                        data: temp
+                    }]
+                },
+
+                // Configuration options go here
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        labelString: "温度",
+                        xAxes: [{
+                            gridLines: {
+                                display: true,
+                            }
+                        }],
+                        yAxes: [{
+                            gridLines: {
+                                display: true,
+                            }
+                        }]
+                    }
+                }
+            });
+
+
+            // 气压图表
+            var lineChartPress = document.getElementById('lineChart_press').getContext('2d');
+            var chartPress = new Chart(lineChartPress, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '气压',
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        pointRadius: 2,
+                        fill: false,
+                        spanGaps: false,
+                        data: press
+                    }]
+                },
+
+                // Configuration options go here
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                display: true,
+                            },
+                            ticks: {}
+                        }],
+                        yAxes: [{
+                            gridLines: {
+                                display: true,
+                            }
+                        }]
+                    }
+                }
+            });
+
+            // 亮度图表
+            var lineChart_light = document.getElementById('lineChart_light').getContext('2d');
+            var chartLight = new Chart(lineChart_light, {
+                // The type of chart we want to create
+                type: 'line',
+
+                // The data for our dataset
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '光照',
+                        backgroundColor: 'rgb(137,248,7)',
+                        borderColor: 'rgb(137,248,7)',
+                        pointRadius: 2,
+                        fill: false,
+                        spanGaps: false,
+                        data: light
+                    }]
+                },
+
+                // Configuration options go here
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                display: true,
+                            },
+                            ticks: {}
+                        }],
+                        yAxes: [{
+                            gridLines: {
+                                display: true,
+                            }
+                        }]
+                    }
+                }
+            });
+
+
+        }
+
         $.ajax({
-            url: "getChartDataJson?duration=86400&interval=120‬"
+            url: "getChartDataJson?duration=1440&interval=120",
+            method: "GET",
+            success: successFunction,
+            error: function () {
+                console.error("error")
+            }
         })
+
+
     })
 
 

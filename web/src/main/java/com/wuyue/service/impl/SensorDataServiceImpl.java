@@ -1,9 +1,13 @@
 package com.wuyue.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.wuyue.constant.enums.EnvironmentParameter;
 import com.wuyue.mapper.SensorDataMapper;
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.vo.ChartData;
+import com.wuyue.model.vo.TableData;
 import com.wuyue.service.intf.SensorDataService;
 import com.wuyue.utils.ChartUtil;
 import org.slf4j.Logger;
@@ -62,7 +66,8 @@ public class SensorDataServiceImpl implements SensorDataService {
         long latestUpdateTime = sensorDataMapper.selectLatestUpdateTime().getTime();
         // 若最近更新时间比查询的开始时间还早,呢么该方法将不能返回有效的图表数据,所以在此将结束时间强制设定为最后更新时间
         if (latestUpdateTime < startTime) {
-            endTime = latestUpdateTime;
+            // 将最后一条记录也包含进去
+            endTime = latestUpdateTime + 1000;
             startTime = Math.round(endTime - durationTime * 60 * 1000);
         }
 
@@ -94,7 +99,7 @@ public class SensorDataServiceImpl implements SensorDataService {
             for (SensorData sensorData : sensorDataList) {
                 logger.trace("\n sensorData: " + sensorData);
                 long time = sensorData.getDate().getTime();
-                if (time >= timeSliceStartTime && time <= timeSliceEndTime) {
+                if (time >= timeSliceStartTime && time < timeSliceEndTime) {
                     dataMap.get(TEMPERATURE).add(sensorData.getTemp());
                     dataMap.get(HUMIDITY).add(sensorData.getHumi());
                     dataMap.get(LIGHT).add(sensorData.getLight());
@@ -127,6 +132,16 @@ public class SensorDataServiceImpl implements SensorDataService {
             returnValue.add(chartData);
         }
         return returnValue;
+    }
+
+    @Override
+    public TableData getTableData(Integer start, Integer length, Integer draw) {
+        PageHelper.offsetPage(start, length, true);
+        List<SensorData> sensorDataList = sensorDataMapper.selectAllWithoutPrimaryKey();
+        PageInfo<SensorData> pageInfo = ((Page<SensorData>) sensorDataList).toPageInfo();
+        int recordsTotal = (int) pageInfo.getTotal();
+        int recordsFiltered = (int) pageInfo.getTotal();
+        return new TableData(draw, recordsTotal, recordsFiltered, sensorDataList, null);
     }
 }
 

@@ -16,7 +16,7 @@ import java.util.List;
 public class TestUtil {
     @Test
     public void testCalAverage() {
-        double average = ChartUtil.calAverage( 300.0, 1000.0);
+        double average = ChartUtil.calAverage(300.0, 1000.0);
         System.out.println(average);
     }
 
@@ -38,5 +38,11 @@ public class TestUtil {
                     simpleDateFormat.format(endDate));
             count++;
         }
+    }
+
+    @Test
+    public void temp() {
+        double v = Double.parseDouble("120");
+        System.out.println(v);
     }
 }

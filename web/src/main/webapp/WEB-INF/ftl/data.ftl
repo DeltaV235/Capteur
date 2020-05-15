@@ -54,145 +54,20 @@
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-                                <table id="example2" class="table table-bordered table-hover">
+                                <table id="sensor_data" class="table table-bordered table-hover">
                                     <thead>
                                     <tr>
-                                        <th>渲染引擎</th>
-                                        <th>浏览器</th>
-                                        <th>平台</th>
-                                        <th>引擎版本</th>
-                                        <th>CSS 等级</th>
+                                        <th>时间</th>
+                                        <th>温度</th>
+                                        <th>湿度</th>
+                                        <th>亮度</th>
+                                        <th>气压</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td>Trident</td>
-                                        <td>Internet
-                                            Explorer 4.0
-                                        </td>
-                                        <td>Win 95+</td>
-                                        <td> 4</td>
-                                        <td>X</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Trident</td>
-                                        <td>Internet
-                                            Explorer 5.0
-                                        </td>
-                                        <td>Win 95+</td>
-                                        <td>5</td>
-                                        <td>C</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Trident</td>
-                                        <td>Internet
-                                            Explorer 5.5
-                                        </td>
-                                        <td>Win 95+</td>
-                                        <td>5.5</td>
-                                        <td>A</td>
-                                    </tr>
-                                    <tr>
-                                        <td>KHTML</td>
-                                        <td>Konqureror 3.1</td>
-                                        <td>KDE 3.1</td>
-                                        <td>3.1</td>
-                                        <td>C</td>
-                                    </tr>
-                                    <tr>
-                                        <td>KHTML</td>
-                                        <td>Konqureror 3.3</td>
-                                        <td>KDE 3.3</td>
-                                        <td>3.3</td>
-                                        <td>A</td>
-                                    </tr>
-                                    <tr>
-                                        <td>KHTML</td>
-                                        <td>Konqureror 3.5</td>
-                                        <td>KDE 3.5</td>
-                                        <td>3.5</td>
-                                        <td>A</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tasman</td>
-                                        <td>Internet Explorer 4.5</td>
-                                        <td>Mac OS 8-9</td>
-                                        <td>-</td>
-                                        <td>X</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tasman</td>
-                                        <td>Internet Explorer 5.1</td>
-                                        <td>Mac OS 7.6-9</td>
-                                        <td>1</td>
-                                        <td>C</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tasman</td>
-                                        <td>Internet Explorer 5.2</td>
-                                        <td>Mac OS 8-X</td>
-                                        <td>1</td>
-                                        <td>C</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>NetFront 3.1</td>
-                                        <td>Embedded devices</td>
-                                        <td>-</td>
-                                        <td>C</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>NetFront 3.4</td>
-                                        <td>Embedded devices</td>
-                                        <td>-</td>
-                                        <td>A</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>Dillo 0.8</td>
-                                        <td>Embedded devices</td>
-                                        <td>-</td>
-                                        <td>X</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>Links</td>
-                                        <td>Text only</td>
-                                        <td>-</td>
-                                        <td>X</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>Lynx</td>
-                                        <td>Text only</td>
-                                        <td>-</td>
-                                        <td>X</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>IE Mobile</td>
-                                        <td>Windows Mobile 6</td>
-                                        <td>-</td>
-                                        <td>C</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Misc</td>
-                                        <td>PSP browser</td>
-                                        <td>PSP</td>
-                                        <td>-</td>
-                                        <td>C</td>
-                                    </tr>
+
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td>Other browsers</td>
-                                        <td>All others</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>U</td>
-                                    </tr>
-                                    </tfoot>
+
                                 </table>
                             </div>
                             <!-- /.card-body -->
@@ -235,7 +110,7 @@
 <!-- 页面脚本 -->
 <script>
     $(function () {
-        $('#example2').DataTable({
+        $('#sensor_data').DataTable({
             "language": {
                 "sProcessing": "处理中...",
                 "sLengthMenu": "显示 _MENU_ 项结果",
@@ -260,12 +135,35 @@
                     "sSortDescending": ": 以降序排列此列"
                 }
             },
+            // 翻页功能
             "paging": true,
-            "lengthChange": false,
+            // 改变每页显示数据的数量
+            "lengthChange": true,
+            // 搜索功能
             "searching": false,
+            // 排序功能
             "ordering": true,
+            // 页脚信息
             "info": true,
+            // 自动宽度
             "autoWidth": false,
+            // 保存状态
+            "stateSave": true,
+            // 显示处理中的提示
+            "processing": true,
+            // 服务端处理数据
+            "serverSide": true,
+            "ajax": {
+                url: "getTableDataJson",
+                type: "post"
+            },
+            "columns": [
+                {"data": "date"},
+                {"data": "temp"},
+                {"data": "humi"},
+                {"data": "light"},
+                {"data": "press"}
+            ]
         });
     });
 </script>

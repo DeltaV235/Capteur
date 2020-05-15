@@ -2,6 +2,7 @@ package com.wuyue.service.intf;
 
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.vo.ChartData;
+import com.wuyue.model.vo.TableData;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface SensorDataService {
     SensorData getCurrentData();
 
     List<ChartData> getChartData(Double durationTime, Double intervalTime);
+
+    TableData getTableData(Integer start, Integer length, Integer draw);
 }

@@ -2,12 +2,17 @@ package com.wuyue.controller;
 
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.vo.ChartData;
+import com.wuyue.model.vo.ResultEntity;
+import com.wuyue.model.vo.TableData;
 import com.wuyue.service.intf.SensorDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -46,4 +51,52 @@ public class IndexController {
         return "index";
     }
 
+    @ResponseBody
+    @GetMapping("/getChartDataJson")
+    public ResultEntity<List<ChartData>> handleChartDataJson(
+            @RequestParam(value = "duration", defaultValue = "1440") String durationTime
+            , @RequestParam(value = "interval", defaultValue = "120") String intervalTime) {
+        try {
+            List<ChartData> chartData = sensorDataService.getChartData(Double.parseDouble(durationTime),
+                    Double.parseDouble(intervalTime));
+            return ResultEntity.successWithData(chartData);
+        } catch (Exception exception) {
+            logger.warn("获取图表数据点失败", exception);
+            return ResultEntity.error("发生内部错误,请稍后重试");
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/getTableDataJson")
+    public TableData getTableDataJson(@RequestParam(value = "start", defaultValue = "0") Integer start,
+                                      @RequestParam(value = "length", defaultValue = "10") Integer length,
+                                      @RequestParam("draw") Integer draw) {
+        return sensorDataService.getTableData(start, length, draw);
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

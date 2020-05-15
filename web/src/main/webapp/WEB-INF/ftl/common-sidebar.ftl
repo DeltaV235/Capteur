@@ -20,7 +20,7 @@
                     <a href="./" class="nav-link <#if page=="index">active</#if>">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
-                            仪表盘
+                            主页
                             <i class="right fas"></i>
                         </p>
                     </a>

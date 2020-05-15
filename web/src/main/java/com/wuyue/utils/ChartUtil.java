@@ -56,12 +56,12 @@ public class ChartUtil {
             long timeSliceEndTime = timeSliceStart + timeSliceIntervalTime;
             Long[] oneResult = new Long[2];
             // 结束时间未越界,开始结束时间合法
-            if (timeSliceEndTime <= endTime) {
+            if (timeSliceEndTime < endTime) {
                 oneResult[0] = timeSliceStart;
                 oneResult[1] = timeSliceEndTime;
                 results.add(oneResult);
                 // 设置下一次循环的开始时间
-                timeSliceStart = timeSliceEndTime + 1000;
+                timeSliceStart = timeSliceEndTime;
             } else {
                 // 结束时间越界,改时间片是最后一个时间片
                 timeSliceEndTime = endTime;
