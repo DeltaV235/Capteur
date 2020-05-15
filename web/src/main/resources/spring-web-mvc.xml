@@ -19,10 +19,9 @@
         <property name="requestContextAttribute" value="rc"/>
     </bean>
 
-    <mvc:view-controller path="/" view-name="index"/>
     <mvc:view-controller path="/data" view-name="data"/>
+    <mvc:view-controller path="/contact" view-name="contact"/>
     <mvc:view-controller path="/warnings" view-name="warn-list"/>
     <mvc:view-controller path="/rules" view-name="rule-list"/>
-    <mvc:view-controller path="/contact" view-name="contact"/>
 
 </beans>

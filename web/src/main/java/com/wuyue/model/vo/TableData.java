@@ -1,7 +1,6 @@
 package com.wuyue.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wuyue.model.entity.SensorData;
 
 import java.util.List;
 
@@ -12,18 +11,18 @@ import java.util.List;
  * @description 响应给DataTable的数据结构
  * @date 2020/5/15 20:33
  */
-public class TableData {
+public class TableData<T> {
     private Integer draw;
     private Integer recordsTotal;
     private Integer recordsFiltered;
-    private List<SensorData> data;
+    private List<T> data;
     @JsonIgnore
     private String error;
 
     public TableData() {
     }
 
-    public TableData(Integer draw, Integer recordsTotal, Integer recordsFiltered, List<SensorData> data, String error) {
+    public TableData(Integer draw, Integer recordsTotal, Integer recordsFiltered, List<T> data, String error) {
         this.draw = draw;
         this.recordsTotal = recordsTotal;
         this.recordsFiltered = recordsFiltered;
@@ -55,11 +54,11 @@ public class TableData {
         this.recordsFiltered = recordsFiltered;
     }
 
-    public List<SensorData> getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(List<SensorData> data) {
+    public void setData(List<T> data) {
         this.data = data;
     }
 

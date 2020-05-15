@@ -154,8 +154,8 @@
             // 服务端处理数据
             "serverSide": true,
             "ajax": {
-                url: "getTableDataJson",
-                type: "post"
+                url: "dataTable",
+                type: "POST"
             },
             "columns": [
                 {"data": "date"},

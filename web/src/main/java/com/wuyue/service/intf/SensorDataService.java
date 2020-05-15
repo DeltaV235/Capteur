@@ -18,5 +18,5 @@ public interface SensorDataService {
 
     List<ChartData> getChartData(Double durationTime, Double intervalTime);
 
-    TableData getTableData(Integer start, Integer length, Integer draw);
+    TableData<SensorData> getTableData(Integer start, Integer length, Integer draw);
 }

@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.wuyue.constant.enums.EnvironmentParameter;
 import com.wuyue.mapper.SensorDataMapper;
 import com.wuyue.model.entity.SensorData;
+import com.wuyue.model.entity.SensorDataExample;
 import com.wuyue.model.vo.ChartData;
 import com.wuyue.model.vo.TableData;
 import com.wuyue.service.intf.SensorDataService;
@@ -25,7 +26,7 @@ import static com.wuyue.constant.enums.EnvironmentParameter.*;
  * @author DeltaV235
  * @version 1.0
  * @className SensorDataService
- * @description
+ * @description 处理环境数据相关的业务
  * @date 2020/5/13 22:34
  */
 @Service
@@ -134,14 +135,23 @@ public class SensorDataServiceImpl implements SensorDataService {
         return returnValue;
     }
 
+    /**
+     * @param start  开始记录索引,从0开始
+     * @param length 每页的长度
+     * @param draw   检验用数据
+     * @return TableData 一个用于DataTable的POJO
+     * @author DeltaV235
+     * @date 2020/5/16 1:42
+     * @description 根据分页信息, 查询数据库中记录并返回
+     */
     @Override
-    public TableData getTableData(Integer start, Integer length, Integer draw) {
+    public TableData<SensorData> getTableData(Integer start, Integer length, Integer draw) {
         PageHelper.offsetPage(start, length, true);
-        List<SensorData> sensorDataList = sensorDataMapper.selectAllWithoutPrimaryKey();
+        List<SensorData> sensorDataList = sensorDataMapper.selectByExample(new SensorDataExample());
         PageInfo<SensorData> pageInfo = ((Page<SensorData>) sensorDataList).toPageInfo();
         int recordsTotal = (int) pageInfo.getTotal();
         int recordsFiltered = (int) pageInfo.getTotal();
-        return new TableData(draw, recordsTotal, recordsFiltered, sensorDataList, null);
+        return new TableData<>(draw, recordsTotal, recordsFiltered, sensorDataList, null);
     }
 }
 

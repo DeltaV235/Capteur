@@ -55,6 +55,4 @@ public interface SensorDataMapper {
      * @description 查询最后一次更新数据的时间
      */
     Date selectLatestUpdateTime();
-
-    List<SensorData> selectAllWithoutPrimaryKey();
 }

@@ -3,14 +3,12 @@ package com.wuyue.controller;
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.vo.ChartData;
 import com.wuyue.model.vo.ResultEntity;
-import com.wuyue.model.vo.TableData;
 import com.wuyue.service.intf.SensorDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -51,6 +49,14 @@ public class IndexController {
         return "index";
     }
 
+    /**
+     * @param durationTime 图表显示的时间返回,从现在开始倒退durationTime分钟
+     * @param intervalTime 每间隔intervalTime分钟,计算一次平均值
+     * @return 图表所需要的数据点集合
+     * @author DeltaV235
+     * @date 2020/5/16 1:43
+     * @description 处理首页的图表的请求
+     */
     @ResponseBody
     @GetMapping("/getChartDataJson")
     public ResultEntity<List<ChartData>> handleChartDataJson(
@@ -65,15 +71,6 @@ public class IndexController {
             return ResultEntity.error("发生内部错误,请稍后重试");
         }
     }
-
-    @ResponseBody
-    @PostMapping("/getTableDataJson")
-    public TableData getTableDataJson(@RequestParam(value = "start", defaultValue = "0") Integer start,
-                                      @RequestParam(value = "length", defaultValue = "10") Integer length,
-                                      @RequestParam("draw") Integer draw) {
-        return sensorDataService.getTableData(start, length, draw);
-    }
-
 }
 
 

@@ -103,57 +103,57 @@
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>
-                                            <div class="icheck-dark d-inline">
-                                                <input type="checkbox" id="checkboxPrimary2">
-                                                <label for="checkboxPrimary2">
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>1</td>
-                                        <td>
-                                            孙一凯
-                                        </td>
-                                        <td>13816862974</td>
-                                        <td>sunyk@boss.com</td>
-                                        <td>
+                                        <#--                                        <td>-->
+                                        <#--                                                                                <div class="icheck-dark d-inline">-->
+                                        <#--                                                                                    <input type="checkbox" id="checkboxPrimary2">-->
+                                        <#--                                                                                    <label for="checkboxPrimary2">-->
+                                        <#--                                                                                    </label>-->
+                                        <#--                                                                                </div>-->
+                                        <#--                                        </td>-->
+                                        <#--                                        <td>1</td>-->
+                                        <#--                                        <td>-->
+                                        <#--                                            孙一凯-->
+                                        <#--                                        </td>-->
+                                        <#--                                        <td>13816862974</td>-->
+                                        <#--                                        <td>sunyk@boss.com</td>-->
+                                        <#--                                        <td>-->
 
-                                            <button class="btn btn-secondary">
-                                                编辑联系人
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger" data-toggle="modal"
-                                                    data-target="#checkDel">
-                                                删除联系人
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="icheck-dark d-inline">
-                                                <input type="checkbox" id="checkboxPrimary3">
-                                                <label for="checkboxPrimary3">
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>2</td>
-                                        <td>冯纲</td>
-                                        <td>13801851255</td>
-                                        <td>fenggang@boss.com</td>
-                                        <td>
+                                        <#--                                            <button class="btn btn-secondary">-->
+                                        <#--                                                编辑联系人-->
+                                        <#--                                            </button>-->
+                                        <#--                                        </td>-->
+                                        <#--                                        <td>-->
+                                        <#--                                            <button class="btn btn-danger" data-toggle="modal"-->
+                                        <#--                                                    data-target="#checkDel">-->
+                                        <#--                                                删除联系人-->
+                                        <#--                                            </button>-->
+                                        <#--                                        </td>-->
+                                        <#--                                    </tr>-->
+                                        <#--                                    <tr>-->
+                                        <#--                                        <td>-->
+                                        <#--                                            <div class="icheck-dark d-inline">-->
+                                        <#--                                                <input type="checkbox" id="checkboxPrimary3">-->
+                                        <#--                                                <label for="checkboxPrimary3">-->
+                                        <#--                                                </label>-->
+                                        <#--                                            </div>-->
+                                        <#--                                        </td>-->
+                                        <#--                                        <td>2</td>-->
+                                        <#--                                        <td>冯纲</td>-->
+                                        <#--                                        <td>13801851255</td>-->
+                                        <#--                                        <td>fenggang@boss.com</td>-->
+                                        <#--                                        <td>-->
 
-                                            <button class="btn btn-secondary">
-                                                编辑联系人
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger" data-toggle="modal"
-                                                    data-target="#checkDel">
-                                                删除联系人
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        <#--                                            <button class="btn btn-secondary">-->
+                                        <#--                                                编辑联系人-->
+                                        <#--                                            </button>-->
+                                        <#--                                        </td>-->
+                                        <#--                                        <td>-->
+                                        <#--                                            <button class="btn btn-danger" data-toggle="modal"-->
+                                        <#--                                                    data-target="#checkDel">-->
+                                        <#--                                                删除联系人-->
+                                        <#--                                            </button>-->
+                                        <#--                                        </td>-->
+                                        <#--                                    </tr>-->
                                     </tbody>
 
                                 </table>
@@ -175,7 +175,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">新建告警规则</h4>
+                            <h4 class="modal-title">新建告警联系人</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                                     onclick="reset()">
                                 <span aria-hidden="true">&times;</span>
@@ -186,7 +186,7 @@
 
 
                             <!-- 表单 -->
-                            <form method="post" action="">
+                            <form id="contactForm" method="post" action="contacts">
                                 <div class="form-group">
 
                                     <!-- 第一行 -->
@@ -195,7 +195,7 @@
                                     <div class="col-md-12">
                                         <label class="col-form-label" for="contactName">联系人姓名</label>
                                         <input type="text" class="form-control is-valid" id="contactName"
-                                               placeholder="请输入联系人姓名">
+                                               placeholder="请输入联系人姓名" name="contactName">
                                     </div>
 
 
@@ -207,7 +207,7 @@
                                     <div class="col-md-12">
                                         <label class="col-form-label" for="contactPhone">联系人手机号</label>
                                         <input type="text" class="form-control is-valid" id="contactPhone"
-                                               placeholder="请输入联系人手机号">
+                                               placeholder="请输入联系人手机号" name="contactPhone">
                                     </div>
 
 
@@ -220,7 +220,7 @@
                                     <div class="col-md-12">
                                         <label class="col-form-label" for="contactEmail">联系人邮箱</label>
                                         <input type="text" class="form-control is-valid" id="contactEmail"
-                                               placeholder="请输入联系人邮箱">
+                                               placeholder="请输入联系人邮箱" name="contactEmail">
                                     </div>
 
 
@@ -241,7 +241,7 @@
                                 <button type="button" class="btn btn-danger" data-toggle="modal"
                                         data-target="#checkReset">重置
                                 </button>
-                                <button type="button" class="btn btn-primary">保存修改</button>
+                                <button type="button" class="btn btn-primary" onclick="submitForm()">保存修改</button>
                             </div>
                         </div>
                     </div>
@@ -338,6 +338,10 @@
 <!-- 页面脚本 -->
 <script>
 
+    function submitForm() {
+        $("#contactForm").submit();
+    }
+
 
     function reset(obj) {
 
@@ -365,6 +369,12 @@
         })
 
 
+        var col1 = "<div class=\"icheck-dark d-inline\">\n" +
+            "<input type=\"checkbox\" id=\"checkboxPrimary2\">\n" +
+            "<label for=\"checkboxPrimary2\">\n" +
+            "</label>\n" +
+            "</div>"
+
         $('#contactTable').DataTable({
             "language": {
                 "sProcessing": "处理中...",
@@ -390,14 +400,85 @@
                     "sSortDescending": ": 以降序排列此列"
                 }
             },
+            // 翻页功能
             "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": false,
-            "info": false,
+            // 改变每页显示数据的数量
+            "lengthChange": true,
+            // 搜索功能
+            "searching": true,
+            // 排序功能
+            "ordering": true,
+            // 页脚信息
+            "info": true,
+            // 自动宽度
             "autoWidth": false,
+            // 保存状态
+            "stateSave": true,
+            // 显示处理中的提示
+            "processing": true,
+            // 服务端处理数据
+            "serverSide": true,
+            "ajax": {
+                url: "contactTable",
+                type: "post"
+            },
+            // 以序号作为默认排序的列,升序排列
+            "columns": [
+                {
+                    "data": null,
+                    "render": function (row, type, val, meta) {
+                        return "<div class=\"icheck-dark d-inline\">" +
+                            "<input type=\"checkbox\" id=\"checkboxPrimary2\">" +
+                            "<label for=\"checkboxPrimary2\">" +
+                            "</label>" +
+                            "</div>"
+                    },
+                    "targets": 0,
+                    "orderable": false
+                },
+                {
+                    "data": null,
+                    "render": function (data, type, row, meta) {
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    },
+                    "orderable": true
+                },
+                {
+                    "data": "name",
+                    "orderable": true
+                },
+                {
+                    "data": "phone",
+                    "orderable": true
+                },
+                {
+                    "data": "email",
+                    "orderable": true
+                },
+                {
+                    "data": null,
+                    "render": function (row, type, val, meta) {
+                        return '<button class="btn btn-secondary">' +
+                            '编辑联系人' +
+                            '</button>'
+                    },
+                    "orderable": false
+                },
+                {
+                    "data": null,
+                    "render": function (row, type, val, meta) {
+                        return '<button class="btn btn-danger" data-toggle="modal"' +
+                            'data-target="#checkDel">' +
+                            '删除联系人' +
+                            '</button>'
+                    },
+                    "orderable": false
+                },
+            ],
+            "order": [[1, 'asc']]
 
         })
+        ;
     })
 </script>
 
