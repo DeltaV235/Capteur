@@ -1,6 +1,6 @@
 package com.wuyue.service.intf;
 
-import com.wuyue.model.vo.ContactData;
+import com.wuyue.model.entity.Contact;
 import com.wuyue.model.vo.TableData;
 
 /**
@@ -11,7 +11,7 @@ import com.wuyue.model.vo.TableData;
  * @date 2020/5/16 1:51
  */
 public interface ContactService {
-    TableData<ContactData> getTableData(Integer start, Integer length, Integer draw);
+    TableData<Contact> getTableData(Integer start, Integer length, Integer draw);
 
     boolean saveContact(String contactName, String contactPhone, String contactEmail);
 }

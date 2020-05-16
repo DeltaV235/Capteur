@@ -6,12 +6,10 @@ import com.github.pagehelper.PageInfo;
 import com.wuyue.mapper.ContactMapper;
 import com.wuyue.model.entity.Contact;
 import com.wuyue.model.entity.ContactExample;
-import com.wuyue.model.vo.ContactData;
 import com.wuyue.model.vo.TableData;
 import com.wuyue.service.intf.ContactService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,20 +29,13 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public TableData<ContactData> getTableData(Integer start, Integer length, Integer draw) {
+    public TableData<Contact> getTableData(Integer start, Integer length, Integer draw) {
         PageHelper.offsetPage(start, length, true);
         List<Contact> contactList = contactMapper.selectByExample(new ContactExample());
         PageInfo<Contact> pageInfo = ((Page<Contact>) contactList).toPageInfo();
         int recordsTotal = (int) pageInfo.getTotal();
         int recordsFiltered = (int) pageInfo.getTotal();
-        int count = 1;
-        ArrayList<ContactData> contactDataList = new ArrayList<>();
-        for (Contact contact : contactList) {
-            contactDataList.add(new ContactData(contact.getId(), contact.getName(), contact.getPhone(),
-                    contact.getEmail(), count));
-            count++;
-        }
-        return new TableData<>(draw, recordsTotal, recordsFiltered, contactDataList, null);
+        return new TableData<>(draw, recordsTotal, recordsFiltered, contactList, null);
     }
 
     @Override

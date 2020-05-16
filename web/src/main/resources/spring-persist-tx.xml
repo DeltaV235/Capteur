@@ -21,6 +21,8 @@
             <tx:method name="find*" rollback-for="java.lang.Exception" read-only="true"/>
             <tx:method name="query*" rollback-for="java.lang.Exception" read-only="true"/>
             <tx:method name="count*" rollback-for="java.lang.Exception" read-only="true"/>
+            <tx:method name="check*" rollback-for="java.lang.Exception" read-only="true"/>
+            <tx:method name="valid*" rollback-for="java.lang.Exception" read-only="true"/>
 
             <tx:method name="save*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
             <tx:method name="update*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>

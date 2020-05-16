@@ -177,7 +177,7 @@
                         <div class="modal-header">
                             <h4 class="modal-title">新建告警联系人</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                    onclick="reset()">
+                                    onclick="reset()" id="closeBtn">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -186,49 +186,49 @@
 
 
                             <!-- 表单 -->
-                            <form id="contactForm" method="post" action="contacts">
-                                <div class="form-group">
+                            <#--                            <form id="contactForm" method="post" action="contacts">-->
+                            <div class="form-group">
 
-                                    <!-- 第一行 -->
+                                <!-- 第一行 -->
 
-                                    <!-- 联系人姓名 -->
-                                    <div class="col-md-12">
-                                        <label class="col-form-label" for="contactName">联系人姓名</label>
-                                        <input type="text" class="form-control is-valid" id="contactName"
-                                               placeholder="请输入联系人姓名" name="contactName">
-                                    </div>
-
-
-                                    <!-- /第一行 -->
-
-
-                                    <!-- 第二行 -->
-
-                                    <div class="col-md-12">
-                                        <label class="col-form-label" for="contactPhone">联系人手机号</label>
-                                        <input type="text" class="form-control is-valid" id="contactPhone"
-                                               placeholder="请输入联系人手机号" name="contactPhone">
-                                    </div>
-
-
-                                    <!-- /第二行 -->
-
-
-                                    <!-- 第三行 -->
-
-
-                                    <div class="col-md-12">
-                                        <label class="col-form-label" for="contactEmail">联系人邮箱</label>
-                                        <input type="text" class="form-control is-valid" id="contactEmail"
-                                               placeholder="请输入联系人邮箱" name="contactEmail">
-                                    </div>
-
-
-                                    <!-- /第三行 -->
-
-
+                                <!-- 联系人姓名 -->
+                                <div class="col-md-12">
+                                    <label class="col-form-label" for="contactName">联系人姓名</label>
+                                    <input type="text" class="form-control is-valid" id="contactName"
+                                           placeholder="请输入联系人姓名" name="contactName">
                                 </div>
-                            </form>
+
+
+                                <!-- /第一行 -->
+
+
+                                <!-- 第二行 -->
+
+                                <div class="col-md-12">
+                                    <label class="col-form-label" for="contactPhone">联系人手机号</label>
+                                    <input type="text" class="form-control is-valid" id="contactPhone"
+                                           placeholder="请输入联系人手机号" name="contactPhone">
+                                </div>
+
+
+                                <!-- /第二行 -->
+
+
+                                <!-- 第三行 -->
+
+
+                                <div class="col-md-12">
+                                    <label class="col-form-label" for="contactEmail">联系人邮箱</label>
+                                    <input type="text" class="form-control is-valid" id="contactEmail"
+                                           placeholder="请输入联系人邮箱" name="contactEmail">
+                                </div>
+
+
+                                <!-- /第三行 -->
+
+
+                            </div>
+                            <#--                            </form>-->
 
 
                         </div>
@@ -339,7 +339,29 @@
 <script>
 
     function submitForm() {
-        $("#contactForm").submit();
+        let contactName = $("#contactName").val()
+        let contactPhone = $("#contactPhone").val()
+        let contactEmail = $("#contactEmail").val()
+        let table = $("#contactTable").DataTable();
+        let requestData = {
+            name: contactName,
+            phone: contactPhone,
+            email: contactEmail
+        }
+        $.ajax({
+            url: "contacts",
+            method: "POST",
+            data: requestData,
+            success: function (response) {
+                console.info(response)
+                // 添加成功
+                if (response.success) {
+                    $("#closeBtn").click()
+                    table.ajax.reload(null, true);
+                    table.page('last').draw('page');
+                }
+            }
+        })
     }
 
 
@@ -427,9 +449,10 @@
                 {
                     "data": null,
                     "render": function (row, type, val, meta) {
+                        var seq = meta.row + 1 + meta.settings._iDisplayStart;
                         return "<div class=\"icheck-dark d-inline\">" +
-                            "<input type=\"checkbox\" id=\"checkboxPrimary2\">" +
-                            "<label for=\"checkboxPrimary2\">" +
+                            "<input type=\"checkbox\" id=\"checkbox_" + seq + "\">" +
+                            "<label for=\"checkbox_" + seq + "\">" +
                             "</label>" +
                             "</div>"
                     },
@@ -439,7 +462,7 @@
                 {
                     "data": null,
                     "render": function (data, type, row, meta) {
-                        return meta.row + 1 + meta.settings._iDisplayStart;
+                        return meta.row + 1;
                     },
                     "orderable": true
                 },
