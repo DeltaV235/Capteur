@@ -43,4 +43,10 @@ public class ContactServiceImpl implements ContactService {
         int insert = contactMapper.insert(new Contact(null, contactName, contactPhone, contactEmail));
         return insert > 0;
     }
+
+    @Override
+    public boolean removeContact(Integer id) {
+        int update = contactMapper.deleteByPrimaryKey(id);
+        return update > 0;
+    }
 }

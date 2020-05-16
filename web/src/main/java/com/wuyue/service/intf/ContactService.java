@@ -14,4 +14,6 @@ public interface ContactService {
     TableData<Contact> getTableData(Integer start, Integer length, Integer draw);
 
     boolean saveContact(String contactName, String contactPhone, String contactEmail);
+
+    boolean removeContact(Integer id);
 }

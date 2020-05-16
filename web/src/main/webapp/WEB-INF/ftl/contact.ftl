@@ -293,7 +293,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="">删除
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">删除
                             </button>
                         </div>
                     </div>
@@ -348,20 +348,25 @@
             phone: contactPhone,
             email: contactEmail
         }
+        let isRefresh = false
         $.ajax({
-            url: "contacts",
-            method: "POST",
-            data: requestData,
-            success: function (response) {
-                console.info(response)
-                // 添加成功
-                if (response.success) {
-                    $("#closeBtn").click()
-                    table.ajax.reload(null, true);
-                    table.page('last').draw('page');
+                url: "contacts",
+                method: "POST",
+                data: requestData,
+                success: function (response) {
+                    console.info(response)
+                    // 添加成功,刷新表格
+                    if (response.success) {
+                        $("#closeBtn").click()
+                        table.ajax.reload(function () {
+                            isRefresh = true
+                        }, true);
+                        // 跳转至最后一页
+                        table.page('last').draw('page');
+                    }
                 }
             }
-        })
+        )
     }
 
 
@@ -374,7 +379,37 @@
 
     }
 
+    function delRecord(event) {
+        console.info(event.data)
+        let contactId = event.data;
+        let table = $("#contactTable").DataTable();
+        $.ajax({
+            url: "contacts/" + contactId,
+            method: "DELETE",
+            success: function (response) {
+                console.debug(response)
+                // 删除成功
+                if (response.success) {
+                    table.ajax.reload(null, false);
+                }
+            }
+        })
+        $("#checkDel").children().first().children().first().find(".modal-footer").children().last().off()
+    }
+
     $(function () {
+
+        $('#checkDel').on('shown.bs.modal', function (event) {
+            var btnThis = $(event.relatedTarget); //触发事件的按钮
+            var modal = $(this);  //当前模态框
+            let table = $("#contactTable").DataTable();
+            let rowNum = btnThis.parent().parent().children().first().next().html();
+            let contactId = table.row(rowNum - 1).data().id
+            console.info(rowNum)
+            console.info(contactId)
+            modal.children().first().children().first().find(".modal-footer").children().last().click(contactId,
+                delRecord)
+        })
 
 
         //初始化 Select2 元素
@@ -390,12 +425,6 @@
             minimumResultsForSearch: -1
         })
 
-
-        var col1 = "<div class=\"icheck-dark d-inline\">\n" +
-            "<input type=\"checkbox\" id=\"checkboxPrimary2\">\n" +
-            "<label for=\"checkboxPrimary2\">\n" +
-            "</label>\n" +
-            "</div>"
 
         $('#contactTable').DataTable({
             "language": {
@@ -449,7 +478,7 @@
                 {
                     "data": null,
                     "render": function (row, type, val, meta) {
-                        var seq = meta.row + 1 + meta.settings._iDisplayStart;
+                        var seq = meta.row + 1;
                         return "<div class=\"icheck-dark d-inline\">" +
                             "<input type=\"checkbox\" id=\"checkbox_" + seq + "\">" +
                             "<label for=\"checkbox_" + seq + "\">" +
