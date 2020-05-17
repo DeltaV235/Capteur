@@ -94,259 +94,323 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td class="warn-list-table-td">
-                                                <!-- 告警条目开始 -->
-                                                <div class="card card-primary warn-list-table-card-no-margin">
-                                                    <!-- 标题栏 -->
-                                                    <a data-toggle="collapse" data-parent="#accordion"
-                                                       href="#collapseOne">
-                                                        <div class="card-header alert-danger"
-                                                             style="border-radius: 4px">
-                                                            <h4 class="card-title">
-                                                                温度高于30摄氏度且湿度小于80%
-                                                            </h4>
-                                                            <span class="badge badge-pill float-left"
-                                                                  style="height: 21px;line-height: 21px;
-                                                      padding-top: 0;padding-bottom: 0">
-                                                    new
-                                                </span>
-                                                            <span class="badge badge-pill float-right"
-                                                                  style="height: 21px;line-height: 21px;
-                                                      padding-top: 0;padding-bottom: 0">
-                                                    9分钟前
-                                                </span>
-                                                        </div>
-                                                    </a>
-
-                                                    <!-- 告警主体 -->
-                                                    <div id="collapseOne" class="panel-collapse collapse in">
-                                                        <div class="card-body" style="padding: 0">
-
-                                                            <!-- 标签条 -->
-                                                            <ul class="nav nav-tabs" id="custom-content-below-tab"
-                                                                role="tablist">
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link active"
-                                                                       id="custom-content-below-home-tab"
-                                                                       data-toggle="pill" href="#info"
-                                                                       role="tab" aria-controls="info"
-                                                                       aria-selected="true"
-                                                                       style="margin-left: 0; border-left: 0"
-                                                                    >
-                                                                        详情
-                                                                    </a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link"
-                                                                       id="custom-content-below-profile-tab"
-                                                                       data-toggle="pill" href="#check-history"
-                                                                       role="tab" aria-controls="check-history"
-                                                                       aria-selected="false">探测历史</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link"
-                                                                       id="custom-content-below-messages-tab"
-                                                                       data-toggle="pill" href="#operation-history"
-                                                                       role="tab" aria-controls="operation-history"
-                                                                       aria-selected="false">操作历史</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" id="tab-warn-history"
-                                                                       data-toggle="pill" href="#warn-history"
-                                                                       role="tab" aria-controls="warn-history"
-                                                                       aria-selected="false">告警历史</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link"
-                                                                       id="custom-content-below-settings-tab"
-                                                                       data-toggle="pill" href="#setting"
-                                                                       role="tab" aria-controls="setting"
-                                                                       aria-selected="false">设置</a>
-                                                                </li>
-                                                            </ul>
-
-                                                            <!-- 标签内容 -->
-                                                            <div class="tab-content"
-                                                                 id="custom-content-below-tabContent">
 
 
-                                                                <!-- 第一个标签的内容 -->
-                                                                <div class="tab-pane fade show active"
-                                                                     id="info" role="tabpanel"
-                                                                     aria-labelledby="info">
+                                        <#list rules as rule>
 
-                                                                    <div class="card-body">
 
-                                                                        <div class="row">
-                                                                            <div class="col-md-3">
-                                                                                规则状态:
-                                                                                &nbsp;
-                                                                                <span class="badge badge-danger" style="height: 24px;line-height: 22px;
-                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">已禁用
+                                            <tr>
+                                                <td class="warn-list-table-td">
+                                                    <!-- 告警条目开始 -->
+                                                    <div class="card card-primary warn-list-table-card-no-margin">
+                                                        <!-- 标题栏 -->
+                                                        <a data-toggle="collapse" data-parent="#accordion"
+                                                           href="#rid_${rule.id}">
+                                                            <div class="card-header
+
+                                                            <#if rule.level=='e'>
+                                                                alert-danger
+                                                                <#elseif rule.level=='w'>
+                                                                alert-warning
+                                                                <#elseif rule.level=='i'>
+                                                                alert-secondary
+                                                            </#if>
+                                                                "
+                                                                 style="border-radius: 4px">
+                                                                <h4 class="card-title">
+                                                                    ${rule.name}
+                                                                </h4>
+
+                                                            </div>
+                                                        </a>
+
+                                                        <!-- 告警主体 -->
+                                                        <div id="rid_${rule.id}" class="panel-collapse collapse in">
+                                                            <div class="card-body" style="padding: 0">
+
+                                                                <!-- 标签条 -->
+                                                                <ul class="nav nav-tabs" id="custom-content-below-tab"
+                                                                    role="tablist">
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link active"
+                                                                           id="custom-content-below-home-tab"
+                                                                           data-toggle="pill" href="#info"
+                                                                           role="tab" aria-controls="info"
+                                                                           aria-selected="true"
+                                                                           style="margin-left: 0; border-left: 0"
+                                                                        >
+                                                                            详情
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link"
+                                                                           id="custom-content-below-profile-tab"
+                                                                           data-toggle="pill" href="#check-history"
+                                                                           role="tab" aria-controls="check-history"
+                                                                           aria-selected="false">探测历史</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link"
+                                                                           id="custom-content-below-messages-tab"
+                                                                           data-toggle="pill" href="#operation-history"
+                                                                           role="tab" aria-controls="operation-history"
+                                                                           aria-selected="false">操作历史</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link" id="tab-warn-history"
+                                                                           data-toggle="pill" href="#warn-history"
+                                                                           role="tab" aria-controls="warn-history"
+                                                                           aria-selected="false">告警历史</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link"
+                                                                           id="custom-content-below-settings-tab"
+                                                                           data-toggle="pill" href="#setting"
+                                                                           role="tab" aria-controls="setting"
+                                                                           aria-selected="false">设置</a>
+                                                                    </li>
+                                                                </ul>
+
+                                                                <!-- 标签内容 -->
+                                                                <div class="tab-content"
+                                                                     id="custom-content-below-tabContent">
+
+
+                                                                    <!-- 第一个标签的内容 -->
+                                                                    <div class="tab-pane fade show active"
+                                                                         id="info" role="tabpanel"
+                                                                         aria-labelledby="info">
+
+                                                                        <div class="card-body">
+
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    规则状态:
+                                                                                    &nbsp;
+                                                                                    <#if rule.status=='e'>
+                                                                                        <span class="badge badge-success"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">
+                                                                                            已启用
                                                         </span>
-                                                                            </div>
+                                                                                    <#elseif rule.status=="d">
+                                                                                        <span class="badge badge-danger"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">
+                                                                                        已禁用
+                                                        </span>
+                                                                                    </#if>
+                                                                                </div>
 
-                                                                            <div class="col-md-3">
-                                                                                告警等级:
-                                                                                &nbsp;
-                                                                                <span class="badge badge-danger" style="height: 24px;line-height: 22px;
+                                                                                <div class="col-md-3">
+                                                                                    告警等级:
+                                                                                    &nbsp;
+
+                                                                                    <#if rule.level=='e'>
+                                                                                        <span class="badge badge-danger"
+                                                                                              style="height: 24px;line-height: 22px;
                                                       padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">ERROR
-                                                                    </span>
+                                                                                        </span>
+                                                                                    <#elseif rule.level=='w'>
+                                                                                        <span class="badge badge-warning"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
+                                                      margin-bottom: 1px">WARN
+                                                                                        </span>
+                                                                                    <#elseif rule.level=='i'>
+                                                                                        <span class="badge badge-secondary"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
+                                                      margin-bottom: 1px">INFO
+                                                                                        </span>
+
+                                                                                    </#if>
+                                                                                </div>
+
+                                                                                <div class="col-md-3">
+                                                                                    告警规则ID:
+                                                                                    &nbsp;
+                                                                                    ${rule.id}
+                                                                                </div>
+                                                                            </div>
+                                                                            <hr>
+
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 float-left">
+                                                                                    告警描述:
+                                                                                </div>
+                                                                                <div class="col-md-6 float-right">
+                                                                                    告警触发条件:
+                                                                                </div>
                                                                             </div>
 
-                                                                            <div class="col-md-3">
-                                                                                告警规则ID:
-                                                                                &nbsp;
-                                                                                39481
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 float-left"
+                                                                                     style="margin-top: 10px">
+                                                                                    ${rule.description}
+                                                                                </div>
+                                                                                <div class="col-md-6 float-right"
+                                                                                     style="margin-top: 10px">
+                                                                                    <#list rule.conditions as condition>
+                                                                                        <div class="row-cols-6">
+                                                                                            <#if condition.param=='t'>
+                                                                                                温度
+                                                                                            <#elseif condition
+                                                                                            .param=='h'>
+                                                                                                湿度
+                                                                                            <#elseif condition
+                                                                                            .param=='l'>
+                                                                                                亮度
+                                                                                            <#elseif condition
+                                                                                            .param=='p'>
+                                                                                                气压
+                                                                                            </#if>
+
+                                                                                            ${condition.symbol}
+                                                                                            ${condition.data}
+
+                                                                                            <#if condition.param=='t'>
+                                                                                                ℃
+                                                                                            <#elseif condition
+                                                                                            .param=='h'>
+                                                                                                %
+                                                                                            <#elseif condition
+                                                                                            .param=='l'>
+                                                                                                lux
+                                                                                            <#elseif condition
+                                                                                            .param=='p'>
+                                                                                                Pa
+                                                                                            </#if>
+                                                                                        </div>
+                                                                                    </#list>
+                                                                                </div>
+
+
                                                                             </div>
+
+                                                                            <hr>
+
+                                                                            <div class="row">
+                                                                                <div class="col-md-6">
+                                                                                    规则添加时间:
+                                                                                    <span>${rule.createTime?string
+                                                                                        ('yyyy-MM-dd HH:mm:ss')}</span>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    最近触发时间:
+                                                                                    <span>
+                                                                                       <#if rule.lastTriggerTime??>
+                                                                                           ${rule.lastTriggerTime?string('yyyy-MM-dd HH:mm:ss')}
+                                                                                       </#if>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class="row"
+                                                                                 style="margin-top: 30px">
+                                                                                <div class="col-12">
+
+                                                                                    <div
+                                                                                            class="btn-group col-md-1">
+                                                                                        <button type="button"
+                                                                                                class="btn btn-primary">
+                                                                                            编辑告警
+                                                                                        </button>
+                                                                                    </div>
+
+                                                                                    <div
+                                                                                            class="btn-group col-md-1">
+                                                                                        <button type="button"
+                                                                                                class="btn btn-secondary">
+                                                                                            禁用告警
+                                                                                        </button>
+                                                                                    </div>
+
+                                                                                    <div class="btn-group float-right col-md-1">
+
+                                                                                        <button type="button"
+                                                                                                class="btn btn-danger">
+                                                                                            删除告警
+                                                                                        </button>
+                                                                                        <!--                                                                                    <button type="button"-->
+                                                                                        <!--                                                                                            class="btn btn-dark dropdown-toggle dropdown-icon"-->
+                                                                                        <!--                                                                                            data-toggle="dropdown">-->
+                                                                                        <!--                                                                                        <span class="sr-only">下拉切换</span>-->
+                                                                                        <!--                                                                                        <div class="dropdown-menu"-->
+                                                                                        <!--                                                                                             role="menu">-->
+                                                                                        <!--                                                                                            <a class="dropdown-item"-->
+                                                                                        <!--                                                                                               href="#">5分钟</a>-->
+                                                                                        <!--                                                                                            <a class="dropdown-item"-->
+                                                                                        <!--                                                                                               href="#">30分钟</a>-->
+                                                                                        <!--                                                                                            <a class="dropdown-item"-->
+                                                                                        <!--                                                                                               href="#">1小时</a>-->
+                                                                                        <!--                                                                                            <a class="dropdown-item"-->
+                                                                                        <!--                                                                                               href="#">3小时</a>-->
+                                                                                        <!--                                                                                            <a class="dropdown-item"-->
+                                                                                        <!--                                                                                               href="#">24小时</a>-->
+                                                                                        <!--                                                                                            <div class="dropdown-divider"></div>-->
+                                                                                        <!--                                                                                            <a class="dropdown-item"-->
+                                                                                        <!--                                                                                               href="#">禁用告警</a>-->
+                                                                                        <!--                                                                                        </div>-->
+                                                                                        <!--                                                                                    </button>-->
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+
                                                                         </div>
-                                                                        <hr>
-
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 float-left">
-                                                                                告警描述:
-                                                                            </div>
-                                                                            <div class="col-md-6 float-right">
-                                                                                告警触发条件:
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 float-left"
-                                                                                 style="margin-top: 10px">
-                                                                                天气太热,预防中暑
-                                                                            </div>
-                                                                            <div class="col-md-6 float-right"
-                                                                                 style="margin-top: 10px">
-                                                                                <div class="row-cols-6">
-                                                                                    温度 > 30 ℃
-                                                                                </div>
-                                                                                <div class="row-cols-6">
-                                                                                    温度 > 30 ℃
-                                                                                </div>
-                                                                                <div class="row-cols-6">
-                                                                                    温度 > 30 ℃
-                                                                                </div>
-                                                                            </div>
 
 
-                                                                        </div>
-
-                                                                        <hr>
-
-                                                                        <div class="row">
-                                                                            <div class="col-md-6">
-                                                                                规则添加时间:
-                                                                                <span>2020-05-09 18:29:56</span>
-                                                                            </div>
-                                                                            <div class="col-md-6">
-                                                                                最近触发时间:
-                                                                                <span>2020-05-09 18:29:56</span>
-                                                                            </div>
-                                                                        </div>
+                                                                    </div>
 
 
-                                                                        <div class="row"
-                                                                             style="margin-top: 30px">
-                                                                            <div class="col-12">
+                                                                    <div class="tab-pane fade" id="check-history"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-profile-tab">
 
-                                                                                <div
-                                                                                        class="btn-group col-md-1">
-                                                                                    <button type="button"
-                                                                                            class="btn btn-primary">
-                                                                                        编辑告警
-                                                                                    </button>
-                                                                                </div>
+                                                                        <div class="card-body">
 
-                                                                                <div
-                                                                                        class="btn-group col-md-1">
-                                                                                    <button type="button"
-                                                                                            class="btn btn-secondary">
-                                                                                        禁用告警
-                                                                                    </button>
-                                                                                </div>
 
-                                                                                <div class="btn-group float-right col-md-1">
-
-                                                                                    <button type="button"
-                                                                                            class="btn btn-danger">
-                                                                                        删除告警
-                                                                                    </button>
-                                                                                    <!--                                                                                    <button type="button"-->
-                                                                                    <!--                                                                                            class="btn btn-dark dropdown-toggle dropdown-icon"-->
-                                                                                    <!--                                                                                            data-toggle="dropdown">-->
-                                                                                    <!--                                                                                        <span class="sr-only">下拉切换</span>-->
-                                                                                    <!--                                                                                        <div class="dropdown-menu"-->
-                                                                                    <!--                                                                                             role="menu">-->
-                                                                                    <!--                                                                                            <a class="dropdown-item"-->
-                                                                                    <!--                                                                                               href="#">5分钟</a>-->
-                                                                                    <!--                                                                                            <a class="dropdown-item"-->
-                                                                                    <!--                                                                                               href="#">30分钟</a>-->
-                                                                                    <!--                                                                                            <a class="dropdown-item"-->
-                                                                                    <!--                                                                                               href="#">1小时</a>-->
-                                                                                    <!--                                                                                            <a class="dropdown-item"-->
-                                                                                    <!--                                                                                               href="#">3小时</a>-->
-                                                                                    <!--                                                                                            <a class="dropdown-item"-->
-                                                                                    <!--                                                                                               href="#">24小时</a>-->
-                                                                                    <!--                                                                                            <div class="dropdown-divider"></div>-->
-                                                                                    <!--                                                                                            <a class="dropdown-item"-->
-                                                                                    <!--                                                                                               href="#">禁用告警</a>-->
-                                                                                    <!--                                                                                        </div>-->
-                                                                                    <!--                                                                                    </button>-->
-                                                                                </div>
-
-                                                                            </div>
                                                                         </div>
 
                                                                     </div>
 
 
-                                                                </div>
-
-
-                                                                <div class="tab-pane fade" id="check-history"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-profile-tab">
-
-                                                                    <div class="card-body">
+                                                                    <div class="tab-pane fade" id="operation-history"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-messages-tab">
 
 
                                                                     </div>
 
+                                                                    <div class="tab-pane fade" id="warn-history"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-settings-tab">
+
+
+                                                                    </div>
+
+                                                                    <div class="tab-pane fade" id="setting"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-settings-tab">
+
+
+                                                                    </div>
                                                                 </div>
 
 
-                                                                <div class="tab-pane fade" id="operation-history"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-messages-tab">
-
-
-                                                                </div>
-
-                                                                <div class="tab-pane fade" id="warn-history"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-settings-tab">
-
-
-                                                                </div>
-
-                                                                <div class="tab-pane fade" id="setting"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-settings-tab">
-
-
-                                                                </div>
                                                             </div>
 
-
                                                         </div>
-
                                                     </div>
-                                                </div>
-                                                <!-- 告警条目结束 -->
-                                            </td>
-                                        </tr>
+                                                    <!-- 告警条目结束 -->
+                                                </td>
+                                            </tr>
+
+
+                                        </#list>
+
 
                                         <tr>
                                             <td>

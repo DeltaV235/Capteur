@@ -3,6 +3,8 @@ package com.wuyue.mapper;
 import com.wuyue.model.entity.RuleList;
 import com.wuyue.model.entity.RuleListExample;
 import java.util.List;
+
+import com.wuyue.model.vo.Rule;
 import org.apache.ibatis.annotations.Param;
 
 public interface RuleListMapper {
@@ -33,4 +35,6 @@ public interface RuleListMapper {
     int updateByPrimaryKeyWithBLOBs(RuleList record);
 
     int updateByPrimaryKey(RuleList record);
+
+    List<Rule> selectAllRuleData();
 }

@@ -512,14 +512,15 @@
         $("#edit_contactPhone").val("");
         $("#edit_contactEmail").val("");
 
-        // 模态框关闭时,删除重置按钮的click事件
+        // 修改页面模态框关闭时,删除重置按钮的click事件,防止重置为上一次的数据
         $("#edit_checkReset .modal-footer>button").last().off()
-        // 模态框关闭时,删除提交表单按钮的click事件,阻止修改错误的记录
+        // 修改页面模态框关闭时,删除提交表单按钮的click事件,阻止修改错误的记录
         $("#edit-contact").find("button").last().off()
     }
 
     // 编辑页面重置操作
     function edit_reset(event) {
+        // 获取打开修改页面时获得的联系人信息
         let contactName = event.data.name
         let contactPhone = event.data.phone
         let contactEmail = event.data.email
@@ -544,6 +545,7 @@
                 }
             }
         })
+        // 无论删除是否成功,都清除模态框删除按钮上的click事件
         $("#checkDel").children().first().children().first().find(".modal-footer").children().last().off()
     }
 
@@ -609,7 +611,7 @@
             minimumResultsForSearch: -1
         })
 
-
+        //DataTable设置
         $('#contactTable').DataTable({
             "language": {
                 "sProcessing": "处理中...",
