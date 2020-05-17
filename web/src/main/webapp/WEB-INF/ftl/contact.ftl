@@ -241,7 +241,7 @@
                                 <button type="button" class="btn btn-danger" data-toggle="modal"
                                         data-target="#checkReset">重置
                                 </button>
-                                <button type="button" class="btn btn-primary" onclick="submitForm()">保存修改</button>
+                                <button type="button" class="btn btn-primary" onclick="submitForm()">保存联系人</button>
                             </div>
                         </div>
                     </div>
@@ -251,6 +251,86 @@
             </div>
             <!-- /.modal -->
 
+            <div class="modal fade" id="edit-contact">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">编辑告警联系人</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    onclick="reset()" id="edit_closeBtn">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 模态框主体 -->
+
+
+                            <!-- 表单 -->
+                            <#--                            <form id="contactForm" method="post" action="contacts">-->
+                            <div class="form-group">
+
+                                <!-- 第一行 -->
+
+                                <!-- 联系人姓名 -->
+                                <div class="col-md-12">
+                                    <label class="col-form-label" for="contactName">联系人姓名</label>
+                                    <input type="text" class="form-control is-valid" id="edit_contactName"
+                                           placeholder="请输入联系人姓名" name="contactName">
+                                </div>
+
+
+                                <!-- /第一行 -->
+
+
+                                <!-- 第二行 -->
+
+                                <div class="col-md-12">
+                                    <label class="col-form-label" for="contactPhone">联系人手机号</label>
+                                    <input type="text" class="form-control is-valid" id="edit_contactPhone"
+                                           placeholder="请输入联系人手机号" name="contactPhone">
+                                </div>
+
+
+                                <!-- /第二行 -->
+
+
+                                <!-- 第三行 -->
+
+
+                                <div class="col-md-12">
+                                    <label class="col-form-label" for="contactEmail">联系人邮箱</label>
+                                    <input type="text" class="form-control is-valid" id="edit_contactEmail"
+                                           placeholder="请输入联系人邮箱" name="contactEmail">
+                                </div>
+
+
+                                <!-- /第三行 -->
+
+
+                            </div>
+                            <#--                            </form>-->
+
+
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <div class="justify-content-start">
+                                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="reset()
+">关闭
+                                </button>
+                            </div>
+                            <div class="justify-content-end">
+                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                                        data-target="#edit_checkReset">重置
+                                </button>
+                                <button type="button" class="btn btn-primary">修改联系人</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
 
             <!-- Modal -->
             <div class="modal fade" id="checkReset" tabindex="2" role="dialog" aria-labelledby="exampleModalLabel"
@@ -276,9 +356,32 @@
             </div>
             <!-- /.modal -->
 
+            <!-- Modal -->
+            <div class="modal fade" id="edit_checkReset" tabindex="2" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <!--                            <h5 class="modal-title" id="exampleModalLabel"></h5>-->
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            重置后所有未保存的数据将丢失,请确认是否重置
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">重置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal -->
 
             <!-- Modal -->
-            <div class="modal fade" id="checkDel" tabindex="2" role="dialog" aria-labelledby="exampleModalLabel"
+            <div class="modal fade" id="checkDel" tabindex="5" role="dialog" aria-labelledby="exampleModalLabel"
                  aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -292,7 +395,9 @@
                             是否删除该联系人
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                    onclick="clearClick(this)">取消
+                            </button>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">删除
                             </button>
                         </div>
@@ -338,6 +443,7 @@
 <!-- 页面脚本 -->
 <script>
 
+    // 表单提交
     function submitForm() {
         let contactName = $("#contactName").val()
         let contactPhone = $("#contactPhone").val()
@@ -348,7 +454,6 @@
             phone: contactPhone,
             email: contactEmail
         }
-        let isRefresh = false
         $.ajax({
                 url: "contacts",
                 method: "POST",
@@ -358,9 +463,7 @@
                     // 添加成功,刷新表格
                     if (response.success) {
                         $("#closeBtn").click()
-                        table.ajax.reload(function () {
-                            isRefresh = true
-                        }, true);
+                        table.ajax.reload(null, true);
                         // 跳转至最后一页
                         table.page('last').draw('page');
                     }
@@ -370,15 +473,62 @@
     }
 
 
-    function reset(obj) {
+    // 表单修改提交
+    function editContact(event) {
+        let contactName = $("#edit_contactName").val()
+        let contactPhone = $("#edit_contactPhone").val()
+        let contactEmail = $("#edit_contactEmail").val()
+        let table = $("#contactTable").DataTable();
+        let requestData = {
+            id: event.data,
+            name: contactName,
+            phone: contactPhone,
+            email: contactEmail
+        }
+        $.ajax({
+                url: "contacts",
+                method: "PUT",
+                data: JSON.stringify(requestData),
+                contentType: "application/json;charset=utf-8",
+                success: function (response) {
+                    console.info(response)
+                    // 添加成功,刷新表格
+                    if (response.success) {
+                        $("#edit_closeBtn").click()
+                        table.ajax.reload(null, false);
+                    }
+                }
+            }
+        )
+    }
+
+    // 新增页面的重置操作
+    function reset() {
 
         $("#contactName").val("");
         $("#contactPhone").val("");
         $("#contactEmail").val("");
+        $("#edit_contactName").val("");
+        $("#edit_contactPhone").val("");
+        $("#edit_contactEmail").val("");
 
-
+        // 模态框关闭时,删除重置按钮的click事件
+        $("#edit_checkReset .modal-footer>button").last().off()
+        // 模态框关闭时,删除提交表单按钮的click事件,阻止修改错误的记录
+        $("#edit-contact").find("button").last().off()
     }
 
+    // 编辑页面重置操作
+    function edit_reset(event) {
+        let contactName = event.data.name
+        let contactPhone = event.data.phone
+        let contactEmail = event.data.email
+        $("#edit_contactName").val(contactName);
+        $("#edit_contactPhone").val(contactPhone);
+        $("#edit_contactEmail").val(contactEmail);
+    }
+
+    // 执行删除操作
     function delRecord(event) {
         console.info(event.data)
         let contactId = event.data;
@@ -397,8 +547,42 @@
         $("#checkDel").children().first().children().first().find(".modal-footer").children().last().off()
     }
 
+
+    // 清除按钮的click事件,防止一次删除多条记录
+    function clearClick(obj) {
+        $(obj).next().off()
+    }
+
     $(function () {
 
+        // 打开编辑模态框时,查询数据库中的该条记录,并回显到输入框中
+        $('#edit-contact').on('show.bs.modal', function (event) {
+            var btnThis = $(event.relatedTarget); //触发事件的按钮
+            var modal = $(this);  //当前模态框
+            let table = $("#contactTable").DataTable();
+            let rowNum = btnThis.parent().parent().children().first().next().html();
+            let contactId = table.row(rowNum - 1).data().id
+            $.ajax({
+                url: "contacts/" + contactId,
+                method: "GET",
+                success: function (response) {
+                    $("#edit-contact #edit_contactName").val(response.data.name)
+                    $("#edit-contact #edit_contactPhone").val(response.data.phone)
+                    $("#edit-contact #edit_contactEmail").val(response.data.email)
+                    // 添加重置按钮的click事件
+                    $("#edit_checkReset .modal-footer>button").last().click(
+                        {
+                            name: response.data.name,
+                            phone: response.data.phone,
+                            email: response.data.email
+                        },
+                        edit_reset);
+                    modal.find("button").last().click(contactId, editContact)
+                }
+            })
+        })
+
+        // 打开删除确认模态框时,记录删除按钮对应记录的id,设置模态框中删除按钮的click事件为delRecord(id)
         $('#checkDel').on('shown.bs.modal', function (event) {
             var btnThis = $(event.relatedTarget); //触发事件的按钮
             var modal = $(this);  //当前模态框
@@ -510,7 +694,8 @@
                 {
                     "data": null,
                     "render": function (row, type, val, meta) {
-                        return '<button class="btn btn-secondary">' +
+                        return '<button class="btn btn-secondary" data-toggle="modal" data-target="#edit-contact" ' +
+                            'data-backdrop="static">' +
                             '编辑联系人' +
                             '</button>'
                     },

@@ -16,4 +16,8 @@ public interface ContactService {
     boolean saveContact(String contactName, String contactPhone, String contactEmail);
 
     boolean removeContact(Integer id);
+
+    Contact getContact(Integer id);
+
+    boolean editContact(Contact contact);
 }

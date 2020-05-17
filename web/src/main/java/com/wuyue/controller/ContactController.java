@@ -31,7 +31,7 @@ public class ContactController {
      * @return json字符串, 包含联系人的id, 姓名, 手机和邮箱
      * @author DeltaV235
      * @date 2020/5/16 20:07
-     * @description 返回指定页数的联系人
+     * @description 返回指定页数的所有联系人
      */
     @PostMapping("/contactTable")
     public TableData<Contact> getTableContactJson(@RequestParam(value = "start", defaultValue = "0") Integer start,
@@ -61,7 +61,7 @@ public class ContactController {
     }
 
     /**
-     * @param id
+     * @param id 删除记录的主键
      * @return jsonString 不携带数据
      * @author DeltaV235
      * @date 2020/5/16 20:52
@@ -69,14 +69,53 @@ public class ContactController {
      */
     @DeleteMapping("/contacts/{id}")
     public ResultEntity<Object> deleteContact(@PathVariable("id") Integer id) {
-        boolean isRemoved = contactService.removeContact(id);
         try {
+            boolean isRemoved = contactService.removeContact(id);
             if (isRemoved)
                 return ResultEntity.successWithoutData();
             return ResultEntity.error("联系人删除失败");
         } catch (Exception e) {
             logger.warn("联系人删除失败", e);
             return ResultEntity.error("联系人删除失败");
+        }
+    }
+
+    /**
+     * @param id 联系人组件
+     * @return 包装了Contact的ResultEntity
+     * @author DeltaV235
+     * @date 2020/5/17 2:00
+     * @description 返回指定的一个联系人信息
+     */
+    @GetMapping("/contacts/{id}")
+    public ResultEntity<Contact> getContact(@PathVariable("id") Integer id) {
+        try {
+            Contact contact = contactService.getContact(id);
+            if (contact != null)
+                return ResultEntity.successWithData(contact);
+            return ResultEntity.error("联系人删除失败");
+        } catch (Exception e) {
+            logger.warn("联系人删除失败", e);
+            return ResultEntity.error("联系人获取失败");
+        }
+    }
+
+    /**
+     * @return json
+     * @author DeltaV235
+     * @date 2020/5/17 3:48
+     * @description 处理修改联系人的请求
+     */
+    @PutMapping(value = "/contacts")
+    public ResultEntity<Contact> editContact(@RequestBody Contact contact) {
+        try {
+            boolean isEdit = contactService.editContact(contact);
+            if (isEdit)
+                return ResultEntity.successWithData(contact);
+            return ResultEntity.error("联系人修改失败");
+        } catch (Exception e) {
+            logger.warn("联系人修改失败", e);
+            return ResultEntity.error("联系人修改失败");
         }
     }
 

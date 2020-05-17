@@ -49,4 +49,15 @@ public class ContactServiceImpl implements ContactService {
         int update = contactMapper.deleteByPrimaryKey(id);
         return update > 0;
     }
+
+    @Override
+    public Contact getContact(Integer id) {
+        return contactMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public boolean editContact(Contact contact) {
+        int update = contactMapper.updateByPrimaryKey(contact);
+        return update > 0;
+    }
 }
