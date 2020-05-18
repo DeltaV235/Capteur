@@ -69,396 +69,359 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td class="warn-list-table-td">
-                                                <!-- 告警条目开始 -->
-                                                <div class="card card-primary warn-list-table-card-no-margin">
-                                                    <!-- 标题栏 -->
-                                                    <a data-toggle="collapse" data-parent="#accordion"
-                                                       href="#collapseOne">
-                                                        <div class="card-header alert-danger"
-                                                             style="border-radius: 4px">
-                                                            <h4 class="card-title">
-                                                                温度高于30摄氏度且湿度小于80%
-                                                            </h4>
-                                                            <span class="badge badge-pill float-left"
-                                                                  style="height: 21px;line-height: 21px;
+
+
+                                        <#list warnings as warning>
+
+                                            <tr>
+                                                <td class="warn-list-table-td">
+                                                    <!-- 告警条目开始 -->
+                                                    <div class="card card-primary warn-list-table-card-no-margin">
+                                                        <!-- 标题栏 -->
+                                                        <a data-toggle="collapse" data-parent="#accordion"
+                                                           href="#id_${warning.id}">
+                                                            <div class="card-header
+                                                            <#if warning.level=="e">alert-danger
+                                                            <#elseif warning.level=="w">alert-warning
+                                                            <#elseif warning.level=="i">alert-secondary
+                                                            </#if>"
+                                                                 style="border-radius: 4px">
+                                                                <h4 class="card-title">
+                                                                    ${warning.name}
+                                                                </h4>
+                                                                <span class="badge badge-pill float-left"
+                                                                      style="height: 21px;line-height: 21px;
                                                       padding-top: 0;padding-bottom: 0">
                                                     new
                                                 </span>
-                                                            <span class="badge badge-pill float-right"
-                                                                  style="height: 21px;line-height: 21px;
+                                                                <span class="badge badge-pill float-right"
+                                                                      style="height: 21px;line-height: 21px;
                                                       padding-top: 0;padding-bottom: 0">
                                                     9分钟前
                                                 </span>
-                                                        </div>
-                                                    </a>
+                                                            </div>
+                                                        </a>
 
-                                                    <!-- 告警主体 -->
-                                                    <div id="collapseOne" class="panel-collapse collapse in">
-                                                        <div class="card-body" style="padding: 0">
+                                                        <!-- 告警主体 -->
+                                                        <div id="id_${warning.id}" class="panel-collapse collapse in">
+                                                            <div class="card-body" style="padding: 0">
 
-                                                            <!-- 标签条 -->
-                                                            <ul class="nav nav-tabs" id="custom-content-below-tab"
-                                                                role="tablist">
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link active"
-                                                                       id="custom-content-below-home-tab"
-                                                                       data-toggle="pill" href="#info"
-                                                                       role="tab" aria-controls="info"
-                                                                       aria-selected="true"
-                                                                       style="margin-left: 0; border-left: 0"
-                                                                    >
-                                                                        详情
-                                                                    </a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link"
-                                                                       id="custom-content-below-profile-tab"
-                                                                       data-toggle="pill" href="#check-history"
-                                                                       role="tab" aria-controls="check-history"
-                                                                       aria-selected="false">探测历史</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link"
-                                                                       id="custom-content-below-messages-tab"
-                                                                       data-toggle="pill" href="#operation-history"
-                                                                       role="tab" aria-controls="operation-history"
-                                                                       aria-selected="false">操作历史</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link" id="tab-warn-history"
-                                                                       data-toggle="pill" href="#warn-history"
-                                                                       role="tab" aria-controls="warn-history"
-                                                                       aria-selected="false">告警历史</a>
-                                                                </li>
-                                                                <li class="nav-item">
-                                                                    <a class="nav-link"
-                                                                       id="custom-content-below-settings-tab"
-                                                                       data-toggle="pill" href="#setting"
-                                                                       role="tab" aria-controls="setting"
-                                                                       aria-selected="false">设置</a>
-                                                                </li>
-                                                            </ul>
+                                                                <!-- 标签条 -->
+                                                                <ul class="nav nav-tabs" id="custom-content-below-tab"
+                                                                    role="tablist">
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link active"
+                                                                           id="custom-content-below-home-tab"
+                                                                           data-toggle="pill" href="#info"
+                                                                           role="tab" aria-controls="info"
+                                                                           aria-selected="true"
+                                                                           style="margin-left: 0; border-left: 0"
+                                                                        >
+                                                                            详情
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link"
+                                                                           id="custom-content-below-profile-tab"
+                                                                           data-toggle="pill" href="#check-history"
+                                                                           role="tab" aria-controls="check-history"
+                                                                           aria-selected="false">探测历史</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link"
+                                                                           id="custom-content-below-messages-tab"
+                                                                           data-toggle="pill" href="#operation-history"
+                                                                           role="tab" aria-controls="operation-history"
+                                                                           aria-selected="false">操作历史</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link" id="tab-warn-history"
+                                                                           data-toggle="pill" href="#warn-history"
+                                                                           role="tab" aria-controls="warn-history"
+                                                                           aria-selected="false">告警历史</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link"
+                                                                           id="custom-content-below-settings-tab"
+                                                                           data-toggle="pill" href="#setting"
+                                                                           role="tab" aria-controls="setting"
+                                                                           aria-selected="false">设置</a>
+                                                                    </li>
+                                                                </ul>
 
-                                                            <!-- 标签内容 -->
-                                                            <div class="tab-content"
-                                                                 id="custom-content-below-tabContent">
+                                                                <!-- 标签内容 -->
+                                                                <div class="tab-content"
+                                                                     id="custom-content-below-tabContent">
 
 
-                                                                <!-- 第一个标签的内容 -->
-                                                                <div class="tab-pane fade show active"
-                                                                     id="info" role="tabpanel"
-                                                                     aria-labelledby="info">
+                                                                    <!-- 第一个标签的内容 -->
+                                                                    <div class="tab-pane fade show active"
+                                                                         id="info" role="tabpanel"
+                                                                         aria-labelledby="info">
 
-                                                                    <div class="card-body">
+                                                                        <div class="card-body">
 
-                                                                        <div class="row">
-                                                                            <div class="col-md-3">
-                                                                                告警状态:
-                                                                                &nbsp;
-                                                                                <span class="badge badge-danger" style="height: 24px;line-height: 22px;
+                                                                            <div class="row">
+                                                                                <div class="col-md-3">
+                                                                                    告警状态:
+                                                                                    &nbsp;
+                                                                                    <#if warning.status=="w">
+                                                                                        <span class="badge badge-danger"
+                                                                                              style="height: 24px;line-height: 22px;
                                                       padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">未恢复
                                                         </span>
-                                                                            </div>
+                                                                                    <#elseif warning.status=="r">
+                                                                                        <span class="badge badge-success"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
+                                                      margin-bottom: 1px">已恢复
+                                                        </span>
+                                                                                    </#if>
+                                                                                </div>
 
-                                                                            <div class="col-md-3">
-                                                                                告警等级:
-                                                                                &nbsp;
-                                                                                <span class="badge badge-danger" style="height: 24px;line-height: 22px;
+                                                                                <div class="col-md-3">
+                                                                                    告警等级:
+                                                                                    &nbsp;
+
+                                                                                    <#if warning.level=="e">
+                                                                                        <span class="badge badge-danger"
+                                                                                              style="height: 24px;line-height: 22px;
                                                       padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">ERROR
                                                                     </span>
-                                                                            </div>
+                                                                                    <#elseif warning.level=="w">
+                                                                                        <span class="badge badge-warning"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
+                                                      margin-bottom: 1px">WARN
+                                                                    </span>
+                                                                                    <#elseif warning.level=="i">
+                                                                                        <span class="badge badge-secondary"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
+                                                      margin-bottom: 1px">INFO
+                                                                    </span>
 
-                                                                            <div class="col-md-3">
-                                                                                告警ID:
-                                                                                &nbsp;
-                                                                                10394
-                                                                            </div>
-
-                                                                            <div class="col-md-3">
-                                                                                告警规则ID:
-                                                                                &nbsp;
-                                                                                39481
-                                                                            </div>
-                                                                        </div>
-                                                                        <hr>
-
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 float-left">
-                                                                                告警描述:
-                                                                            </div>
-                                                                            <div class="col-md-3 float-right">
-                                                                                告警触发条件:
-                                                                            </div>
-                                                                            <div class="col-md-3 float-right">
-                                                                                当前值为:
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="row">
-                                                                            <div class="col-md-6 float-left"
-                                                                                 style="margin-top: 10px">
-                                                                                天气太热,预防中暑
-                                                                            </div>
-                                                                            <div class="col-md-3 float-right"
-                                                                                 style="margin-top: 10px">
-                                                                                <div class="row-cols-3">
-                                                                                    温度 > 30 ℃
+                                                                                    </#if>
                                                                                 </div>
-                                                                                <div class="row-cols-3">
-                                                                                    温度 > 30 ℃
+
+                                                                                <div class="col-md-3">
+                                                                                    告警ID:
+                                                                                    &nbsp;
+                                                                                    ${warning.id}
                                                                                 </div>
-                                                                                <div class="row-cols-3">
-                                                                                    温度 > 30 ℃
+
+                                                                                <div class="col-md-3">
+                                                                                    告警规则ID:
+                                                                                    &nbsp;
+                                                                                    ${warning.ruleId}
+                                                                                </div>
+                                                                            </div>
+                                                                            <hr>
+
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 float-left">
+                                                                                    告警描述:
+                                                                                </div>
+                                                                                <div class="col-md-3 float-right">
+                                                                                    告警触发条件:
+                                                                                </div>
+                                                                                <div class="col-md-3 float-right">
+                                                                                    当前值为:
                                                                                 </div>
                                                                             </div>
 
-                                                                            <div class="col-md-3 float-right"
-                                                                                 style="margin-top: 10px">
-                                                                                <div class="row-cols-3">
-                                                                                    温度 = 40 ℃
+                                                                            <div class="row">
+                                                                                <div class="col-md-6 float-left"
+                                                                                     style="margin-top: 10px">
+                                                                                    ${warning.description}
                                                                                 </div>
-                                                                                <div class="row-cols-3">
-                                                                                    湿度 = 100 %
-                                                                                </div>
-                                                                                <div class="row-cols-3">
-                                                                                    气压 = 1.02 ATM
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
+                                                                                <div class="col-md-3 float-right"
+                                                                                     style="margin-top: 10px">
+                                                                                    <#list warning.conditions as condition>
+                                                                                        <div class="row-cols-3">
+                                                                                            <#if condition.param=='t'>
+                                                                                                温度
+                                                                                            <#elseif condition
+                                                                                            .param=='h'>
+                                                                                                湿度
+                                                                                            <#elseif condition
+                                                                                            .param=='l'>
+                                                                                                亮度
+                                                                                            <#elseif condition
+                                                                                            .param=='p'>
+                                                                                                气压
+                                                                                            </#if>
 
-                                                                        <hr>
+                                                                                            ${condition.symbol}
+                                                                                            ${condition.data}
 
-                                                                        <div class="row">
-                                                                            <div class="col-md-4">
-                                                                                开始时间:
-                                                                                <span>2020-05-09 18:29:56</span>
-                                                                            </div>
-                                                                            <div class="col-md-4">
-                                                                                最近触发时间:
-                                                                                <span>2020-05-09 18:29:56</span>
-                                                                            </div>
-                                                                            <div class="col-md-4">
-                                                                                恢复时间:
-                                                                                <span></span>
-                                                                            </div>
-                                                                        </div>
-
-
-                                                                        <div class="row"
-                                                                             style="margin-top: 30px">
-                                                                            <div class="col-12">
-
-                                                                                <div class="btn-group float-left">
-                                                                                    <button type="button"
-                                                                                            class="btn btn-secondary">
-                                                                                        抑制告警15分钟
-                                                                                    </button>
-                                                                                    <button type="button"
-                                                                                            class="btn btn-secondary dropdown-toggle dropdown-icon"
-                                                                                            data-toggle="dropdown">
-                                                                                        <span class="sr-only">下拉切换</span>
-                                                                                        <div class="dropdown-menu"
-                                                                                             role="menu">
-                                                                                            <a class="dropdown-item"
-                                                                                               href="#">5分钟</a>
-                                                                                            <a class="dropdown-item"
-                                                                                               href="#">30分钟</a>
-                                                                                            <a class="dropdown-item"
-                                                                                               href="#">1小时</a>
-                                                                                            <a class="dropdown-item"
-                                                                                               href="#">3小时</a>
-                                                                                            <a class="dropdown-item"
-                                                                                               href="#">24小时</a>
-                                                                                            <div class="dropdown-divider"></div>
-                                                                                            <a class="dropdown-item"
-                                                                                               href="#">禁用告警</a>
+                                                                                            <#if condition.param=='t'>
+                                                                                                ℃
+                                                                                            <#elseif condition
+                                                                                            .param=='h'>
+                                                                                                %
+                                                                                            <#elseif condition
+                                                                                            .param=='l'>
+                                                                                                lux
+                                                                                            <#elseif condition
+                                                                                            .param=='p'>
+                                                                                                Pa
+                                                                                            </#if>
                                                                                         </div>
-                                                                                    </button>
+                                                                                    </#list>
+
                                                                                 </div>
 
+                                                                                <div class="col-md-3 float-right"
+                                                                                     style="margin-top: 10px">
+
+                                                                                    <#list warning.conditions as
+                                                                                    condition>
+                                                                                        <#if condition.param=="t">
+                                                                                            <div class="row-cols-3">
+                                                                                                温度
+                                                                                                = ${warning.curSensorData
+                                                                                                .temp} ℃
+                                                                                            </div>
+                                                                                        <#elseif condition
+                                                                                        .param=="h">
+                                                                                            <div class="row-cols-3">
+                                                                                                湿度
+                                                                                                = ${warning.curSensorData
+                                                                                                .humi} %
+                                                                                            </div>
+                                                                                        <#elseif condition
+                                                                                        .param=="p">
+                                                                                            <div class="row-cols-3">
+                                                                                                气压
+                                                                                                = ${warning.curSensorData
+                                                                                                .press} ATM
+                                                                                            </div>
+                                                                                        <#elseif condition
+                                                                                        .param=="l">
+                                                                                            <div class="row-cols-3">
+                                                                                                亮度
+                                                                                                = ${warning.curSensorData
+                                                                                                .light} lux
+                                                                                            </div>
+                                                                                        </#if>
+
+                                                                                    </#list>
+
+
+                                                                                </div>
                                                                             </div>
+
+                                                                            <hr>
+
+                                                                            <div class="row">
+                                                                                <div class="col-md-4">
+                                                                                    开始时间:
+                                                                                    <span>${warning.startTime?string
+                                                                                        ('yyyy-MM-dd HH:mm:ss')}</span>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    最近触发时间:
+                                                                                    <span>${warning.lastTriggerTime?string
+                                                                                        ('yyyy-MM-dd HH:mm:ss')}</span>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    恢复时间:
+                                                                                    <span>
+                                                                                    <#if warning.recoverTime??>
+                                                                                        ${warning.recoverTime?string('yyyy-MM-dd HH:mm:ss')}
+                                                                                    </#if>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class="row"
+                                                                                 style="margin-top: 30px">
+                                                                                <div class="col-12">
+
+                                                                                    <div class="btn-group float-left">
+                                                                                        <button type="button"
+                                                                                                class="btn btn-secondary">
+                                                                                            抑制告警15分钟
+                                                                                        </button>
+                                                                                        <button type="button"
+                                                                                                class="btn btn-secondary dropdown-toggle dropdown-icon"
+                                                                                                data-toggle="dropdown">
+                                                                                            <span class="sr-only">下拉切换</span>
+                                                                                            <div class="dropdown-menu"
+                                                                                                 role="menu">
+                                                                                                <a class="dropdown-item"
+                                                                                                   href="#">5分钟</a>
+                                                                                                <a class="dropdown-item"
+                                                                                                   href="#">30分钟</a>
+                                                                                                <a class="dropdown-item"
+                                                                                                   href="#">1小时</a>
+                                                                                                <a class="dropdown-item"
+                                                                                                   href="#">3小时</a>
+                                                                                                <a class="dropdown-item"
+                                                                                                   href="#">24小时</a>
+                                                                                                <div class="dropdown-divider"></div>
+                                                                                                <a class="dropdown-item"
+                                                                                                   href="#">禁用告警</a>
+                                                                                            </div>
+                                                                                        </button>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+
+                                                                    <div class="tab-pane fade" id="check-history"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-profile-tab">
+
+                                                                        <div class="card-body">
+
+
                                                                         </div>
 
                                                                     </div>
 
 
-                                                                </div>
-
-
-                                                                <div class="tab-pane fade" id="check-history"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-profile-tab">
-
-                                                                    <div class="card-body">
+                                                                    <div class="tab-pane fade" id="operation-history"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-messages-tab">
 
 
                                                                     </div>
 
+                                                                    <div class="tab-pane fade" id="warn-history"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-settings-tab">
+
+
+                                                                    </div>
+
+                                                                    <div class="tab-pane fade" id="setting"
+                                                                         role="tabpanel"
+                                                                         aria-labelledby="custom-content-below-settings-tab">
+
+
+                                                                    </div>
                                                                 </div>
 
 
-                                                                <div class="tab-pane fade" id="operation-history"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-messages-tab">
-
-
-                                                                </div>
-
-                                                                <div class="tab-pane fade" id="warn-history"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-settings-tab">
-
-
-                                                                </div>
-
-                                                                <div class="tab-pane fade" id="setting"
-                                                                     role="tabpanel"
-                                                                     aria-labelledby="custom-content-below-settings-tab">
-
-
-                                                                </div>
                                                             </div>
 
-
                                                         </div>
-
                                                     </div>
-                                                </div>
-                                                <!-- 告警条目结束 -->
-                                            </td>
-                                        </tr>
+                                                    <!-- 告警条目结束 -->
+                                                </td>
+                                            </tr>
 
-                                        <tr>
-                                            <td>
-                                                <!-- 告警条目开始 -->
-                                                <div class="card card-primary warn-list-table-card-no-margin">
-                                                    <a data-toggle="collapse" data-parent="#accordion"
-                                                       href="#collapseTwo">
-                                                        <div class="card-header alert-warning">
-                                                            <h4 class="card-title">
-                                                                温度高于30摄氏度且湿度小于80%
-                                                            </h4>
-                                                            <span class="badge badge-pill float-right"
-                                                                  style="height: 21px;line-height: 21px;
-                                                      padding-top: 0;padding-bottom: 0">2分钟前
-                                                </span>
-                                                        </div>
-                                                    </a>
-                                                    <div id="collapseTwo" class="panel-collapse collapse in">
-                                                        <div class="card-body">
+                                        </#list>
 
-                                                            <div class="row">
-                                                                <div class="col-md-1">
-                                                                    告警状态:
-                                                                </div>
-                                                                <div class="col-md-1">
-
-                                                        <span class="badge badge-warning"
-                                                              style="height: 24px;line-height: 22px;
-                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">已抑制 30 分钟
-                                                        </span>
-                                                                    <span class="badge badge-dark"
-                                                                          style="height: 24px;line-height: 22px;
-                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">将于 18 分钟 后再次检查该告警
-                                                        </span>
-
-                                                                </div>
-                                                            </div>
-
-                                                            <br>
-
-                                                            <div class="row">
-                                                                <div class="col-md-6 float-left">
-                                                                    告警描述:
-                                                                </div>
-                                                                <div class="col-md-3 float-right">
-                                                                    告警触发条件:
-                                                                </div>
-                                                                <div class="col-md-3 float-right">
-                                                                    当前值为:
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row">
-                                                                <div class="col-md-6 float-left"
-                                                                     style="margin-top: 10px">
-                                                                    天气太热,预防中暑
-                                                                </div>
-                                                                <div class="col-md-3 float-right"
-                                                                     style="margin-top: 10px">
-                                                                    <div class="row-cols-3">
-                                                                        温度 > 30 ℃
-                                                                    </div>
-                                                                    <div class="row-cols-3">
-                                                                        温度 > 30 ℃
-                                                                    </div>
-                                                                    <div class="row-cols-3">
-                                                                        温度 > 30 ℃
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-md-3 float-right"
-                                                                     style="margin-top: 10px">
-                                                                    <div class="row-cols-3">
-                                                                        温度 = 40 ℃
-                                                                    </div>
-                                                                    <div class="row-cols-3">
-                                                                        湿度 = 100 %
-                                                                    </div>
-                                                                    <div class="row-cols-3">
-                                                                        气压 = 1.02 ATM
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <br>
-
-                                                            <div class="row">
-                                                                <div class="col-md-6 float-left">
-                                                                    开始时间:
-                                                                    <span>2020-05-09 18:29:56</span>
-                                                                </div>
-                                                                <div class="col-md-6 float-right">
-                                                                    恢复时间:
-                                                                    <span>2020-05-09 20:50:11</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row" style="margin-bottom: 10px; margin-left: 10px;
-                                            margin-top: 10px">
-                                                            <div class="col-12">
-
-                                                                <div class="btn-group float-left">
-                                                                    <button type="button" class="btn btn-warning">
-                                                                        抑制告警15分钟
-                                                                    </button>
-                                                                    <button type="button"
-                                                                            class="btn btn-warning dropdown-toggle dropdown-icon"
-                                                                            data-toggle="dropdown">
-                                                                        <span class="sr-only">下拉切换</span>
-                                                                        <div class="dropdown-menu" role="menu">
-                                                                            <a class="dropdown-item" href="#">5分钟</a>
-                                                                            <a class="dropdown-item" href="#">30分钟</a>
-                                                                            <a class="dropdown-item" href="#">1小时</a>
-                                                                            <a class="dropdown-item" href="#">3小时</a>
-                                                                            <a class="dropdown-item" href="#">24小时</a>
-                                                                            <div class="dropdown-divider"></div>
-                                                                            <a class="dropdown-item" href="#">禁用告警</a>
-                                                                        </div>
-                                                                    </button>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                                <!-- 告警条目结束 -->
-                                            </td>
-                                        </tr>
                                         </tbody>
                                     </table>
 

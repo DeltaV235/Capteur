@@ -1,5 +1,6 @@
 package com.wuyue.service.intf;
 
+import com.wuyue.model.entity.RuleList;
 import com.wuyue.model.vo.Rule;
 
 import java.util.List;
@@ -13,4 +14,8 @@ import java.util.List;
  */
 public interface RuleService {
     List<Rule> getAllRules();
+
+    boolean addRule(RuleList ruleList, String param, String data, String contact);
+
+    boolean delRule(Integer id);
 }

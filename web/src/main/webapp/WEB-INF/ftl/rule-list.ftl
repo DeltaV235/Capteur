@@ -291,6 +291,22 @@
                                                                             <hr>
 
                                                                             <div class="row">
+                                                                                <div class="col-md-12">
+                                                                                    告警联系人:
+                                                                                    <#list rule.contacts as contact>
+                                                                                        <h5 style="display: inline">
+                                                                                        <span class="badge">
+                                                                                            ${contact.name}
+                                                                                        </span>
+                                                                                        </h5>
+                                                                                    </#list>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <hr>
+
+                                                                            <div class="row">
                                                                                 <div class="col-md-6">
                                                                                     规则添加时间:
                                                                                     <span>${rule.createTime?string
@@ -305,7 +321,6 @@
                                                                                     </span>
                                                                                 </div>
                                                                             </div>
-
 
                                                                             <div class="row"
                                                                                  style="margin-top: 30px">
@@ -329,10 +344,10 @@
 
                                                                                     <div class="btn-group float-right col-md-1">
 
-                                                                                        <button type="button"
-                                                                                                class="btn btn-danger">
+                                                                                        <a href="rules/del/${rule
+                                                                                        .id}" class="btn btn-danger">
                                                                                             删除告警
-                                                                                        </button>
+                                                                                        </a>
                                                                                         <!--                                                                                    <button type="button"-->
                                                                                         <!--                                                                                            class="btn btn-dark dropdown-toggle dropdown-icon"-->
                                                                                         <!--                                                                                            data-toggle="dropdown">-->
@@ -574,15 +589,15 @@
 
 
                             <!-- 表单 -->
-                            <form method="post" action="">
+                            <form method="post" action="rules" id="add_rule_form">
                                 <div class="form-group">
 
                                     <!-- 第一行 -->
 
                                     <!-- 告警名称 -->
-                                    <div class="col-md-5 float-left">
+                                    <div class="col-md-5 float-left" style="z-index: 1">
                                         <label class="col-form-label" for="warnName">告警名称</label>
-                                        <input type="text" class="form-control is-valid" id="warnName"
+                                        <input type="text" class="form-control is-valid" id="warnName" name="name"
                                                placeholder="请输入告警名称">
                                     </div>
 
@@ -593,15 +608,17 @@
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons"
                                              id="warnLevel">
                                             <label class="btn btn-outline-secondary active">
-                                                <input type="radio" name="options" id="infoOption" autocomplete="off"
-                                                       checked> INFO
+                                                <input type="radio" name="level" id="infoOption" autocomplete="off"
+                                                       checked value="i"> INFO
                                             </label>
                                             <label class="btn btn-outline-warning">
-                                                <input type="radio" name="options" id="warnOption" autocomplete="off">
+                                                <input type="radio" name="level" id="warnOption" autocomplete="off"
+                                                       value="w">
                                                 WARN
                                             </label>
                                             <label class="btn btn-outline-danger">
-                                                <input type="radio" name="options" id="errorOoption" autocomplete="off">
+                                                <input type="radio" name="level" id="errorOption" autocomplete="off"
+                                                       value="e">
                                                 ERROR
                                             </label>
                                         </div>
@@ -614,11 +631,12 @@
                                     <!-- 第二行 -->
 
                                     <!-- 告警描述 -->
-                                    <div class="col-md-5 float-left form-margin-top">
+                                    <div class="col-md-5 float-left form-margin-top" style="z-index: 1">
                                         <!-- textarea -->
                                         <div class="form-group">
                                             <label for="warnDescription">告警描述</label>
                                             <textarea id="warnDescription" class="form-control" rows="3"
+                                                      name="description"
                                                       placeholder="请输入告警描述"></textarea>
                                         </div>
                                     </div>
@@ -637,18 +655,18 @@
                                                 <div class="col-md-3">
                                                     <!-- 条件参数选择 -->
                                                     <select class="form-control select2ConditionParam"
-                                                            id="warnCondition"
+                                                            id="warnCondition" name="param"
                                                             onchange="conditionParamOnChange(this)">
-                                                        <option value="temp">温度</option>
-                                                        <option value="humi">湿度</option>
-                                                        <option value="press">气压</option>
-                                                        <option value="light">亮度</option>
+                                                        <option value="t">温度</option>
+                                                        <option value="h">湿度</option>
+                                                        <option value="p">气压</option>
+                                                        <option value="l">亮度</option>
                                                     </select>
                                                 </div>
 
                                                 <!-- 参数范围滑块 -->
                                                 <div class="col-md-7 float-left">
-                                                    <input class="slider-temp" type="text" name="value">
+                                                    <input class="slider-temp" type="text" name="data">
                                                 </div>
 
                                             </div>
@@ -667,14 +685,12 @@
 
                                             <label class="col-form-label" for="warnContact">告警联系人</label>
                                             <select class="form-control select2bs4" multiple="multiple"
-                                                    style="width: 100%;" id="warnContact">
-                                                <option>邱晓波</option>
-                                                <option>柴国栋</option>
-                                                <option>SB孙一凯</option>
-                                                <option>裴立</option>
-                                                <option>贾栋</option>
-                                                <option>LJ集团</option>
-                                                <option>冯刚</option>
+                                                    style="width: 100%;" id="warnContact" name="contact">
+                                                <#if contacts??>
+                                                    <#list contacts as contact>
+                                                        <option value="${contact.id}">${contact.name}</option>
+                                                    </#list>
+                                                </#if>
                                             </select>
 
                                         </div>
@@ -698,7 +714,7 @@
                                 <button type="button" class="btn btn-danger" data-toggle="modal"
                                         data-target="#checkReset">重置
                                 </button>
-                                <button type="button" class="btn btn-primary">保存修改</button>
+                                <button type="button" class="btn btn-primary" onclick="submit_form()">添加告警</button>
                             </div>
                         </div>
                     </div>
@@ -773,6 +789,13 @@
 
 <!-- 页面脚本 -->
 <script>
+
+    // 添加表单的提交
+    function submit_form() {
+        $("#add_rule_form").submit()
+    }
+
+
     let sliderTempSetting = {
         min: -20,
         max: 50,
@@ -829,17 +852,17 @@
             '<div class="input-group" style="margin-top: 3px">' +
             '<div class="col-md-3">' +
             '<!-- 条件参数选择 -->' +
-            '<select class="form-control" onchange="conditionParamOnChange(this)">' +
-            '<option value="temp">温度</option>' +
-            '<option value="humi">湿度</option>' +
-            '<option value="press">气压</option>' +
-            '<option value="light">亮度</option>' +
+            '<select class="form-control select2ConditionParam" onchange="conditionParamOnChange(this)" name="param">' +
+            '<option value="t">温度</option>' +
+            '<option value="h">湿度</option>' +
+            '<option value="p">气压</option>' +
+            '<option value="l">亮度</option>' +
             '</select>' +
             '</div>' +
             '<!-- 参数范围滑块 -->' +
             '<div class="col-md-7 float-left">' +
             '<input class="slider-temp"' +
-            ' type="text" name="">' +
+            ' type="text" name="data">' +
             '</div>' +
             '<!-- 删除按钮 -->' +
             '<button type="button" class="btn btn-tool" style="margin-left: 15px"' +
@@ -874,6 +897,14 @@
         $('.slider-humi').ionRangeSlider(sliderHumiSetting);
         $('.slider-press').ionRangeSlider(sliderPressSetting);
         $('.slider-light').ionRangeSlider(sliderLightSetting);
+
+        // 应用select2的select元素
+        $(".select2ConditionParam").select2({
+            theme: 'bootstrap4',
+            closeOnSelect: true,
+            allowClear: false,
+            minimumResultsForSearch: -1
+        })
 
 
         // 若第一个条件的删除按钮是禁用的,则启用它,在告警条件不唯一的情况下

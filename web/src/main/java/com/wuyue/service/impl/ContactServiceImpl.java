@@ -60,4 +60,9 @@ public class ContactServiceImpl implements ContactService {
         int update = contactMapper.updateByPrimaryKey(contact);
         return update > 0;
     }
+
+    @Override
+    public List<Contact> getAllContacts() {
+        return contactMapper.selectByExample(new ContactExample());
+    }
 }

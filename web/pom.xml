@@ -23,6 +23,7 @@
         <javax-servlet-api.version>4.0.1</javax-servlet-api.version>
         <freemarker.version>2.3.28</freemarker.version>
         <jackson.version>2.10.0</jackson.version>
+        <quartz.version>2.3.0</quartz.version>
     </properties>
 
     <dependencies>
@@ -145,6 +146,15 @@
             <artifactId>freemarker</artifactId>
             <version>${freemarker.version}</version>
         </dependency>
+
+        <!-- quartz定时任务 -->
+        <!-- https://mvnrepository.com/artifact/org.quartz-scheduler/quartz -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+
 
     </dependencies>
 

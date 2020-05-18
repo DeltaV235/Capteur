@@ -21,6 +21,5 @@
 
     <mvc:view-controller path="/data" view-name="data"/>
     <mvc:view-controller path="/contact" view-name="contact"/>
-    <mvc:view-controller path="/warnings" view-name="warn-list"/>
 
 </beans>

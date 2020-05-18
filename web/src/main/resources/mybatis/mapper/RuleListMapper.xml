@@ -127,7 +127,8 @@
             <include refid="Example_Where_Clause"/>
         </if>
     </delete>
-    <insert id="insert" parameterType="com.wuyue.model.entity.RuleList">
+    <insert id="insert" parameterType="com.wuyue.model.entity.RuleList" useGeneratedKeys="true" keyColumn="id"
+            keyProperty="id">
         insert into rule_list (id, name, status,
                                level, create_time, description)
         values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=CHAR},
@@ -227,12 +228,12 @@
         from capteur.rule_list r
                  left join capteur.warn_list w
                            on r.id = w.rule_id
-                 join capteur.conditions c
-                      on c.rule_id = r.id
-                 join capteur.contact_rule cr
-                      on r.id = cr.rule_id
-                 join capteur.contact co
-                      on cr.contact_id = co.id
+                 left join capteur.conditions c
+                           on c.rule_id = r.id
+                 left join capteur.contact_rule cr
+                           on r.id = cr.rule_id
+                 left join capteur.contact co
+                           on cr.contact_id = co.id
     </select>
 
     <!--    <select id="selectAllRuleData" resultType="com.wuyue.model.vo.Rule">-->

@@ -58,7 +58,7 @@ create table if not exists conditions
     symbol  char(1) not null comment '比较符号',
     data    double  not null comment '阈值',
     rule_id int     not null comment '告警规则id,外键',
-    constraint fk_conditions_rule_id foreign key (rule_id) references rule_list (id)
+    constraint fk_conditions_rule_id foreign key (rule_id) references rule_list (id) on delete cascade
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
@@ -82,8 +82,8 @@ create table if not exists contact_rule
     rule_id    int not null comment '外键,告警规则id',
     contact_id int not null comment '外键,联系人id',
     primary key (contact_id, rule_id),
-    constraint fk_rule_id foreign key (rule_id) references rule_list (id),
-    constraint fk_contact_id foreign key (contact_id) references contact (id)
+    constraint fk_rule_id foreign key (rule_id) references rule_list (id) on delete cascade,
+    constraint fk_contact_id foreign key (contact_id) references contact (id) on delete cascade
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;

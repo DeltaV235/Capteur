@@ -3,6 +3,8 @@ package com.wuyue.service.intf;
 import com.wuyue.model.entity.Contact;
 import com.wuyue.model.vo.TableData;
 
+import java.util.List;
+
 /**
  * @author DeltaV235
  * @version 1.0
@@ -20,4 +22,6 @@ public interface ContactService {
     Contact getContact(Integer id);
 
     boolean editContact(Contact contact);
+
+    List<Contact> getAllContacts();
 }

@@ -3,6 +3,8 @@ package com.wuyue.mapper;
 import com.wuyue.model.entity.WarnList;
 import com.wuyue.model.entity.WarnListExample;
 import java.util.List;
+
+import com.wuyue.model.vo.WarningData;
 import org.apache.ibatis.annotations.Param;
 
 public interface WarnListMapper {
@@ -27,4 +29,6 @@ public interface WarnListMapper {
     int updateByPrimaryKeySelective(WarnList record);
 
     int updateByPrimaryKey(WarnList record);
+
+//    List<WarningData> selectAllWarningData();
 }

@@ -8,8 +8,30 @@ package com.wuyue.constant.enums;
  * @date 2020/5/14 13:26
  */
 public enum EnvironmentParameter {
-    TEMPERATURE,
-    HUMIDITY,
-    PRESSURE,
-    LIGHT
+    TEMPERATURE("t", -20, 50),
+    HUMIDITY("h", 0, 100),
+    PRESSURE("p", 900, 1200),
+    LIGHT("l",0, 30000);
+
+    private String paramName;
+    private double maxValue;
+    private double minValue;
+
+    EnvironmentParameter(String paramName, double maxValue, double minValue) {
+        this.paramName = paramName;
+        this.maxValue = maxValue;
+        this.minValue = minValue;
+    }
+
+    public String getParamName() {
+        return paramName;
+    }
+
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    public double getMinValue() {
+        return minValue;
+    }
 }
