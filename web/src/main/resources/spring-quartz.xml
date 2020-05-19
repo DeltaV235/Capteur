@@ -5,21 +5,36 @@
 
     <bean class="com.wuyue.task.CheckRules" id="checkRules"/>
 
-    <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean" id="jobDetail">
+    <!-- 检查触发任务 -->
+    <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean" id="jobDetailCheck">
         <property name="targetObject" ref="checkRules"/>
         <property name="targetMethod" value="check"/>
         <property name="concurrent" value="true"/>
     </bean>
 
-    <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" id="cronTrigger">
-        <property name="jobDetail" ref="jobDetail"/>
+    <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" id="cronTriggerCheck">
+        <property name="jobDetail" ref="jobDetailCheck"/>
         <property name="cronExpression" value="*/10 * * * * ?"/>
     </bean>
 
+    <!-- 检查恢复任务栏 -->
+    <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean" id="jobDetailRecover">
+        <property name="targetObject" ref="checkRules"/>
+        <property name="targetMethod" value="recover"/>
+        <property name="concurrent" value="true"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" id="cronTriggerRecover">
+        <property name="jobDetail" ref="jobDetailRecover"/>
+        <property name="cronExpression" value="*/10 * * * * ?"/>
+    </bean>
+
+    <!-- 注册任务 -->
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="cronTrigger"/>
+                <ref bean="cronTriggerCheck"/>
+                <ref bean="cronTriggerRecover"/>
             </list>
         </property>
     </bean>

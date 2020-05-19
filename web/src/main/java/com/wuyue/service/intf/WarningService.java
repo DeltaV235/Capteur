@@ -1,5 +1,6 @@
 package com.wuyue.service.intf;
 
+import com.wuyue.model.entity.WarnList;
 import com.wuyue.model.vo.WarningData;
 
 import java.util.List;
@@ -13,8 +14,14 @@ import java.util.List;
  */
 public interface WarningService {
 
+    boolean updateWarning(WarnList warnList);
+
     List<WarningData> getAllWarningsData();
+
     boolean findUnRecoverWarning(Integer ruleId);
+
+    List<WarningData> findUnRecoverWarningData();
+
     boolean addWarning(Integer ruleId);
 
 }

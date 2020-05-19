@@ -45,6 +45,19 @@ public class WarningServiceImpl implements WarningService {
     }
 
     /**
+     * @param warnList 修改的对象
+     * @return 修改成功返回true, 否则false
+     * @author DeltaV235
+     * @date 2020/5/19 14:08
+     * @description 根据id修改warn list 中的数据
+     */
+    @Override
+    public boolean updateWarning(WarnList warnList) {
+        int update = warnListMapper.updateByPrimaryKeySelective(warnList);
+        return update > 0;
+    }
+
+    /**
      * @return 告警信息的集合
      * @author DeltaV235
      * @date 2020/5/19 2:20
@@ -55,13 +68,13 @@ public class WarningServiceImpl implements WarningService {
         List<WarningData> returnValue = new ArrayList<>();
         List<WarnList> warnLists = warnListMapper.selectByExample(new WarnListExample());
 
+        // 获取当前的环境数据
+        SensorData sensorData = sensorDataMapper.selectsLatest();
+
         for (WarnList warning : warnLists) {
             Integer ruleId = warning.getRuleId();
             // 获取告警对应的规则记录
             RuleList ruleList = ruleListMapper.selectByPrimaryKey(ruleId);
-
-            // 获取当前的环境数据
-            SensorData sensorData = sensorDataMapper.selectsLatest();
 
             // 获取告警规则id对应的告警条件
             ConditionsExample conditionsExample = new ConditionsExample();
@@ -117,6 +130,23 @@ public class WarningServiceImpl implements WarningService {
         criteria.andStatusEqualTo(WarningStatus.WARNING);
         List<WarnList> warnLists = warnListMapper.selectByExample(warnListExample);
         return warnLists.size() > 0;
+    }
+
+    /**
+     * @return 未恢复的告警集合
+     * @author DeltaV235
+     * @date 2020/5/19 13:48
+     * @description 查询所有未恢复的告警
+     */
+    @Override
+    public List<WarningData> findUnRecoverWarningData() {
+        List<WarningData> allWarningsData = getAllWarningsData();
+        List<WarningData> unRecoverWarningData = new ArrayList<>();
+        for (WarningData warningData : allWarningsData) {
+            if (warningData.getStatus().equals(WarningStatus.WARNING))
+                unRecoverWarningData.add(warningData);
+        }
+        return unRecoverWarningData;
     }
 
     /**

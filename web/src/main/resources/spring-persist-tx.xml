@@ -25,6 +25,7 @@
             <tx:method name="valid*" rollback-for="java.lang.Exception" read-only="true"/>
 
             <tx:method name="save*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
+            <tx:method name="add*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
             <tx:method name="update*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
             <tx:method name="remove*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>
             <tx:method name="batch*" rollback-for="java.lang.Exception" propagation="REQUIRES_NEW"/>

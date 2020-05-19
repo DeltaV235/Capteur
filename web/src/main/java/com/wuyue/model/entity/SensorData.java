@@ -2,8 +2,12 @@ package com.wuyue.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wuyue.constant.enums.EnvironmentParameter;
 
 import java.util.Date;
+import java.util.Objects;
+
+import static com.wuyue.constant.enums.EnvironmentParameter.*;
 
 public class SensorData {
     @JsonIgnore
@@ -42,6 +46,19 @@ public class SensorData {
                 ", light=" + light +
                 ", press=" + press +
                 '}';
+    }
+
+    public Double getValueByEnvironmentParameter(EnvironmentParameter environmentParameter) {
+        Objects.requireNonNull(environmentParameter, "入参不能为null");
+        if (environmentParameter == TEMPERATURE)
+            return getTemp();
+        else if (environmentParameter == HUMIDITY)
+            return getHumi();
+        else if (environmentParameter == LIGHT)
+            return getLight();
+        else if (environmentParameter == PRESSURE)
+            return getPress();
+        return null;
     }
 
     public Integer getId() {
