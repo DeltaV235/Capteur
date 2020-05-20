@@ -79,12 +79,15 @@
                                                     <div class="card card-primary warn-list-table-card-no-margin">
                                                         <!-- 标题栏 -->
                                                         <a data-toggle="collapse" data-parent="#accordion"
-                                                           href="#id_${warning.id}">
+                                                           href="#id-${warning.id}">
                                                             <div class="card-header
-                                                            <#if warning.level=="e">alert-danger
+                                                            <#if warning.status=="r">alert-success
+                                                            <#elseif warning.status=="d">alert-dark
+                                                            <#elseif warning.level=="e">alert-danger
                                                             <#elseif warning.level=="w">alert-warning
                                                             <#elseif warning.level=="i">alert-secondary
-                                                            </#if>"
+                                                            </#if>
+                                                            "
                                                                  style="border-radius: 4px">
                                                                 <h4 class="card-title">
                                                                     ${warning.name}
@@ -97,13 +100,21 @@
                                                                 <span class="badge badge-pill float-right"
                                                                       style="height: 21px;line-height: 21px;
                                                       padding-top: 0;padding-bottom: 0">
-                                                    9分钟前
+                                                                    <#-- 将时区提前8个小时 -->
+                                                                    <#assign diffTime=((.now?long-warning.lastTriggerTime?long)-28800000)>
+                                                                    <#if diffTime<(3600000-28800000)>
+                                                                        ${diffTime?number_to_datetime?string("m")}分钟前
+                                                                    <#elseif diffTime<(86400000-28800000)>
+                                                                        ${diffTime?number_to_datetime?string("H")}小时前
+                                                                    <#else>
+                                                                        ${diffTime?number_to_datetime?string("d")}天前
+                                                                    </#if>
                                                 </span>
                                                             </div>
                                                         </a>
 
                                                         <!-- 告警主体 -->
-                                                        <div id="id_${warning.id}" class="panel-collapse collapse in">
+                                                        <div id="id-${warning.id}" class="panel-collapse collapse in">
                                                             <div class="card-body" style="padding: 0">
 
                                                                 <!-- 标签条 -->
@@ -112,8 +123,8 @@
                                                                     <li class="nav-item">
                                                                         <a class="nav-link active"
                                                                            id="custom-content-below-home-tab"
-                                                                           data-toggle="pill" href="#info"
-                                                                           role="tab" aria-controls="info"
+                                                                           data-toggle="pill" href="#info-${warning.id}"
+                                                                           role="tab" aria-controls="info-${warning.id}"
                                                                            aria-selected="true"
                                                                            style="margin-left: 0; border-left: 0"
                                                                         >
@@ -123,28 +134,36 @@
                                                                     <li class="nav-item">
                                                                         <a class="nav-link"
                                                                            id="custom-content-below-profile-tab"
-                                                                           data-toggle="pill" href="#check-history"
-                                                                           role="tab" aria-controls="check-history"
+                                                                           data-toggle="pill"
+                                                                           href="#check-history-${warning.id}"
+                                                                           role="tab"
+                                                                           aria-controls="check-history-${warning.id}"
                                                                            aria-selected="false">探测历史</a>
                                                                     </li>
                                                                     <li class="nav-item">
                                                                         <a class="nav-link"
                                                                            id="custom-content-below-messages-tab"
-                                                                           data-toggle="pill" href="#operation-history"
-                                                                           role="tab" aria-controls="operation-history"
+                                                                           data-toggle="pill"
+                                                                           href="#operation-history-${warning.id}"
+                                                                           role="tab"
+                                                                           aria-controls="operation-history-${warning.id}"
                                                                            aria-selected="false">操作历史</a>
                                                                     </li>
                                                                     <li class="nav-item">
                                                                         <a class="nav-link" id="tab-warn-history"
-                                                                           data-toggle="pill" href="#warn-history"
-                                                                           role="tab" aria-controls="warn-history"
+                                                                           data-toggle="pill"
+                                                                           href="#warn-history-${warning.id}"
+                                                                           role="tab"
+                                                                           aria-controls="warn-history-${warning.id}"
                                                                            aria-selected="false">告警历史</a>
                                                                     </li>
                                                                     <li class="nav-item">
                                                                         <a class="nav-link"
                                                                            id="custom-content-below-settings-tab"
-                                                                           data-toggle="pill" href="#setting"
-                                                                           role="tab" aria-controls="setting"
+                                                                           data-toggle="pill"
+                                                                           href="#setting-${warning.id}"
+                                                                           role="tab"
+                                                                           aria-controls="setting-${warning.id}"
                                                                            aria-selected="false">设置</a>
                                                                     </li>
                                                                 </ul>
@@ -156,8 +175,8 @@
 
                                                                     <!-- 第一个标签的内容 -->
                                                                     <div class="tab-pane fade show active"
-                                                                         id="info" role="tabpanel"
-                                                                         aria-labelledby="info">
+                                                                         id="info-${warning.id}" role="tabpanel"
+                                                                         aria-labelledby="info-${warning.id}">
 
                                                                         <div class="card-body">
 
@@ -175,6 +194,12 @@
                                                                                               style="height: 24px;line-height: 22px;
                                                       padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
                                                       margin-bottom: 1px">已恢复
+                                                        </span>
+                                                                                    <#elseif warning.status=="d">
+                                                                                        <span class="badge badge-dark"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;
+                                                      margin-bottom: 1px">已禁用
                                                         </span>
                                                                                     </#if>
                                                                                 </div>
@@ -225,9 +250,11 @@
                                                                                 <div class="col-md-3 float-right">
                                                                                     告警触发条件:
                                                                                 </div>
-                                                                                <div class="col-md-3 float-right">
-                                                                                    当前值为:
-                                                                                </div>
+                                                                                <#if warning.status!="r">
+                                                                                    <div class="col-md-3 float-right">
+                                                                                        当前值为:
+                                                                                    </div>
+                                                                                </#if>
                                                                             </div>
 
                                                                             <div class="row">
@@ -253,7 +280,12 @@
                                                                                             </#if>
 
                                                                                             ${condition.symbol}
-                                                                                            ${condition.data}
+                                                                                            <#if condition.param=='p'>
+                                                                                                ${(condition.data/100)?
+                                                                                                string["#.#"]}
+                                                                                            <#else>
+                                                                                                ${condition.data}
+                                                                                            </#if>
 
                                                                                             <#if condition.param=='t'>
                                                                                                 ℃
@@ -265,51 +297,55 @@
                                                                                                 lux
                                                                                             <#elseif condition
                                                                                             .param=='p'>
-                                                                                                Pa
+                                                                                                hPa
                                                                                             </#if>
                                                                                         </div>
                                                                                     </#list>
 
                                                                                 </div>
 
-                                                                                <div class="col-md-3 float-right"
-                                                                                     style="margin-top: 10px">
 
-                                                                                    <#list warning.conditions as
-                                                                                    condition>
-                                                                                        <#if condition.param=="t">
-                                                                                            <div class="row-cols-3">
-                                                                                                温度
-                                                                                                = ${warning.curSensorData
-                                                                                                .temp} ℃
-                                                                                            </div>
-                                                                                        <#elseif condition
-                                                                                        .param=="h">
-                                                                                            <div class="row-cols-3">
-                                                                                                湿度
-                                                                                                = ${warning.curSensorData
-                                                                                                .humi} %
-                                                                                            </div>
-                                                                                        <#elseif condition
-                                                                                        .param=="p">
-                                                                                            <div class="row-cols-3">
-                                                                                                气压
-                                                                                                = ${warning.curSensorData
-                                                                                                .press} ATM
-                                                                                            </div>
-                                                                                        <#elseif condition
-                                                                                        .param=="l">
-                                                                                            <div class="row-cols-3">
-                                                                                                亮度
-                                                                                                = ${warning.curSensorData
-                                                                                                .light} lux
-                                                                                            </div>
-                                                                                        </#if>
+                                                                                <#if warning.status!="r">
+                                                                                    <div class="col-md-3 float-right"
+                                                                                         style="margin-top: 10px">
 
-                                                                                    </#list>
+                                                                                        <#list warning.conditions as
+                                                                                        condition>
+                                                                                            <#if condition.param=="t">
+                                                                                                <div class="row-cols-3">
+                                                                                                    温度
+                                                                                                    = ${warning.curSensorData
+                                                                                                    .temp} ℃
+                                                                                                </div>
+                                                                                            <#elseif condition
+                                                                                            .param=="h">
+                                                                                                <div class="row-cols-3">
+                                                                                                    湿度
+                                                                                                    = ${warning.curSensorData
+                                                                                                    .humi} %
+                                                                                                </div>
+                                                                                            <#elseif condition
+                                                                                            .param=="p">
+                                                                                                <div class="row-cols-3">
+                                                                                                    气压
+                                                                                                    = ${(warning
+                                                                                                    .curSensorData
+                                                                                                    .press/100)?
+                                                                                                    string["#.#"]}
+                                                                                                    hPa
+                                                                                                </div>
+                                                                                            <#elseif condition
+                                                                                            .param=="l">
+                                                                                                <div class="row-cols-3">
+                                                                                                    亮度
+                                                                                                    = ${warning.curSensorData
+                                                                                                    .light} lux
+                                                                                                </div>
+                                                                                            </#if>
 
-
-                                                                                </div>
+                                                                                        </#list>
+                                                                                    </div>
+                                                                                </#if>
                                                                             </div>
 
                                                                             <hr>
@@ -335,41 +371,43 @@
                                                                                 </div>
                                                                             </div>
 
+                                                                            <#if warning.status=="w">
+                                                                                <div class="row"
+                                                                                     style="margin-top: 30px">
+                                                                                    <div class="col-12">
 
-                                                                            <div class="row"
-                                                                                 style="margin-top: 30px">
-                                                                                <div class="col-12">
+                                                                                        <div class="btn-group float-left">
+                                                                                            <button type="button"
+                                                                                                    class="btn btn-secondary">
+                                                                                                抑制告警15分钟
+                                                                                            </button>
+                                                                                            <button type="button"
+                                                                                                    class="btn btn-secondary dropdown-toggle dropdown-icon"
+                                                                                                    data-toggle="dropdown">
+                                                                                                <span class="sr-only">下拉切换</span>
+                                                                                                <div class="dropdown-menu"
+                                                                                                     role="menu">
+                                                                                                    <a class="dropdown-item"
+                                                                                                       href="#">5分钟</a>
+                                                                                                    <a class="dropdown-item"
+                                                                                                       href="#">30分钟</a>
+                                                                                                    <a class="dropdown-item"
+                                                                                                       href="#">1小时</a>
+                                                                                                    <a class="dropdown-item"
+                                                                                                       href="#">3小时</a>
+                                                                                                    <a class="dropdown-item"
+                                                                                                       href="#">24小时</a>
+                                                                                                    <div class="dropdown-divider"></div>
+                                                                                                    <a class="dropdown-item"
+                                                                                                       href="#">禁用告警</a>
+                                                                                                </div>
+                                                                                            </button>
+                                                                                        </div>
 
-                                                                                    <div class="btn-group float-left">
-                                                                                        <button type="button"
-                                                                                                class="btn btn-secondary">
-                                                                                            抑制告警15分钟
-                                                                                        </button>
-                                                                                        <button type="button"
-                                                                                                class="btn btn-secondary dropdown-toggle dropdown-icon"
-                                                                                                data-toggle="dropdown">
-                                                                                            <span class="sr-only">下拉切换</span>
-                                                                                            <div class="dropdown-menu"
-                                                                                                 role="menu">
-                                                                                                <a class="dropdown-item"
-                                                                                                   href="#">5分钟</a>
-                                                                                                <a class="dropdown-item"
-                                                                                                   href="#">30分钟</a>
-                                                                                                <a class="dropdown-item"
-                                                                                                   href="#">1小时</a>
-                                                                                                <a class="dropdown-item"
-                                                                                                   href="#">3小时</a>
-                                                                                                <a class="dropdown-item"
-                                                                                                   href="#">24小时</a>
-                                                                                                <div class="dropdown-divider"></div>
-                                                                                                <a class="dropdown-item"
-                                                                                                   href="#">禁用告警</a>
-                                                                                            </div>
-                                                                                        </button>
                                                                                     </div>
-
                                                                                 </div>
-                                                                            </div>
+                                                                            </#if>
+
 
                                                                         </div>
 
@@ -377,7 +415,8 @@
                                                                     </div>
 
 
-                                                                    <div class="tab-pane fade" id="check-history"
+                                                                    <div class="tab-pane fade"
+                                                                         id="check-history-${warning.id}"
                                                                          role="tabpanel"
                                                                          aria-labelledby="custom-content-below-profile-tab">
 
@@ -389,21 +428,24 @@
                                                                     </div>
 
 
-                                                                    <div class="tab-pane fade" id="operation-history"
+                                                                    <div class="tab-pane fade"
+                                                                         id="operation-history-${warning.id}"
                                                                          role="tabpanel"
                                                                          aria-labelledby="custom-content-below-messages-tab">
 
 
                                                                     </div>
 
-                                                                    <div class="tab-pane fade" id="warn-history"
+                                                                    <div class="tab-pane fade"
+                                                                         id="warn-history-${warning.id}"
                                                                          role="tabpanel"
                                                                          aria-labelledby="custom-content-below-settings-tab">
 
 
                                                                     </div>
 
-                                                                    <div class="tab-pane fade" id="setting"
+                                                                    <div class="tab-pane fade"
+                                                                         id="setting-${warning.id}"
                                                                          role="tabpanel"
                                                                          aria-labelledby="custom-content-below-settings-tab">
 

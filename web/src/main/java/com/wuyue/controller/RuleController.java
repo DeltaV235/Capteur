@@ -38,6 +38,25 @@ public class RuleController {
         this.contactService = contactService;
     }
 
+    @GetMapping("/rules/ena/{id}")
+    public String enableRule(@PathVariable("id") Integer id) {
+        ruleService.enaRule(id);
+        return "redirect:/rules";
+    }
+
+    /**
+     * @param id 告警规则id
+     * @return 页面重定向
+     * @author DeltaV235
+     * @date 2020/5/20 19:16
+     * @description 禁用告警
+     */
+    @GetMapping("/rules/dis/{id}")
+    public String disableRule(@PathVariable("id") Integer id) {
+        ruleService.disRule(id);
+        return "redirect:/rules";
+    }
+
     /**
      * @param name        告警名称
      * @param level       告警等级

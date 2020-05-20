@@ -7,6 +7,7 @@
         <result column="status" jdbcType="CHAR" property="status"/>
         <result column="level" jdbcType="CHAR" property="level"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_delete" jdbcType="BIT" property="isDelete"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.wuyue.model.entity.RuleList">
         <result column="description" jdbcType="LONGVARCHAR" property="description"/>
@@ -72,7 +73,7 @@
         </where>
     </sql>
     <sql id="Base_Column_List">
-        id, name, status, level, create_time
+        id, name, status, level, create_time, is_delete
     </sql>
     <sql id="Blob_Column_List">
         description
@@ -130,9 +131,11 @@
     <insert id="insert" parameterType="com.wuyue.model.entity.RuleList" useGeneratedKeys="true" keyColumn="id"
             keyProperty="id">
         insert into rule_list (id, name, status,
-                               level, create_time, description)
+                               level, create_time, is_delete,
+                               description)
         values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=CHAR},
-                #{level,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR})
+                #{level,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP}, #{isDelete,jdbcType=BIT},
+                #{description,jdbcType=LONGVARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.wuyue.model.entity.RuleList">
         insert into rule_list
@@ -151,6 +154,9 @@
             </if>
             <if test="createTime != null">
                 create_time,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
             </if>
             <if test="description != null">
                 description,
@@ -171,6 +177,9 @@
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=BIT},
             </if>
             <if test="description != null">
                 #{description,jdbcType=LONGVARCHAR},
@@ -234,30 +243,8 @@
                            on r.id = cr.rule_id
                  left join capteur.contact co
                            on cr.contact_id = co.id
+        where r.is_delete = false
     </select>
-
-    <!--    <select id="selectAllRuleData" resultType="com.wuyue.model.vo.Rule">-->
-    <!--        select id, name, status, level, description, create_time, w.last_trigger_time lastTriggerName-->
-    <!--        from capteur.rule_list r-->
-    <!--                 join capteur.warn_list w-->
-    <!--                      on r.id = w.rule_id-->
-    <!--    </select>-->
-
-    <!--    <select id="selectConditionsByRuleId" resultType="com.wuyue.model.entity.Conditions">-->
-    <!--        select id, param, symbol, data, rule_id-->
-    <!--        from capteur.conditions c-->
-    <!--                 join capteur.rule_list r-->
-    <!--                      on c.rule_id = r.id-->
-    <!--        where r.id = #{id}-->
-    <!--    </select>-->
-
-    <!--    <select id="selectContactsByRuleId" resultType="com.wuyue.model.entity.Contact">-->
-    <!--        select-->
-    <!--        from capteur.contact c-->
-    <!--        join  capteur.contact_rule cr-->
-    <!--        on c.id = cr.contact_id-->
-    <!--        where cr.rule_id = #{id}-->
-    <!--    </select>-->
 
 
     <update id="updateByExampleSelective" parameterType="map">
@@ -278,6 +265,9 @@
             <if test="record.createTime != null">
                 create_time = #{record.createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="record.isDelete != null">
+                is_delete = #{record.isDelete,jdbcType=BIT},
+            </if>
             <if test="record.description != null">
                 description = #{record.description,jdbcType=LONGVARCHAR},
             </if>
@@ -293,6 +283,7 @@
         status = #{record.status,jdbcType=CHAR},
         level = #{record.level,jdbcType=CHAR},
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
+        is_delete = #{record.isDelete,jdbcType=BIT},
         description = #{record.description,jdbcType=LONGVARCHAR}
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause"/>
@@ -304,7 +295,8 @@
         name = #{record.name,jdbcType=VARCHAR},
         status = #{record.status,jdbcType=CHAR},
         level = #{record.level,jdbcType=CHAR},
-        create_time = #{record.createTime,jdbcType=TIMESTAMP}
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+        is_delete = #{record.isDelete,jdbcType=BIT}
         <if test="_parameter != null">
             <include refid="Update_By_Example_Where_Clause"/>
         </if>
@@ -324,6 +316,9 @@
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="isDelete != null">
+                is_delete = #{isDelete,jdbcType=BIT},
+            </if>
             <if test="description != null">
                 description = #{description,jdbcType=LONGVARCHAR},
             </if>
@@ -336,6 +331,7 @@
             status      = #{status,jdbcType=CHAR},
             level       = #{level,jdbcType=CHAR},
             create_time = #{createTime,jdbcType=TIMESTAMP},
+            is_delete   = #{isDelete,jdbcType=BIT},
             description = #{description,jdbcType=LONGVARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -344,7 +340,8 @@
         set name        = #{name,jdbcType=VARCHAR},
             status      = #{status,jdbcType=CHAR},
             level       = #{level,jdbcType=CHAR},
-            create_time = #{createTime,jdbcType=TIMESTAMP}
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            is_delete   = #{isDelete,jdbcType=BIT}
         where id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>

@@ -1,14 +1,16 @@
 package com.wuyue.service.impl;
 
+import com.wuyue.constant.constant.WarningStatus;
 import com.wuyue.constant.enums.EnvironmentParameter;
+import com.wuyue.constant.enums.RuleStatus;
 import com.wuyue.mapper.ConditionsMapper;
 import com.wuyue.mapper.ContactRuleMapper;
 import com.wuyue.mapper.RuleListMapper;
-import com.wuyue.model.entity.Conditions;
-import com.wuyue.model.entity.ContactRuleKey;
-import com.wuyue.model.entity.RuleList;
+import com.wuyue.mapper.WarnListMapper;
+import com.wuyue.model.entity.*;
 import com.wuyue.model.vo.Rule;
 import com.wuyue.service.intf.RuleService;
+import com.wuyue.utils.CheckRuleUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ import java.util.Objects;
 
 import static com.wuyue.constant.constant.CompareSymbol.GT;
 import static com.wuyue.constant.constant.CompareSymbol.LT;
-import static com.wuyue.constant.enums.EnvironmentParameter.*;
+import static com.wuyue.constant.enums.EnvironmentParameter.PRESSURE;
 
 /**
  * @author DeltaV235
@@ -32,12 +34,72 @@ public class RuleServiceImpl implements RuleService {
     private final RuleListMapper ruleListMapper;
     private final ConditionsMapper conditionsMapper;
     private final ContactRuleMapper contactRuleMapper;
+    private final WarnListMapper warnListMapper;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public RuleServiceImpl(RuleListMapper ruleListMapper, ConditionsMapper conditionsMapper, ContactRuleMapper contactRuleMapper) {
+    public RuleServiceImpl(RuleListMapper ruleListMapper, ConditionsMapper conditionsMapper, ContactRuleMapper contactRuleMapper, WarnListMapper warnListMapper) {
         this.ruleListMapper = ruleListMapper;
         this.conditionsMapper = conditionsMapper;
         this.contactRuleMapper = contactRuleMapper;
+        this.warnListMapper = warnListMapper;
+    }
+
+    /**
+     * @param id 告警规则id
+     * @return 成功与否
+     * @author DeltaV235
+     * @date 2020/5/20 19:39
+     * @description 启用一个告警规则及启用其已经触发告警
+     */
+    @Override
+    public boolean enaRule(Integer id) {
+        // 获取所有告警状态是禁用的告警id
+        WarnListExample warnListExample = new WarnListExample();
+        WarnListExample.Criteria criteria = warnListExample.createCriteria();
+        criteria.andRuleIdEqualTo(id).andStatusEqualTo(WarningStatus.DISABLE);
+        List<WarnList> warnLists = warnListMapper.selectByExample(warnListExample);
+
+        // 更新上方找到的告警的状态为未恢复,进入下一次告警判断
+        for (WarnList warnList : warnLists) {
+            warnList.setStatus(WarningStatus.WARNING);
+            warnListMapper.updateByPrimaryKeySelective(warnList);
+        }
+        RuleList ruleList = new RuleList(id,
+                null,
+                RuleStatus.ENABLE.getStatus(),
+                null,
+                null,
+                null);
+        return ruleListMapper.updateByPrimaryKeySelective(ruleList) > 0;
+    }
+
+    /**
+     * @param id 告警规则id
+     * @author DeltaV235
+     * @date 2020/5/20 19:40
+     * @description 禁用告警规则, 并禁用已经触发, 且未恢复的告警
+     */
+    @Override
+    public boolean disRule(Integer id) {
+        // 获取所有告警状态是未恢复的告警id
+        WarnListExample warnListExample = new WarnListExample();
+        WarnListExample.Criteria criteria = warnListExample.createCriteria();
+        criteria.andRuleIdEqualTo(id).andStatusEqualTo(WarningStatus.WARNING);
+        List<WarnList> warnLists = warnListMapper.selectByExample(warnListExample);
+
+        // 更新上方找到的告警的状态为已禁用
+        for (WarnList warnList : warnLists) {
+            warnList.setStatus(WarningStatus.DISABLE);
+            warnListMapper.updateByPrimaryKeySelective(warnList);
+        }
+
+        RuleList ruleList = new RuleList(id,
+                null,
+                RuleStatus.DISABLE.getStatus(),
+                null,
+                null,
+                null);
+        return ruleListMapper.updateByPrimaryKeySelective(ruleList) > 0;
     }
 
     /**
@@ -76,54 +138,74 @@ public class RuleServiceImpl implements RuleService {
             double min = Double.parseDouble(maxMin[0]);
             double max = Double.parseDouble(maxMin[1]);
 
-            // 如果告警条件是温度
-            EnvironmentParameter environmentParameter = null;
-            if (splitParam[count].equals(TEMPERATURE.getParamName())) {
-                environmentParameter = TEMPERATURE;
-            } else if (splitParam[count].equals(HUMIDITY.getParamName())) {
-                environmentParameter = HUMIDITY;
-            } else if (splitParam[count].equals(LIGHT.getParamName())) {
-                environmentParameter = LIGHT;
-            } else if (splitParam[count].equals(PRESSURE.getParamName())) {
-                environmentParameter = PRESSURE;
-            }
+            // 返回环境参数的枚举类型
+            EnvironmentParameter environmentParameter = CheckRuleUtil.getEnvirParamByString(splitParam[count]);
 
             if (Objects.nonNull(environmentParameter)) {
 
                 // 如果温度最小值为-20,则添加一条条件: temp<data.max
                 if (min == environmentParameter.getMinValue()) {
-                    Conditions realCondition = new Conditions(null, environmentParameter.getParamName(), LT, max, ruleList.getId());
+                    Conditions realCondition = new Conditions(null,
+                            environmentParameter.getParamName(),
+                            LT,
+                            environmentParameter == PRESSURE ? max * 100.0 : max,
+                            ruleList.getId());
                     insertedConditions += conditionsMapper.insert(realCondition);
                 }
                 // 如果温度最大值为50,则添加一条条件: temp>data.min
                 if (max == environmentParameter.getMaxValue()) {
-                    Conditions realCondition = new Conditions(null, environmentParameter.getParamName(), GT, min,
+                    Conditions realCondition = new Conditions(null,
+                            environmentParameter.getParamName(),
+                            GT,
+                            environmentParameter == PRESSURE ? min * 100.0 : min,
                             ruleList.getId());
                     insertedConditions += conditionsMapper.insert(realCondition);
                 }
                 if (min != environmentParameter.getMinValue() && max != environmentParameter.getMaxValue()) {
-                    Conditions realCondition1 = new Conditions(null, environmentParameter.getParamName(), LT, max,
+                    Conditions realCondition1 = new Conditions(null,
+                            environmentParameter.getParamName(),
+                            LT,
+                            environmentParameter == PRESSURE ? max * 100.0 : max,
                             ruleList.getId());
-                    Conditions realCondition2 = new Conditions(null, environmentParameter.getParamName(), GT, min,
+                    Conditions realCondition2 = new Conditions(null,
+                            environmentParameter.getParamName(),
+                            GT,
+                            environmentParameter == PRESSURE ? min * 100.0 : min,
                             ruleList.getId());
                     insertedConditions += conditionsMapper.insert(realCondition1);
                     insertedConditions += conditionsMapper.insert(realCondition2);
                 }
 
             }
-
-            // 添加告警联系人
-            String[] contactsId = contact.split(",");
-            for (String id : contactsId) {
-                insertedContacts += contactRuleMapper.insert(new ContactRuleKey(Integer.parseInt(id),
-                        ruleList.getId()));
-            }
         }
+
+        // 添加告警联系人
+        String[] contactsId = contact.split(",");
+        for (String id : contactsId) {
+            insertedContacts += contactRuleMapper.insert(new ContactRuleKey(Integer.parseInt(id),
+                    ruleList.getId()));
+        }
+
         return insertRuleList > 0 && insertedConditions > 0 && insertedContacts > 0;
     }
 
+    /**
+     * @param id 告警规则id
+     * @return 若成功禁用则返回true, 返回false
+     * @author DeltaV235
+     * @date 2020/5/20 18:53
+     * @description 禁用指定id的告警规则
+     */
     @Override
     public boolean delRule(Integer id) {
-        return ruleListMapper.deleteByPrimaryKey(id) > 0;
+        // 禁用告警规则
+        RuleList ruleList = new RuleList(id,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true);
+        return ruleListMapper.updateByPrimaryKeySelective(ruleList) > 0;
     }
 }

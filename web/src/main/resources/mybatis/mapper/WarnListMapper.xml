@@ -177,61 +177,69 @@
         </if>
     </select>
 
+    <select id="selectLatestWarnings" resultType="com.wuyue.model.vo.IndexWarning">
+        select w.id "id", r.name "name", w.status "status", w.last_trigger_time "lastTriggerTime"
+        from capteur.warn_list w
+                 left join capteur.rule_list r
+                           on w.rule_id = r.id
+        order by w.last_trigger_time desc
+        limit #{length}
+
+    </select>
 
 
-<!--    <resultMap id="voWarning" type="com.wuyue.model.vo.WarningData">-->
-<!--        <id property="id" column="id"/>-->
-<!--        <result property="name" column="name"/>-->
-<!--        <result property="status" column="status"/>-->
-<!--        <result property="ruleId" column="ruleId"/>-->
-<!--        <result property="startTime" column="startTime"/>-->
-<!--        <result property="lastTriggerTime" column="lastTriggerTime"/>-->
-<!--        <result property="recoverTime" column="recoverTime"/>-->
-<!--        <result property="level" column="level"/>-->
-<!--        <result property="description" column="description"/>-->
-<!--        <collection property="conditions" ofType="com.wuyue.model.entity.Conditions">-->
-<!--            <id property="id" column="conditions.id"/>-->
-<!--            <result property="param" column="conditions.param"/>-->
-<!--            <result property="symbol" column="conditions.symbol"/>-->
-<!--            <result property="data" column="conditions.data"/>-->
-<!--            <result property="ruleId" column="conditions.ruleId"/>-->
-<!--        </collection>-->
-<!--        <collection property="contacts" columnPrefix="contacts_" ofType="com.wuyue.model.entity.Contact">-->
-<!--            <id property="id" column="id"/>-->
-<!--            <result property="name" column="name"/>-->
-<!--            <result property="phone" column="phone"/>-->
-<!--            <result property="email" column="email"/>-->
-<!--        </collection>-->
-<!--    </resultMap>-->
+    <!--    <resultMap id="voWarning" type="com.wuyue.model.vo.WarningData">-->
+    <!--        <id property="id" column="id"/>-->
+    <!--        <result property="name" column="name"/>-->
+    <!--        <result property="status" column="status"/>-->
+    <!--        <result property="ruleId" column="ruleId"/>-->
+    <!--        <result property="startTime" column="startTime"/>-->
+    <!--        <result property="lastTriggerTime" column="lastTriggerTime"/>-->
+    <!--        <result property="recoverTime" column="recoverTime"/>-->
+    <!--        <result property="level" column="level"/>-->
+    <!--        <result property="description" column="description"/>-->
+    <!--        <collection property="conditions" ofType="com.wuyue.model.entity.Conditions">-->
+    <!--            <id property="id" column="conditions.id"/>-->
+    <!--            <result property="param" column="conditions.param"/>-->
+    <!--            <result property="symbol" column="conditions.symbol"/>-->
+    <!--            <result property="data" column="conditions.data"/>-->
+    <!--            <result property="ruleId" column="conditions.ruleId"/>-->
+    <!--        </collection>-->
+    <!--        <collection property="contacts" columnPrefix="contacts_" ofType="com.wuyue.model.entity.Contact">-->
+    <!--            <id property="id" column="id"/>-->
+    <!--            <result property="name" column="name"/>-->
+    <!--            <result property="phone" column="phone"/>-->
+    <!--            <result property="email" column="email"/>-->
+    <!--        </collection>-->
+    <!--    </resultMap>-->
 
-<!--    <select id="selectAllWarningData" resultMap="voWarning">-->
-<!--        select r.id                "id",-->
-<!--               r.name              "name",-->
-<!--               r.status            "status",-->
-<!--               r.level             "level",-->
-<!--               r.description       "description",-->
-<!--               r.create_time       "createTime",-->
-<!--               w.last_trigger_time "lastTriggerName",-->
-<!--               c.id                "conditions.id",-->
-<!--               c.param             "conditions.param",-->
-<!--               c.symbol            "conditions.symbol",-->
-<!--               c.data              "conditions.data",-->
-<!--               c.rule_id           "conditions.ruleId",-->
-<!--               co.id               "contacts_id",-->
-<!--               co.name             "contacts_name",-->
-<!--               co.phone            "contacts_phone",-->
-<!--               co.email            "contacts_email"-->
-<!--        from capteur.rule_list r-->
-<!--                 left join capteur.warn_list w-->
-<!--                           on r.id = w.rule_id-->
-<!--                 left join capteur.conditions c-->
-<!--                           on c.rule_id = r.id-->
-<!--                 left join capteur.contact_rule cr-->
-<!--                           on r.id = cr.rule_id-->
-<!--                 left join capteur.contact co-->
-<!--                           on cr.contact_id = co.id-->
-<!--    </select>-->
-
+    <!--    <select id="selectAllWarningData" resultMap="voWarning">-->
+    <!--        select r.id                "id",-->
+    <!--               r.name              "name",-->
+    <!--               r.status            "status",-->
+    <!--               r.level             "level",-->
+    <!--               r.description       "description",-->
+    <!--               r.create_time       "createTime",-->
+    <!--               w.last_trigger_time "lastTriggerName",-->
+    <!--               c.id                "conditions.id",-->
+    <!--               c.param             "conditions.param",-->
+    <!--               c.symbol            "conditions.symbol",-->
+    <!--               c.data              "conditions.data",-->
+    <!--               c.rule_id           "conditions.ruleId",-->
+    <!--               co.id               "contacts_id",-->
+    <!--               co.name             "contacts_name",-->
+    <!--               co.phone            "contacts_phone",-->
+    <!--               co.email            "contacts_email"-->
+    <!--        from capteur.rule_list r-->
+    <!--                 left join capteur.warn_list w-->
+    <!--                           on r.id = w.rule_id-->
+    <!--                 left join capteur.conditions c-->
+    <!--                           on c.rule_id = r.id-->
+    <!--                 left join capteur.contact_rule cr-->
+    <!--                           on r.id = cr.rule_id-->
+    <!--                 left join capteur.contact co-->
+    <!--                           on cr.contact_id = co.id-->
+    <!--    </select>-->
 
 
     <update id="updateByExampleSelective" parameterType="map">

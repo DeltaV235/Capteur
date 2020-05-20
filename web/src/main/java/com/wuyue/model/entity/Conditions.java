@@ -1,5 +1,7 @@
 package com.wuyue.model.entity;
 
+import java.util.Date;
+
 public class Conditions {
     private Integer id;
 
@@ -11,6 +13,10 @@ public class Conditions {
 
     private Integer ruleId;
 
+    private Date createTime;
+
+    private Boolean disabled;
+
     public Conditions() {
     }
 
@@ -20,6 +26,18 @@ public class Conditions {
         this.symbol = symbol;
         this.data = data;
         this.ruleId = ruleId;
+        this.createTime = new Date();
+        this.disabled = false;
+    }
+
+    public Conditions(Integer id, String param, String symbol, Double data, Integer ruleId, Date createTime, Boolean disabled) {
+        this.id = id;
+        this.param = param;
+        this.symbol = symbol;
+        this.data = data;
+        this.ruleId = ruleId;
+        this.createTime = createTime;
+        this.disabled = disabled;
     }
 
     @Override
@@ -30,6 +48,8 @@ public class Conditions {
                 ", symbol='" + symbol + '\'' +
                 ", data=" + data +
                 ", ruleId=" + ruleId +
+                ", createTime=" + createTime +
+                ", disabled=" + disabled +
                 '}';
     }
 
@@ -71,5 +91,21 @@ public class Conditions {
 
     public void setRuleId(Integer ruleId) {
         this.ruleId = ruleId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
     }
 }

@@ -1,9 +1,12 @@
 package com.wuyue.controller;
 
+import com.wuyue.constant.constant.RequestScopeAttribute;
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.vo.ChartData;
+import com.wuyue.model.vo.IndexWarning;
 import com.wuyue.model.vo.ResultEntity;
 import com.wuyue.service.intf.SensorDataService;
+import com.wuyue.service.intf.WarningService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,10 +27,12 @@ import java.util.List;
 @Controller
 public class IndexController {
     private final SensorDataService sensorDataService;
+    private final WarningService warningService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public IndexController(SensorDataService sensorDataService) {
+    public IndexController(SensorDataService sensorDataService, WarningService warningService) {
         this.sensorDataService = sensorDataService;
+        this.warningService = warningService;
     }
 
     /**
@@ -41,11 +46,16 @@ public class IndexController {
     public String handleIndex(Model model) {
         // 查询当前环境数据
         SensorData sensorData = sensorDataService.getCurrentData();
-        Double intervalTime = 2 * 60d;      // 时间间隔2小时
-        Double durationTime = 24 * 60d;     // 持续时间1天
-        List<ChartData> chartData = sensorDataService.getChartData(durationTime, intervalTime);
+//        Double intervalTime = 2 * 60d;      // 时间间隔2小时
+//        Double durationTime = 24 * 60d;     // 持续时间1天
+//        List<ChartData> chartData = sensorDataService.getChartData(durationTime, intervalTime);
         model.addAttribute("curData", sensorData);
         logger.info(sensorData.toString());
+
+        // 获取最近6条告警信息
+        int length = 6;
+        List<IndexWarning> latestWarnings = warningService.getLatestWarnings(length);
+        model.addAttribute(RequestScopeAttribute.WARNINGS, latestWarnings);
         return "index";
     }
 

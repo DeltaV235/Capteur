@@ -3,6 +3,7 @@ package com.wuyue.service.impl;
 import com.wuyue.constant.constant.WarningStatus;
 import com.wuyue.mapper.*;
 import com.wuyue.model.entity.*;
+import com.wuyue.model.vo.IndexWarning;
 import com.wuyue.model.vo.WarningData;
 import com.wuyue.service.intf.WarningService;
 import org.slf4j.Logger;
@@ -44,6 +45,12 @@ public class WarningServiceImpl implements WarningService {
         this.contactRuleMapper = contactRuleMapper;
     }
 
+    @Override
+    public List<IndexWarning> getLatestWarnings(Integer length) {
+        List<IndexWarning> indexWarnings = warnListMapper.selectLatestWarnings(length);
+        return indexWarnings;
+    }
+
     /**
      * @param warnList 修改的对象
      * @return 修改成功返回true, 否则false
@@ -66,7 +73,10 @@ public class WarningServiceImpl implements WarningService {
     @Override
     public List<WarningData> getAllWarningsData() {
         List<WarningData> returnValue = new ArrayList<>();
-        List<WarnList> warnLists = warnListMapper.selectByExample(new WarnListExample());
+        // 告警根据最后触发时间降序
+        WarnListExample warnListExample = new WarnListExample();
+        warnListExample.setOrderByClause("`last_trigger_time` desc");
+        List<WarnList> warnLists = warnListMapper.selectByExample(warnListExample);
 
         // 获取当前的环境数据
         SensorData sensorData = sensorDataMapper.selectsLatest();

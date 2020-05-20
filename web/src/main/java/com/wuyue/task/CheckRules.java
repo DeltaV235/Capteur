@@ -2,6 +2,7 @@ package com.wuyue.task;
 
 import com.wuyue.constant.constant.WarningStatus;
 import com.wuyue.constant.enums.EnvironmentParameter;
+import com.wuyue.constant.enums.RuleStatus;
 import com.wuyue.model.entity.Conditions;
 import com.wuyue.model.entity.SensorData;
 import com.wuyue.model.entity.WarnList;
@@ -49,38 +50,20 @@ public class CheckRules {
             rules = ruleService.getAllRules();
             SensorData curSensorData = sensorDataService.getCurrentData();
             for (Rule rule : rules) {
+                // 若该告警已被禁用,则不再判断其触发条件
+                if (rule.getStatus().equals(RuleStatus.DISABLE.getStatus()))
+                    break;
+
                 for (Conditions condition : rule.getConditions()) {
-                    if (condition.getParam().equals(EnvironmentParameter.TEMPERATURE.getParamName())) {
-                        if (CheckRuleUtil.eval(curSensorData.getTemp().toString() + condition.getSymbol() +
-                                condition.getData())) {
-                            // 检查是否存在已触发的告警
-                            if (!warningService.findUnRecoverWarning(rule.getId()))
-                                // 不存在已触发的告警,触发告警
-                                warningService.addWarning(rule.getId());
-                        }
-                    } else if (condition.getParam().equals(EnvironmentParameter.HUMIDITY.getParamName())) {
-                        if (CheckRuleUtil.eval(curSensorData.getHumi().toString() + condition.getSymbol() +
-                                condition.getData())) {
-                            // 检查是否存在已触发的告警
-                            if (!warningService.findUnRecoverWarning(rule.getId()))
-                                // 不存在已触发的告警,触发告警
-                                warningService.addWarning(rule.getId());
-                        }
-                    } else if (condition.getParam().equals(EnvironmentParameter.LIGHT.getParamName())) {
-                        if (CheckRuleUtil.eval(curSensorData.getLight().toString() + condition.getSymbol() +
-                                condition.getData())) {
-                            // 检查是否存在已触发的告警
-                            if (!warningService.findUnRecoverWarning(rule.getId()))
-                                // 不存在已触发的告警,触发告警
-                                warningService.addWarning(rule.getId());
-                        }
-                    } else if (condition.getParam().equals(EnvironmentParameter.PRESSURE.getParamName())) {
-                        if (CheckRuleUtil.eval(curSensorData.getPress().toString() + condition.getSymbol() +
-                                condition.getData())) {
-                            // 检查是否存在已触发的告警
-                            if (!warningService.findUnRecoverWarning(rule.getId()))
-                                // 不存在已触发的告警,触发告警
-                                warningService.addWarning(rule.getId());
+                    EnvironmentParameter ep =
+                            CheckRuleUtil.getEnvirParamByString(condition.getParam());
+                    if (CheckRuleUtil.eval(curSensorData.getValueByEnvironmentParameter(ep).toString() +
+                            condition.getSymbol() + condition.getData())) {
+                        // 检查是否存在已触发的告警
+                        if (!warningService.findUnRecoverWarning(rule.getId())) {
+                            // 不存在已触发的告警,触发告警
+                            warningService.addWarning(rule.getId());
+                            logger.debug("告警规则id: " + rule.getId() + "\t已触发");
                         }
                     }
                 }
@@ -120,9 +103,26 @@ public class CheckRules {
             // 一条告警的条件判断完毕,若isRecover==true,则表示所有告警条件都没有被触发
             if (isRecover) {
                 // 告警已恢复,修改告警状态位
-                WarnList updateWarnList = new WarnList(unRecoverWarning.getId(), WarningStatus.RECOVER, null, null,
-                        new Date()
-                        , null, null, null);
+                logger.debug("告警id: " + unRecoverWarning.getId() + "\t已恢复");
+                WarnList updateWarnList = new WarnList(unRecoverWarning.getId(),
+                        WarningStatus.RECOVER,
+                        null,
+                        null,
+                        new Date(),
+                        null,
+                        null,
+                        null);
+                warningService.updateWarning(updateWarnList);
+            } else {
+                // 告警未恢复,更新告警最后触发时间
+                WarnList updateWarnList = new WarnList(unRecoverWarning.getId(),
+                        null,
+                        null,
+                        new Date(),
+                        null,
+                        null,
+                        null,
+                        null);
                 warningService.updateWarning(updateWarnList);
             }
 

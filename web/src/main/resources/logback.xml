@@ -18,6 +18,7 @@
         <appender-ref ref="STDOUT"/>
     </root>
     <!-- 根据特殊需求指定局部日志级别-->
-    <logger name="com.wuyue.mapper" level="DEBUG"/>
+    <logger name="com.wuyue.mapper" level="INFO"/>
     <logger name="com.wuyue.service" level="DEBUG"/>
+    <logger name="com.wuyue.task" level="DEBUG"/>
 </configuration>

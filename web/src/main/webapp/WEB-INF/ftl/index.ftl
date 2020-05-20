@@ -129,80 +129,36 @@
                                             <th>告警ID</th>
                                             <th>告警名称</th>
                                             <th>状态</th>
-                                            <th>开始时间</th>
+                                            <th>最后触发时间</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR9842</a></td>
-                                            <td>使命召唤 4</td>
-                                            <td><span class="badge badge-success">已发货</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#00a65a" data-height="20">
-                                                    90,80,90,-70,61,-83,63
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR1848</a></td>
-                                            <td>三星智能电视</td>
-                                            <td><span class="badge badge-warning">待处理</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#f39c12" data-height="20">
-                                                    90,80,-90,70,61,-83,68
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR7429</a></td>
-                                            <td>iPhone 6 Plus</td>
-                                            <td><span class="badge badge-danger">已交付</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#f56954" data-height="20">
-                                                    90,-80,90,70,-61,83,63
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR7429</a></td>
-                                            <td>三星智能电视</td>
-                                            <td><span class="badge badge-info">处理中</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#00c0ef" data-height="20">
-                                                    90,80,-90,70,-61,83,63
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR1848</a></td>
-                                            <td>三星智能电视</td>
-                                            <td><span class="badge badge-warning">待处理</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#f39c12" data-height="20">
-                                                    90,80,-90,70,61,-83,68
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR7429</a></td>
-                                            <td>iPhone 6 Plus</td>
-                                            <td><span class="badge badge-danger">已交付</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#f56954" data-height="20">
-                                                    90,-80,90,70,-61,83,63
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="../../pages/examples/invoice.html">OR9842</a></td>
-                                            <td>使命召唤 4</td>
-                                            <td><span class="badge badge-success">已发货</span></td>
-                                            <td>
-                                                <div class="sparkbar" data-color="#00a65a" data-height="20">
-                                                    90,80,90,-70,61,-83,63
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <#list warnings as warning>
+
+                                            <tr>
+
+                                                <td><a href="warnings">${warning.id}</a></td>
+                                                <td>${warning.name}</td>
+                                                <td>
+                                                    <#if warning.status=='r'>
+                                                        <span class="badge badge-success">已恢复</span>
+                                                    <#elseif warning.status=='w'>
+                                                        <span class="badge badge-danger">未恢复</span>
+                                                    <#elseif warning.status=='d'>
+                                                        <span class="badge badge-dark">已禁用</span>
+
+                                                    </#if>
+                                                </td>
+                                                <td>
+                                                    <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                                        ${warning.lastTriggerTime?datetime}
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+
+                                        </#list>
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -210,7 +166,7 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix">
-                                <a href="javascript:void(0)" class="btn btn-sm btn-secondary float-right">查看所有告警</a>
+                                <a href="warnings" class="btn btn-sm btn-secondary float-right">查看所有告警</a>
                             </div>
                             <!-- /.card-footer -->
                         </div>

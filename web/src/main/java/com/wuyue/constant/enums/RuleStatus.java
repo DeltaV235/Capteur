@@ -12,6 +12,7 @@ public enum RuleStatus {
     DISABLE("d"),
     SUPPRESS("s");
 
+
     private String status;
 
     RuleStatus(String status) {

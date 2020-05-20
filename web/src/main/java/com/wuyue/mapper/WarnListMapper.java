@@ -2,10 +2,10 @@ package com.wuyue.mapper;
 
 import com.wuyue.model.entity.WarnList;
 import com.wuyue.model.entity.WarnListExample;
-import java.util.List;
-
-import com.wuyue.model.vo.WarningData;
+import com.wuyue.model.vo.IndexWarning;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface WarnListMapper {
     long countByExample(WarnListExample example);
@@ -30,5 +30,6 @@ public interface WarnListMapper {
 
     int updateByPrimaryKey(WarnList record);
 
-//    List<WarningData> selectAllWarningData();
+    List<IndexWarning> selectLatestWarnings(int length);
+
 }

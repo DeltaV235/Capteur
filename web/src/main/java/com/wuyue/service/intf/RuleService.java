@@ -13,6 +13,10 @@ import java.util.List;
  * @date 2020/5/17 21:16
  */
 public interface RuleService {
+    boolean enaRule(Integer id);
+
+    boolean disRule(Integer id);
+
     List<Rule> getAllRules();
 
     boolean addRule(RuleList ruleList, String param, String data, String contact);

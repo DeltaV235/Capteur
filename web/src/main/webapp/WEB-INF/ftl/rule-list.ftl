@@ -192,13 +192,19 @@
                                                                                               style="height: 24px;line-height: 22px;
                                                       padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">
                                                                                             已启用
-                                                        </span>
+                                                                                        </span>
                                                                                     <#elseif rule.status=="d">
                                                                                         <span class="badge badge-danger"
                                                                                               style="height: 24px;line-height: 22px;
                                                       padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">
                                                                                         已禁用
-                                                        </span>
+                                                                                        </span>
+                                                                                    <#elseif rule.status=="s">
+                                                                                        <span class="badge badge-warning"
+                                                                                              style="height: 24px;line-height: 22px;
+                                                      padding-top: 1px;padding-bottom: 1px;margin-top: 1px;margin-bottom: 1px">
+                                                                                        已抑制
+                                                                                        </span>
                                                                                     </#if>
                                                                                 </div>
 
@@ -267,7 +273,12 @@
                                                                                             </#if>
 
                                                                                             ${condition.symbol}
-                                                                                            ${condition.data}
+                                                                                            <#if condition.param=='p'>
+                                                                                                ${(condition.data/100)?
+                                                                                                string["#.#"]}
+                                                                                            <#else>
+                                                                                                ${condition.data}
+                                                                                            </#if>
 
                                                                                             <#if condition.param=='t'>
                                                                                                 ℃
@@ -279,7 +290,7 @@
                                                                                                 lux
                                                                                             <#elseif condition
                                                                                             .param=='p'>
-                                                                                                Pa
+                                                                                                hPa
                                                                                             </#if>
                                                                                         </div>
                                                                                     </#list>
@@ -334,12 +345,22 @@
                                                                                         </button>
                                                                                     </div>
 
-                                                                                    <div
-                                                                                            class="btn-group col-md-1">
-                                                                                        <button type="button"
-                                                                                                class="btn btn-secondary">
-                                                                                            禁用告警
-                                                                                        </button>
+                                                                                    <div class="btn-group col-md-1">
+
+                                                                                        <#if rule.status=='e'>
+                                                                                            <a href="rules/dis/${rule
+                                                                                            .id}"
+                                                                                               class="btn btn-secondary">
+                                                                                                禁用告警
+                                                                                            </a>
+                                                                                        <#elseif rule.status=='d'>
+                                                                                            <a
+                                                                                                    href="rules/ena/${rule
+                                                                                                    .id}"
+                                                                                                    class="btn btn-success">
+                                                                                                启用告警
+                                                                                            </a>
+                                                                                        </#if>
                                                                                     </div>
 
                                                                                     <div class="btn-group float-right col-md-1">
@@ -891,7 +912,7 @@
             '<i class="fas fa-times"></i>' +
             '</button>';
 
-        conditionDiv.append(andor);
+        // conditionDiv.append(andor);
         conditionDiv.append(conditionHTML);
         $('.slider-temp').ionRangeSlider(sliderTempSetting);
         $('.slider-humi').ionRangeSlider(sliderHumiSetting);
@@ -919,15 +940,15 @@
 
         // 删除的不是第一个条件
         if (removeElement.attr("id") !== "firstCondition") {
-            removeElement.prev().remove();
+            // removeElement.prev().remove();
             removeElement.remove();
         }
         // 删除的是第一个条件
         else if (removeElement.attr("id") === "firstCondition") {
             // 设置新的第一条件的id
-            removeElement.next().next().attr("id", "firstCondition");
+            removeElement.next().attr("id", "firstCondition");
             // 移除条件连接
-            removeElement.next().remove();
+            // removeElement.next().remove();
             // 移除条件
             removeElement.remove();
         }
@@ -947,27 +968,27 @@
         sliderDivElement.remove();
         // 新滑块元素
         let newSliderDivElement = $(' <div class="col-md-7 float-left">' +
-            '<input  type="text" name="value">' +
+            '<input  type="text" name="data">' +
             '</div>')
 
         // 获取选择的value
         let selectedValue = $(obj).val();
-        if (selectedValue === "temp") {
+        if (selectedValue === "t") {
             // 设置新滑块元素
             newSliderDivElement.children().attr("class", "slider-temp")
             // 在删除按钮前放置滑块元素
             selectionDiv.after(newSliderDivElement);
             // 应用滑块
             newSliderDivElement.children().ionRangeSlider(sliderTempSetting)
-        } else if (selectedValue === "humi") {
+        } else if (selectedValue === "h") {
             newSliderDivElement.children().attr("class", "slider-humi")
             selectionDiv.after(newSliderDivElement);
             newSliderDivElement.children().ionRangeSlider(sliderHumiSetting)
-        } else if (selectedValue === "press") {
+        } else if (selectedValue === "p") {
             newSliderDivElement.children().attr("class", "slider-press")
             selectionDiv.after(newSliderDivElement);
             newSliderDivElement.children().ionRangeSlider(sliderPressSetting)
-        } else if (selectedValue === "light") {
+        } else if (selectedValue === "l") {
             newSliderDivElement.children().attr("class", "slider-light")
             selectionDiv.after(newSliderDivElement);
             newSliderDivElement.children().ionRangeSlider(sliderLightSetting)
@@ -992,10 +1013,10 @@
         // 重置第一条件的条件参数和滑块
         $("#warnCondition").empty();
         let options =
-            '<option value="temp">温度</option>' +
-            '<option value="humi">湿度</option>' +
-            '<option value="press">气压</option>' +
-            '<option value="light">亮度</option>';
+            '<option value="t">温度</option>' +
+            '<option value="h">湿度</option>' +
+            '<option value="p">气压</option>' +
+            '<option value="l">亮度</option>';
         $("#warnCondition").append(options);
         conditionParamOnChange(document.getElementById("warnCondition"));
         // 禁用第一条件的删除按钮

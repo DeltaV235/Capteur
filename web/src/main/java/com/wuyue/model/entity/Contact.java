@@ -10,6 +10,8 @@ public class Contact {
 
     private String email;
 
+    private Boolean isDelete;
+
     public Contact() {
     }
 
@@ -18,6 +20,15 @@ public class Contact {
         this.name = name;
         this.phone = phone;
         this.email = email;
+        this.isDelete = false;
+    }
+
+    public Contact(Integer id, String name, String phone, String email, Boolean isDelete) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.isDelete = isDelete;
     }
 
     @Override
@@ -27,6 +38,7 @@ public class Contact {
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
+                ", isDelete=" + isDelete +
                 '}';
     }
 
@@ -60,5 +72,13 @@ public class Contact {
 
     public void setEmail(String email) {
         this.email = email == null ? null : email.trim();
+    }
+
+    public Boolean getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
     }
 }

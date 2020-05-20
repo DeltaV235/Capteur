@@ -15,6 +15,8 @@ public class RuleList {
 
     private String description;
 
+    private Boolean isDelete;
+
     public RuleList() {
     }
 
@@ -25,6 +27,17 @@ public class RuleList {
         this.level = level;
         this.createTime = createTime;
         this.description = description;
+        this.isDelete = false;
+    }
+
+    public RuleList(Integer id, String name, String status, String level, Date createTime, String description, Boolean isDelete) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+        this.level = level;
+        this.createTime = createTime;
+        this.description = description;
+        this.isDelete = isDelete;
     }
 
     @Override
@@ -36,6 +49,7 @@ public class RuleList {
                 ", level='" + level + '\'' +
                 ", createTime=" + createTime +
                 ", description='" + description + '\'' +
+                ", isDelete=" + isDelete +
                 '}';
     }
 
@@ -77,6 +91,14 @@ public class RuleList {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Boolean isDelete) {
+        this.isDelete = isDelete;
     }
 
     public String getDescription() {

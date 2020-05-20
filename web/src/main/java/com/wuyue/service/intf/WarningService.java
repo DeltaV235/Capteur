@@ -1,6 +1,7 @@
 package com.wuyue.service.intf;
 
 import com.wuyue.model.entity.WarnList;
+import com.wuyue.model.vo.IndexWarning;
 import com.wuyue.model.vo.WarningData;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * @date 2020/5/19 1:09
  */
 public interface WarningService {
+    List<IndexWarning> getLatestWarnings(Integer length);
 
     boolean updateWarning(WarnList warnList);
 
@@ -23,5 +25,4 @@ public interface WarningService {
     List<WarningData> findUnRecoverWarningData();
 
     boolean addWarning(Integer ruleId);
-
 }

@@ -13,11 +13,11 @@ public enum EnvironmentParameter {
     PRESSURE("p", 900, 1200),
     LIGHT("l",0, 30000);
 
-    private String paramName;
-    private double maxValue;
-    private double minValue;
+    private final String paramName;
+    private final double maxValue;
+    private final double minValue;
 
-    EnvironmentParameter(String paramName, double maxValue, double minValue) {
+    EnvironmentParameter(String paramName, double minValue, double maxValue) {
         this.paramName = paramName;
         this.maxValue = maxValue;
         this.minValue = minValue;
