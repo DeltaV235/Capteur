@@ -94,6 +94,8 @@ public class SensorData {
     }
 
     public Double getLight() {
+        if (light == null)
+            return null;
         return Math.round(light * 10) / 10.0;
     }
 

@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wuyue</groupId>
-    <artifactId>ems-web</artifactId>
+    <artifactId>capteur-web</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>12</maven.compiler.source>
         <maven.compiler.target>12</maven.compiler.target>
         <mybatis.version>3.5.4</mybatis.version>
@@ -25,6 +26,24 @@
         <jackson.version>2.10.0</jackson.version>
         <quartz.version>2.3.0</quartz.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <profiles.active>release</profiles.active>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- spring-mvc -->
@@ -172,7 +191,24 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-war-plugin</artifactId>-->
+<!--            </plugin>-->
+
         </plugins>
+
+<!--        &lt;!&ndash; 定义了变量配置文件的地址 &ndash;&gt;-->
+<!--        <filters>-->
+<!--            <filter>src/main/resources/jdbc-${env}.properties</filter>-->
+<!--        </filters>-->
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                <filtering>true</filtering>-->
+<!--            </resource>-->
+<!--        </resources>-->
     </build>
 
 

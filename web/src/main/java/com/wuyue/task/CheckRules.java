@@ -52,7 +52,7 @@ public class CheckRules {
             for (Rule rule : rules) {
                 // 若该告警已被禁用,则不再判断其触发条件
                 if (rule.getStatus().equals(RuleStatus.DISABLE.getStatus()))
-                    break;
+                    continue;
 
                 for (Conditions condition : rule.getConditions()) {
                     EnvironmentParameter ep =

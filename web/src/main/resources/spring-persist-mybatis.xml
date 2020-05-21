@@ -2,9 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
+    <description>mybatis及数据源相关的配置文件</description>
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-        <property name="location" value="classpath:/jdbc.properties"/>
+        <property name="location" value="classpath:/jdbc-release.properties"/>
     </bean>
 
     <bean class="com.alibaba.druid.pool.DruidDataSource" id="dataSource">

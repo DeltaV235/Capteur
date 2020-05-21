@@ -25,7 +25,7 @@ class ems:
     logger = mylogger('ems', 'log_ems')
 
     # 各线程检测频率
-    _saveFreq = _warnFreq = 0
+    _saveFreq = _warnFreq = 10
     _acqFreq = 1 / 6
 
     # 采集到的数据
@@ -137,14 +137,16 @@ class ems:
     #     print(getLocalTimeHuman(),'Database insert error!',exc)
     #     connection.rollback()
 
-    def insertDataALL(self, connection, table, temp, humi, illuminance, pressure, haveco):
+    def insertDataALL(self, connection, table, temp, humi, illuminance, pressure):
         # try:
         with connection.cursor() as cursor:
-            sql = 'insert into ' + table + '(date,temp,humi,illuminance,pressure,haveco) values (' + self.getLocalTime() + ',' + str(
-                temp) + ',' + str(humi) + ',' + str(illuminance) + ',' + str(pressure) + ',"' + haveco + '");'
+            sql = 'insert into ' + table + '(date,temp,humi,light,press) values (' + self.getLocalTime() + ',' + str(
+                temp) + ',' + str(humi) + ',' + str(illuminance) + ',' + str(pressure) + ');'
+            # sql = 'insert into ' + table + '(date,temp,humi,illuminance,pressure,haveco) values (' + self.getLocalTime() + ',' + str(
+            #     temp) + ',' + str(humi) + ',' + str(illuminance) + ',' + str(pressure) + ',"' + haveco + '");'
             cout = cursor.execute(sql)
             if cout >= 1:
-                self.logger.info('Insert ' + str(cout) + ' row(s) in sensors_data.' + table)
+                self.logger.info('Insert ' + str(cout) + ' row(s) in capteur.' + table)
             connection.commit()
 
     # except AttributeError as exc:
@@ -156,10 +158,10 @@ class ems:
     def insert(self):
         try:
             connCloud = self.getConnection(self._config['database']['host'], self._config['database']['user'],
-                                           self._config['database']['password'], 'sensors_data')
+                                           self._config['database']['password'], 'capteur')
             while (True):
                 connCloud.commit()
-                date = self.travValue(connCloud, 'all_sensors_data', 'date', 'order by date desc limit 1')
+                date = self.travValue(connCloud, 'sensor_data', 'date', 'order by date desc limit 1')
                 distance = (time.mktime(time.localtime(time.time())) - time.mktime(
                     time.strptime(str(date[0][0]), "%Y-%m-%d %H:%M:%S")))
                 if self._isAcqRun:
@@ -167,14 +169,14 @@ class ems:
                         # if self._temp22 is not None and 0 <= self._humi22 <= 100.0 and self._illuminance >= 0 and self._haveco is not None:
                         self._acqLock.acquire()
                         self.logger.info('Cloud Server:')
-                        self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
-                        self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
-                        self.insertDataMQ7(connCloud, 'mq7', self._haveco)
-                        self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude,
-                                            self._sealevel_pressure)
-                        self.insertDataALL(connCloud, 'all_sensors_data', ('%.2f' % self._temp22),
+                        # self.insertDataDHT22(connCloud, 'dht22', ('%.2f' % self._temp22), ('%.2f' % self._humi22))
+                        # self.insertDataGY30(connCloud, 'gy30', ('%.1f' % self._illuminance))
+                        # self.insertDataMQ7(connCloud, 'mq7', self._haveco)
+                        # self.insertDataGY68(connCloud, 'gy68', self._pressure, self._temperature, self._altitude,
+                        #                     self._sealevel_pressure)
+                        self.insertDataALL(connCloud, 'sensor_data', ('%.2f' % self._temp22),
                                            ('%.2f' % self._humi22), ('%.1f' % self._illuminance),
-                                           ('%.2f' % self._pressure), self._haveco)
+                                           ('%.2f' % self._pressure))
                         # date[0][0] = getLocalTime()
                         self._acqLock.release()
                     # else:  # 错误输出错误信息，和校验数据
@@ -210,8 +212,8 @@ class ems:
     def acquire(self):
         try:
             # connection = self.getConnection('localhost', 'root', '', 'setting')
-            connection_vps = self.getConnection(self._config['database']['host'], self._config['database']['user'],
-                                                self._config['database']['password'], 'setting')
+            # connection_vps = self.getConnection(self._config['database']['host'], self._config['database']['user'],
+            #                                     self._config['database']['password'], 'setting')
             dht22Pin = 4
 
             bus_GY30 = smbus.SMBus(1)
@@ -229,18 +231,18 @@ class ems:
             retryCount = 0
             while (True):
                 # connection.commit()
-                connection_vps.commit()
-                Freq = self.travValue(connection_vps, 'setting')
+                # connection_vps.commit()
+                # Freq = self.travValue(connection_vps, 'setting')
                 if count >= 2:  # 前2次采集不更新采集频率，使用main中的短采集周期，提高程序的启动速度
-                    self._acqFreq = Freq[0][0]
+                    # self._acqFreq = Freq[0][0]
                     if not isExecuted:
                         self._isAcqRun = True
                         self.logger.info('Acquire thread is ready.')
                         isExecuted = True
                 else:
                     count += 1
-                self._saveFreq = Freq[0][1]
-                self._warnFreq = Freq[0][2]
+                # self._saveFreq = Freq[0][1]
+                # self._warnFreq = Freq[0][2]
                 # print (acqFreq, saveFreq, warnFreq)
 
                 # 采集数据
@@ -304,7 +306,7 @@ class ems:
                     'Temp_GY68:{5:0.2f} *C  Altitude_GY68:{6:0.2f} m  Sealevel_Pressure_GY68:{7:0.2f} Pa  acqFreq:{8:0.1f} s'
                         .format(temp, humi, illuminance, pressure, haveco,
                                 self._temperature, self._altitude, self._sealevel_pressure, self._acqFreq * 60))
-                self.checkWarning('', connection_vps)
+                # self.checkWarning('', connection_vps)
                 # print(getLocalTimeHuman(), 'acqFreq =', round(acqFreq * 60, 1), 's')
                 self._acqLock.release()
                 time.sleep(self._acqFreq * 60)
@@ -829,7 +831,7 @@ class ems:
                     break
 
             while not self._isINT:  # 所有线程启动1次后
-                if self._thrAcqAlive is False or self._thrSaveAlive is False or self._thrSendAlive is False:  # 如有线程未正常运行，则红LED闪烁
+                if self._thrAcqAlive is False or self._thrSaveAlive is False:  # 如有线程未正常运行，则红LED闪烁
                     isExecuted = False  # 是否已经使green LED常亮
                     isrunning = False
                     # 置空所有LED
@@ -1003,9 +1005,9 @@ class ems:
             thrSave.setDaemon(True)
             thrSave.start()
 
-            thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
-            thrSend.setDaemon(True)
-            thrSend.start()
+            # thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
+            # thrSend.setDaemon(True)
+            # thrSend.start()
             time.sleep(3)
             self._isFirstStarted = True
 
@@ -1018,8 +1020,8 @@ class ems:
                     self._thrAcqAlive = True
                 if thrSave.isAlive():
                     self._thrSaveAlive = True
-                if thrSend.isAlive():
-                    self._thrSendAlive = True
+                # if thrSend.isAlive():
+                #     self._thrSendAlive = True
 
                 if not self._thrLEDAlive:
                     self.logger.error('Restarting LED thread!')
@@ -1042,12 +1044,12 @@ class ems:
                     thrSave.setDaemon(True)
                     thrSave.start()
                     restartCount = restartCount + 1
-                if not self._thrSendAlive:
-                    self.logger.error('Restarting Send thread!')
-                    thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
-                    thrSend.setDaemon(True)
-                    thrSend.start()
-                    restartCount = restartCount + 1
+                # if not self._thrSendAlive:
+                #     self.logger.error('Restarting Send thread!')
+                #     thrSend = threading.Thread(target=self.sendWarning, name='Thread_Send')
+                #     thrSend.setDaemon(True)
+                #     thrSend.start()
+                #     restartCount = restartCount + 1
                 if restartCount >= 200:
                     exit(200)
                 time.sleep(10)
