@@ -1,6 +1,8 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+<link rel="shortcut icon" href="favicon.ico">
+
 <!-- 告诉浏览器屏幕自适应 -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -16,7 +18,8 @@
 <!-- JQVMap -->
 <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
 <!-- 主题样式 -->
-<link rel="stylesheet" href="dist/css/adminlte.min.css">
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/admin-lte/3.0.4/css/adminlte.min.css">
+
 <!-- overlayScrollbars -->
 <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
 <!-- Daterange picker -->

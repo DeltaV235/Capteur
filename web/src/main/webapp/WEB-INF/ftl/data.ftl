@@ -93,7 +93,7 @@
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <!-- 解决使用 Bootstrap 提示工具与 jQuery UI 提示工具冲突 -->
 
 <!-- Bootstrap 4 -->

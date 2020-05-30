@@ -27,6 +27,9 @@ public class ChartUtil {
         for (Double element : data) {
             if (element == null)
                 continue;
+# select *
+# from student s
+#
             sum += element;
             count++;
         }
