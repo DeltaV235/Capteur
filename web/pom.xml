@@ -24,7 +24,7 @@
         <javax-servlet-api.version>4.0.1</javax-servlet-api.version>
         <freemarker.version>2.3.28</freemarker.version>
         <jackson.version>2.10.0</jackson.version>
-        <quartz.version>2.3.0</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
     </properties>
 
     <profiles>
